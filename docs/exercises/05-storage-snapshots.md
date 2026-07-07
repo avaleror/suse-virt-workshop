@@ -1,16 +1,16 @@
-# Exercise 5 — Snapshots and DR
+# Exercise 5: Snapshots and DR
 
 **Time:** 30 min
-**Previous:** [Exercise 4 — Networking and isolation](04-networking.md)
-**Next:** [Exercise 6 — Provision a K3s cluster](06-provision-k3s.md)
+**Previous:** [Exercise 4: Networking and isolation](04-networking.md)
+**Next:** [Exercise 6: Provision a K3s cluster](06-provision-k3s.md)
 
 ---
 
-Flight operations data retention is an ICAO regulatory requirement — 7 years minimum. Before any risky change to `virt1`, take a checkpoint. This exercise configures storage policies, snapshots before a change, simulates corruption, and restores clean.
+Flight operations data retention is an ICAO regulatory requirement: 7 years minimum. Before any risky change to `virt1`, take a checkpoint. This exercise configures storage policies, snapshots before a change, simulates corruption, and restores clean.
 
 ## 5.1 AeroGrid's storage architecture
 
-Harvester uses **Longhorn** as its distributed block storage engine — local disks from every cluster node pooled into a replicated volume, no external SAN, no NFS, no proprietary array.
+Harvester uses **Longhorn** as its distributed block storage engine: local disks from every cluster node pooled into a replicated volume, no external SAN, no NFS, no proprietary array.
 
 | VMware (Broadcom) | SUSE Virtualization |
 |---|---|
@@ -30,7 +30,7 @@ You should see 3 Longhorn storage nodes, one per cluster node.
 
 ## 5.2 Inspect and add storage policies
 
-Harvester ships `harvester-longhorn` as the default StorageClass — 3 replicas, one per node. In the Harvester UI, go to **Advanced > Storage Classes** and open `harvester-longhorn`: note `numberOfReplicas: "3"`.
+Harvester ships `harvester-longhorn` as the default StorageClass: 3 replicas, one per node. In the Harvester UI, go to **Advanced > Storage Classes** and open `harvester-longhorn`: note `numberOfReplicas: "3"`.
 
 Add a second policy for dev/test workloads (2 replicas, lower overhead):
 
@@ -62,9 +62,9 @@ Two policies now exist: `harvester-longhorn` (3 replicas, production data) and `
 
 ## 5.3 Checkpoint before a risky change
 
-Before a configuration change on `virt1`, take a snapshot — a point-in-time rollback target.
+Before a configuration change on `virt1`, take a snapshot: a point-in-time rollback target.
 
-> **Note:** Harvester snapshots are crash-consistent by default. For application-consistent snapshots (filesystem freeze) use the QEMU guest agent — pre-installed in the `leap16` image.
+> **Note:** Harvester snapshots are crash-consistent by default. For application-consistent snapshots (filesystem freeze) use the QEMU guest agent, already pre-installed in the `leap16` image.
 
 In the Harvester UI: **Virtual Machines** → `virt1` → **⋮** → **Take Snapshot** → name it `virt1-snap1` → **Create**.
 
@@ -80,7 +80,7 @@ Simulate the incident:
 
 ```bash
 ssh opensuse@192.168.122.50 \
-  "echo 'CRITICAL: GATE ASSIGNMENT DATABASE CORRUPTED — GROUND OPS AT RISK' | sudo tee /etc/incident-report.txt"
+  "echo 'CRITICAL: GATE ASSIGNMENT DATABASE CORRUPTED, GROUND OPS AT RISK' | sudo tee /etc/incident-report.txt"
 ```
 
 Restore from the checkpoint via the Harvester UI: **Virtual Machines** → `virt1` → **⋮** → **Restore Snapshot** → select `virt1-snap1` → **Create new VM** (leaves `virt1` intact for comparison) → name it `virt1-restored` → **Restore**.
@@ -93,7 +93,7 @@ You should see both `virt1` (post-incident) and `virt1-restored` (clean checkpoi
 
 ## 5.5 Off-site backup configuration
 
-Snapshots are local — if the cluster is lost, they're lost with it. For real DR, Harvester supports backup to S3-compatible storage or NFS.
+Snapshots are local. If the cluster is lost, they're lost with it. For real DR, Harvester supports backup to S3-compatible storage or NFS.
 
 ```bash
 kubectl get settings.harvesterhci.io backup-target -o yaml
@@ -113,8 +113,8 @@ VOLUME:.spec.volumeName,\
 STATE:.status.currentState
 ```
 
-Each volume should have replicas spread across different nodes — vSAN resilience without the vSAN license.
+Each volume should have replicas spread across different nodes: vSAN resilience without the vSAN license.
 
 ---
 
-**Next:** [Exercise 6 — Provision a K3s cluster](06-provision-k3s.md)
+**Next:** [Exercise 6: Provision a K3s cluster](06-provision-k3s.md)

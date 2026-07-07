@@ -1,16 +1,16 @@
-# Exercise 3 — First VM and live migration
+# Exercise 3: First VM and live migration
 
 **Time:** 30 min
-**Previous:** [Exercise 2 — Bring the cluster online](02-cluster-online.md)
-**Next:** [Exercise 4 — Networking and isolation](04-networking.md)
+**Previous:** [Exercise 2: Bring the cluster online](02-cluster-online.md)
+**Next:** [Exercise 4: Networking and isolation](04-networking.md)
 
 ---
 
-The cluster is healthy and networked. Time to put a VM on it — AeroGrid's ground operations system (baggage tracking, gate assignments, ramp coordination). Under VMware this ran on vMotion-capable ESXi. Here it runs on KubeVirt and KVM, and moves between nodes with the same zero-downtime guarantee.
+The cluster is healthy and networked. Time to put a VM on it: AeroGrid's ground operations system (baggage tracking, gate assignments, ramp coordination). Under VMware this ran on vMotion-capable ESXi. Here it runs on KubeVirt and KVM, and moves between nodes with the same zero-downtime guarantee.
 
 ## 3.1 Check the base image
 
-This lab ships a pre-loaded **openSUSE Leap 16** cloud image called `leap16` — the standard production path for VM provisioning, since it boots fast and supports full cloud-init customization.
+This lab ships a pre-loaded **openSUSE Leap 16** cloud image called `leap16`. It's the standard production path for VM provisioning, since it boots fast and supports full cloud-init customization.
 
 ```bash
 kubectl get virtualmachineimages -n default
@@ -44,23 +44,23 @@ ethernets:
         - 8.8.8.8
 ```
 
-This assigns `virt1` a fixed IP of `192.168.122.50` at first boot — no manual post-deploy networking.
+This assigns `virt1` a fixed IP of `192.168.122.50` at first boot, no manual post-deploy networking.
 
 ## 3.4 Node scheduling
 
 Harvester offers three placement policies:
 
-- **Any available node** — Kubernetes schedules the VM; live migration is enabled
-- **Specific node** — pinned, no migration
-- **Scheduling rules** — affinity based on node labels (GPU capability, NUMA topology, network zone, etc.)
+- **Any available node**, Kubernetes schedules the VM; live migration is enabled
+- **Specific node**, pinned, no migration
+- **Scheduling rules**, affinity based on node labels (GPU capability, NUMA topology, network zone, etc.)
 
-Go to **Node Scheduling** and select **Run virtual machine on any available node** — required for the live migration step below.
+Go to **Node Scheduling** and select **Run virtual machine on any available node**. It's required for the live migration step below.
 
 Click **Create** and wait for `virt1` to reach `Running`.
 
 ## 3.5 Confirm virt1 is operational
 
-Because your host has a direct route to `virbr0`, you can reach `virt1` straight from your shell — no proxy needed:
+Because your host has a direct route to `virbr0`, you can reach `virt1` straight from your shell, no proxy needed:
 
 ```bash
 until ssh -o StrictHostKeyChecking=no opensuse@192.168.122.50 "uname -a" 2>/dev/null; do
@@ -75,9 +75,9 @@ When kernel info prints, cloud-init has configured the network and injected your
 ssh opensuse@192.168.122.50 "cat /etc/os-release"
 ```
 
-## 3.6 Live migration — zero-downtime node mobility
+## 3.6 Live migration: zero-downtime node mobility
 
-A maintenance window is coming on one of the cluster nodes. `virt1` needs to move to another node without going offline — airport operations run 24/7.
+A maintenance window is coming on one of the cluster nodes. `virt1` needs to move to another node without going offline: airport operations run 24/7.
 
 Check which node `virt1` is on:
 
@@ -99,8 +99,8 @@ Confirm it never went offline:
 ssh opensuse@192.168.122.50 "hostname && uptime"
 ```
 
-`virt1` moved between nodes with zero downtime — the vMotion equivalent, on open-source KubeVirt, no VMware license required.
+`virt1` moved between nodes with zero downtime: the vMotion equivalent, on open-source KubeVirt, no VMware license required.
 
 ---
 
-**Next:** [Exercise 4 — Networking and isolation](04-networking.md)
+**Next:** [Exercise 4: Networking and isolation](04-networking.md)

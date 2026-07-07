@@ -1,7 +1,7 @@
-# Exercise 1 — Import Harvester into Rancher
+# Exercise 1: Import Harvester into Rancher
 
 **Time:** 30 min
-**Next:** [Exercise 2 — Bring the cluster online](02-cluster-online.md)
+**Next:** [Exercise 2: Bring the cluster online](02-cluster-online.md)
 
 ---
 
@@ -27,7 +27,7 @@ Open `https://<host-ip>:30002` in a browser (or `https://192.168.122.9:30002` if
 - **Username:** `admin`
 - **Password:** the `rancher_admin_password` value in `~/.rodeo/secrets.yaml` on the host
 
-You land on the Rancher home screen with one cluster listed: **local** — that's Rancher's own K3s management cluster, not Harvester. There's no Virtualization Management section yet because nothing is imported.
+You land on the Rancher home screen with one cluster listed: **local**. That's Rancher's own K3s management cluster, not Harvester. There's no Virtualization Management section yet because nothing is imported.
 
 ## 1.3 Register the Harvester cluster in Rancher
 
@@ -46,7 +46,7 @@ https://192.168.122.9:30002/v3/import/xxxxx_c-xxxxx.yaml
 
 Copy it. You need it in the next step.
 
-> **Important:** the cluster name must be exactly `harvester` — later exercises assume it.
+> **Important:** the cluster name must be exactly `harvester`. Later exercises assume it.
 
 ## 1.4 Apply the registration URL in Harvester
 
@@ -68,7 +68,7 @@ Once it's `Active`, `harvester` is now a cluster Rancher manages like any other.
 
 ## 1.6 Configure kubectl to reach Harvester through Rancher
 
-Rancher proxies the Kubernetes API of every cluster it manages. Rather than SSH into a Harvester node for every `kubectl` command in this workshop, point `kubectl` on your host at that proxy — it's the same access pattern Rancher gives you for any downstream cluster, on-prem or cloud.
+Rancher proxies the Kubernetes API of every cluster it manages. Rather than SSH into a Harvester node for every `kubectl` command in this workshop, point `kubectl` on your host at that proxy. It's the same access pattern Rancher gives you for any downstream cluster, on-prem or cloud.
 
 Generate a Rancher API token: top-right user avatar → **Account & API Keys** → **Create API Key** → no scope, no expiration → **Create**. Copy the **Bearer Token** shown (you won't see it again).
 
@@ -100,7 +100,7 @@ Verify:
 kubectl get nodes
 ```
 
-All three Harvester nodes should show `Ready`. Every `kubectl` command in the rest of this workshop runs from right here — no need to SSH into a Harvester node.
+All three Harvester nodes should show `Ready`. Every `kubectl` command in the rest of this workshop runs from right here, no need to SSH into a Harvester node at all.
 
 ## 1.7 Register your SSH key for later VM access
 
@@ -121,4 +121,4 @@ EOF
 
 ---
 
-**Next:** [Exercise 2 — Bring the cluster online](02-cluster-online.md)
+**Next:** [Exercise 2: Bring the cluster online](02-cluster-online.md)

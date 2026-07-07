@@ -1,4 +1,4 @@
-# Host Setup — SUSE Virtualization Workshop
+# Host Setup: SUSE Virtualization Workshop
 
 This workshop deploys on a bare metal Linux host with KVM. These steps cover host prep and initial deploy.
 
@@ -43,7 +43,7 @@ From the workshop directory:
 sudo rodeo deploy --config-dir .
 ```
 
-The deploy runs in phases: `kvm_host → vms → pxe_server → cluster → rancher → finalise`. Total time is **1-2.5 hours**, and the `cluster` phase is the long pole — nested KVM makes the Harvester install slow (VIP wait up to 60 min, all-3-nodes-Ready up to 90 min). This is expected; do not interrupt it. See [Lab overview](../reference/lab-overview.md) for the full phase breakdown.
+The deploy runs in phases: `kvm_host → vms → pxe_server → cluster → rancher → finalise`. Total time is **1-2.5 hours**, and the `cluster` phase is the long pole. Nested KVM makes the Harvester install slow (VIP wait up to 60 min, all-3-nodes-Ready up to 90 min). This is expected; do not interrupt it. See [Lab overview](../reference/lab-overview.md) for the full phase breakdown.
 
 When complete, the success screen shows:
 
@@ -53,7 +53,7 @@ When complete, the success screen shows:
 
 ## harvester_auto_import stays false
 
-`rodeo-plan.yaml` sets `harvester_auto_import: false` on purpose — importing Harvester into Rancher is Exercise 1. Don't do it for students; if you do, skip straight to Exercise 2 when handing off, or redeploy from a clean state.
+`rodeo-plan.yaml` sets `harvester_auto_import: false` on purpose: importing Harvester into Rancher is Exercise 1. Don't do it for students; if you do, skip straight to Exercise 2 when handing off, or redeploy from a clean state.
 
 ## Verify before handing to students
 
@@ -73,7 +73,7 @@ curl -sk -u admin:$(grep rancher_admin_password ~/.rodeo/secrets.yaml | cut -d'"
 # should list only "local"
 ```
 
-Everything should be green, and only `local` should appear in the Rancher cluster list — that confirms Exercise 1 hasn't been done yet.
+Everything should be green, and only `local` should appear in the Rancher cluster list. That confirms Exercise 1 hasn't been done yet.
 
 ## Tear down
 

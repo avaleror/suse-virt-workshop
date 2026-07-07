@@ -10,7 +10,7 @@
 | Admin user | `admin` |
 | Admin passwords | `cat ~/.rodeo/secrets.yaml` (`harvester_admin_password`, `rancher_admin_password`) |
 | kubectl (Harvester, via Rancher proxy) | see [Exercise 1.6](../exercises/01-import-into-rancher.md#16-configure-kubectl-to-reach-harvester-through-rancher) |
-| virt1 SSH | `ssh opensuse@192.168.122.50` (direct — host routes to virbr0) |
+| virt1 SSH | `ssh opensuse@192.168.122.50` (direct, host routes to virbr0) |
 
 ## Node reference
 

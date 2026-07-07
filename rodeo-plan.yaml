@@ -1,4 +1,4 @@
-# rodeo-plan.yaml — deployment plan for the SUSE Virtualization Workshop
+# rodeo-plan.yaml: deployment plan for the SUSE Virtualization Workshop
 # Run: rodeo init  to (re)generate the secrets this plan references.
 # Secrets go in ~/.rodeo/secrets.yaml (chmod 600, never committed).
 #
@@ -6,11 +6,11 @@
 
 name: suse-virt-workshop
 
-deployment_target: baremetal   # a clean host you own — instruqt is for the internal customer lab
+deployment_target: baremetal   # a clean host you own, instruqt is for the internal customer lab
 
 network:
   mode: nat              # nat | bridge
-  vip: "192.168.122.10"   # kube-vip floating IP — must not be a node IP
+  vip: "192.168.122.10"   # kube-vip floating IP, must not be a node IP
   rancher_ip: "192.168.122.9"
   gateway: "192.168.122.1"
   dns_domain: "aerogrid.com"
@@ -19,7 +19,7 @@ network:
 
 resources:
   harvester:
-    memory_mib: 16384    # 16 GiB — meets Harvester minimum
+    memory_mib: 16384    # 16 GiB, meets Harvester minimum
     vcpu: 8
     disk_gb: 270         # Longhorn needs room; 270 GB works for nested KVM
   rancher:
@@ -52,5 +52,5 @@ credentials:
   harvester_os_password: "??harvester_os_password"
   harvester_admin_password: "??harvester_admin_password"
   rancher_admin_password: "??rancher_admin_password"
-  # Cluster join token — random per environment (rodeo init generates it)
+  # Cluster join token, random per environment (rodeo init generates it)
   harvester_token: "??harvester_token"

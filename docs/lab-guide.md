@@ -1,4 +1,4 @@
-# SUSE Virtualization Rodeo — Lab Guide
+# SUSE Virtualization Rodeo: Lab Guide
 
 **Version:** 1.0 | **Duration:** ~3.5 hours
 **Author:** Andres Valero, Principal Technology Advocate, SUSE
@@ -7,7 +7,7 @@
 
 ## Before we start
 
-This is a hands-on lab. You will import a running Harvester HCI cluster into Rancher Prime, build its networking and storage, provision and live-migrate a VM, isolate tenant traffic, take VM snapshots, then provision a full Kubernetes cluster on top of it all and deploy a workload to it. The goal is not to click through slides — it's to leave knowing how SUSE Virtualization actually works at the system level.
+This is a hands-on lab. You will import a running Harvester HCI cluster into Rancher Prime, build its networking and storage, provision and live-migrate a VM, isolate tenant traffic, take VM snapshots, then provision a full Kubernetes cluster on top of it all and deploy a workload to it. The goal is not to click through slides. It's to leave knowing how SUSE Virtualization actually works at the system level.
 
 Your environment is already running: a bare metal host with three Harvester nodes forming a cluster, and a fourth VM running Rancher Prime. **Access credentials** are in `~/.rodeo/secrets.yaml` on the host.
 
@@ -15,7 +15,7 @@ Your environment is already running: a bare metal host with three Harvester node
 
 ## The scenario
 
-AeroGrid Operations runs the IT stack for a regional international airport — baggage handling, gate assignment, check-in kiosks, ramp control, three airline tenants sharing the same infrastructure. When Broadcom's acquisition of VMware closed, the renewal quote came in at 3.2x the previous cost, with NSX, vSAN, and vCenter billed separately.
+AeroGrid Operations runs the IT stack for a regional international airport: baggage handling, gate assignment, check-in kiosks, ramp control, three airline tenants sharing the same infrastructure. When Broadcom's acquisition of VMware closed, the renewal quote came in at 3.2x the previous cost, with NSX, vSAN, and vCenter billed separately.
 
 The decision was made: migrate to SUSE Virtualization. This lab puts you in the seat of the AeroGrid infrastructure team, bringing the new platform online end to end.
 
@@ -34,7 +34,7 @@ VIP (kube-vip): 192.168.122.10
 
 ---
 
-## Exercise 1 — Import Harvester into Rancher
+## Exercise 1: Import Harvester into Rancher
 
 *(30 min)*
 
@@ -47,7 +47,7 @@ curl -sk https://192.168.122.10/v1 | jq -r '.apiVersion'
 curl -sk https://192.168.122.9:30002/v3 | jq -r '.type'
 ```
 
-**2. Log in to Rancher** at `https://<host-ip>:30002` — user `admin`, password from `~/.rodeo/secrets.yaml` (`rancher_admin_password`). You'll see one cluster, `local`.
+**2. Log in to Rancher** at `https://<host-ip>:30002`: user `admin`, password from `~/.rodeo/secrets.yaml` (`rancher_admin_password`). You'll see one cluster, `local`.
 
 **3. Register the Harvester cluster:** Rancher UI → **Virtualization Management** → **Import Existing** → name it exactly `harvester` → **Create**. Copy the registration URL Rancher shows you.
 
@@ -55,7 +55,7 @@ curl -sk https://192.168.122.9:30002/v3 | jq -r '.type'
 
 **5. Watch the import** in Rancher's Virtualization Management view: `Pending` → `Waiting` → `Active`.
 
-**6. Configure kubectl through Rancher's proxy** — generate an API token (user avatar → Account & API Keys → Create API Key), then:
+**6. Configure kubectl through Rancher's proxy**: generate an API token (user avatar → Account & API Keys → Create API Key), then:
 
 ```bash
 export RANCHER_URL="https://192.168.122.9:30002"
@@ -93,7 +93,7 @@ Full detail: [Exercise 1](exercises/01-import-into-rancher.md)
 
 ---
 
-## Exercise 2 — Bring the cluster online
+## Exercise 2: Bring the cluster online
 
 *(30 min)*
 
@@ -104,15 +104,15 @@ kubectl get nodes
 kubectl get pods -n harvester-system | grep -v Completed
 ```
 
-**2. Create the VM cluster network** — Harvester UI → **Networks > Cluster Networks** → **Create** → name `vms` → add a Node Network Config entry per node with NIC `eth3`.
+**2. Create the VM cluster network**: Harvester UI → **Networks > Cluster Networks** → **Create** → name `vms` → add a Node Network Config entry per node with NIC `eth3`.
 
-**3. Create the primary VM network** — **Networks > VM Networks** → **Create** → name `vmnet`, type `L2VlanNetwork`, cluster network `vms`, VLAN ID `1`.
+**3. Create the primary VM network**: **Networks > VM Networks** → **Create** → name `vmnet`, type `L2VlanNetwork`, cluster network `vms`, VLAN ID `1`.
 
 ```bash
 kubectl get network-attachment-definitions -n default   # vmnet listed
 ```
 
-**4. Set up the LoadBalancer IP pool** — **Networks > IP Pools** → **Create** → name `rodeo-ippool`, range `192.168.122.200`–`192.168.122.220`, VM Network `default/vmnet`, namespace `default`.
+**4. Set up the LoadBalancer IP pool**: **Networks > IP Pools** → **Create** → name `rodeo-ippool`, range `192.168.122.200`–`192.168.122.220`, VM Network `default/vmnet`, namespace `default`.
 
 ```bash
 kubectl get ippools.network.harvesterhci.io -n default
@@ -122,11 +122,11 @@ Full detail: [Exercise 2](exercises/02-cluster-online.md)
 
 ---
 
-## Exercise 3 — First VM and live migration
+## Exercise 3: First VM and live migration
 
 *(30 min)*
 
-**1. Provision virt1** — Rancher UI → Virtualization Management → Virtual Machines → Create: name `virt1`, 2 CPU / 2 GiB, SSH key `default/workshop-host`, volume from image `default/leap16` (20 GiB), network `default/vmnet` with static IP `192.168.122.50` via cloud-init Network Data:
+**1. Provision virt1**: Rancher UI → Virtualization Management → Virtual Machines → Create: name `virt1`, 2 CPU / 2 GiB, SSH key `default/workshop-host`, volume from image `default/leap16` (20 GiB), network `default/vmnet` with static IP `192.168.122.50` via cloud-init Network Data:
 
 ```yaml
 version: 2
@@ -158,11 +158,11 @@ Full detail: [Exercise 3](exercises/03-first-vm.md)
 
 ---
 
-## Exercise 4 — Networking and isolation
+## Exercise 4: Networking and isolation
 
 *(30 min)*
 
-**1. VLAN backbone** — Harvester UI → **Networks > VM Networks** → Create: name `vlan100`, type `L2VlanNetwork`, cluster network `mgmt`, VLAN ID `100`.
+**1. VLAN backbone**: Harvester UI → **Networks > VM Networks** → Create: name `vlan100`, type `L2VlanNetwork`, cluster network `mgmt`, VLAN ID `100`.
 
 **2. Two isolated tenant zones** (same CIDR, fully isolated via Kube-OVN):
 
@@ -192,7 +192,7 @@ Full detail: [Exercise 4](exercises/04-networking.md)
 
 ---
 
-## Exercise 5 — Snapshots and DR
+## Exercise 5: Snapshots and DR
 
 *(30 min)*
 
@@ -215,7 +215,7 @@ parameters:
 EOF
 ```
 
-**2. Snapshot virt1** — Harvester UI → Virtual Machines → `virt1` → **⋮** → **Take Snapshot** → name `virt1-snap1`.
+**2. Snapshot virt1**: Harvester UI → Virtual Machines → `virt1` → **⋮** → **Take Snapshot** → name `virt1-snap1`.
 
 **3. Simulate corruption and restore:**
 
@@ -240,11 +240,11 @@ Full detail: [Exercise 5](exercises/05-storage-snapshots.md)
 
 ---
 
-## Exercise 6 — Provision a K3s cluster
+## Exercise 6: Provision a K3s cluster
 
 *(45 min)*
 
-**1. Project RBAC** — Rancher UI → Projects/Namespaces → Create Project `terminal-ops`, add `admin` as Project Member.
+**1. Project RBAC**: Rancher UI → Projects/Namespaces → Create Project `terminal-ops`, add `admin` as Project Member.
 
 ```bash
 kubectl create namespace checkin-workloads
@@ -253,9 +253,9 @@ kubectl annotate namespace checkin-workloads \
     -o jsonpath='{.items[?(@.spec.displayName=="terminal-ops")].metadata.name}') --overwrite
 ```
 
-**2. Cloud credential** — Rancher UI → Cloud Credentials → Create → Harvester → name `harvester-local`, cluster `harvester`.
+**2. Cloud credential**: Rancher UI → Cloud Credentials → Create → Harvester → name `harvester-local`, cluster `harvester`.
 
-**3. Provision `checkin-cluster`** — Cluster Management → Create → RKE2/K3s → Infrastructure Harvester: cloud credential `harvester-local`, node pool 1x (2 CPU / 4 GiB / 40 GiB, image `default/leap16`, network `default/vmnet`, SSH user `opensuse`). Enable **Harvester CSI Driver** and **Harvester Cloud Provider**.
+**3. Provision `checkin-cluster`**: Cluster Management → Create → RKE2/K3s → Infrastructure Harvester: cloud credential `harvester-local`, node pool 1x (2 CPU / 4 GiB / 40 GiB, image `default/leap16`, network `default/vmnet`, SSH user `opensuse`). Enable **Harvester CSI Driver** and **Harvester Cloud Provider**.
 
 ```bash
 watch kubectl get clusters.provisioning.cattle.io -A
@@ -275,18 +275,18 @@ Full detail: [Exercise 6](exercises/06-provision-k3s.md)
 
 ---
 
-## Exercise 7 — NOC dashboard
+## Exercise 7: NOC dashboard
 
 *(20 min)*
 
-**1. Deploy alien-geeko** on `checkin-cluster` (namespace, ServiceAccount + ClusterRole, ConfigMap with `CLUSTER_NAME`, Deployment + LoadBalancer Service) — full manifests in [Exercise 7](exercises/07-noc-dashboard.md).
+**1. Deploy alien-geeko** on `checkin-cluster` (namespace, ServiceAccount + ClusterRole, ConfigMap with `CLUSTER_NAME`, Deployment + LoadBalancer Service). Full manifests in [Exercise 7](exercises/07-noc-dashboard.md).
 
 ```bash
 export KUBECONFIG=~/.kube/checkin-cluster.yaml
 kubectl rollout status deployment/alien-geeko -n alien-geeko
 ```
 
-**2. Open it directly** — no port-forward needed, the LoadBalancer IP is on your local network:
+**2. Open it directly**: no port-forward needed, the LoadBalancer IP is on your local network:
 
 ```bash
 kubectl get svc alien-geeko -n alien-geeko

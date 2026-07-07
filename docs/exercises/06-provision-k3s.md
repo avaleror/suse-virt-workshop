@@ -1,16 +1,16 @@
-# Exercise 6 — Provision a K3s cluster
+# Exercise 6: Provision a K3s cluster
 
 **Time:** 45 min
-**Previous:** [Exercise 5 — Snapshots and DR](05-storage-snapshots.md)
-**Next:** [Exercise 7 — NOC dashboard](07-noc-dashboard.md)
+**Previous:** [Exercise 5: Snapshots and DR](05-storage-snapshots.md)
+**Next:** [Exercise 7: NOC dashboard](07-noc-dashboard.md)
 
 ---
 
-AeroGrid passengers currently queue at staffed desks to check in. That changes now: a self-service check-in portal, running on Kubernetes, provisioned directly on top of the Harvester platform. Rancher handles the full lifecycle — VM creation, OS install, CNI setup, storage wiring, load balancer integration — from one interface.
+AeroGrid passengers currently queue at staffed desks to check in. That changes now: a self-service check-in portal, running on Kubernetes, provisioned directly on top of the Harvester platform. Rancher handles the full lifecycle from one interface: VM creation, OS install, CNI setup, storage wiring, load balancer integration.
 
 ## 6.1 Rancher as the control plane
 
-When Rancher Prime manages Harvester, it treats the platform as a **cloud provider** — the same way it talks to GCP, AWS, or Azure. You provision Kubernetes clusters on your on-prem HCI using the same workflow you'd use for the cloud.
+When Rancher Prime manages Harvester, it treats the platform as a **cloud provider**: the same way it talks to GCP, AWS, or Azure. You provision Kubernetes clusters on your on-prem HCI using the same workflow you'd use for the cloud.
 
 | VMware | Rancher + SUSE Virtualization |
 |---|---|
@@ -23,11 +23,11 @@ When Rancher Prime manages Harvester, it treats the platform as a **cloud provid
 kubectl get clusters.provisioning.cattle.io -A
 ```
 
-You should see only `local` — the Harvester platform itself. No application clusters yet.
+You should see only `local`: the Harvester platform itself. No application clusters yet.
 
 ## 6.2 Configure project RBAC
 
-Rancher uses **Projects** to group namespaces and apply RBAC at scale — a project maps to a team, and members only see what's in their project's scope.
+Rancher uses **Projects** to group namespaces and apply RBAC at scale. A project maps to a team, and members only see what's in their project's scope.
 
 In the Rancher UI: your Harvester cluster → **Projects/Namespaces** → **Create Project**:
 
@@ -87,8 +87,8 @@ Node pool:
 
 Under **Cluster Configuration > Add-Ons** (Rancher 2.14 may show this as **System Services**), enable:
 
-- **Harvester CSI Driver** — Longhorn-backed persistent volumes
-- **Harvester Cloud Provider** — LoadBalancer services via `rodeo-ippool`
+- **Harvester CSI Driver**: Longhorn-backed persistent volumes
+- **Harvester Cloud Provider**: LoadBalancer services via `rodeo-ippool`
 
 Click **Create** and watch:
 
@@ -118,17 +118,17 @@ curl -sk -X POST \
 KUBECONFIG=~/.kube/checkin-cluster.yaml kubectl get nodes
 ```
 
-`checkin-cluster` is online, kubeconfig saved at `~/.kube/checkin-cluster.yaml`.
+`checkin-cluster` is online: kubeconfig saved at `~/.kube/checkin-cluster.yaml`.
 
 ## 6.6 What you have now
 
 In Rancher, **Cluster Management** shows:
 
-- `local` — Harvester HCI: 3 nodes, Longhorn storage, Kube-OVN networking
-- `checkin-cluster` — K3s, provisioned as a VM on the platform, managed by Rancher
+- `local`: Harvester HCI, 3 nodes, Longhorn storage, Kube-OVN networking
+- `checkin-cluster`: K3s, provisioned as a VM on the platform, managed by Rancher
 
 One Rancher instance, two clusters, no VMware, no Broadcom invoice.
 
 ---
 
-**Next:** [Exercise 7 — NOC dashboard](07-noc-dashboard.md)
+**Next:** [Exercise 7: NOC dashboard](07-noc-dashboard.md)

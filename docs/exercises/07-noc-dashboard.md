@@ -1,11 +1,11 @@
-# Exercise 7 — NOC dashboard
+# Exercise 7: NOC dashboard
 
 **Time:** 20 min
-**Previous:** [Exercise 6 — Provision a K3s cluster](06-provision-k3s.md)
+**Previous:** [Exercise 6: Provision a K3s cluster](06-provision-k3s.md)
 
 ---
 
-`checkin-cluster` is running but dark — the NOC has no visibility into node count, architecture, Kubernetes version, or load. This exercise deploys **alien-geeko**, a small Node.js app that queries the Kubernetes API at runtime and renders live cluster vitals, then exposes it with a LoadBalancer IP pulled straight from `rodeo-ippool`.
+`checkin-cluster` is running but dark: the NOC has no visibility into node count, architecture, Kubernetes version, or load. This exercise deploys **alien-geeko**, a small Node.js app that queries the Kubernetes API at runtime and renders live cluster vitals, then exposes it with a LoadBalancer IP pulled straight from `rodeo-ippool`.
 
 ## 7.1 Connect to the check-in cluster
 
@@ -70,7 +70,7 @@ subjects:
 EOF
 ```
 
-**Cluster display name** — this is what shows on the dashboard:
+**Cluster display name**: this is what shows on the dashboard:
 
 ```bash
 kubectl apply -f - << 'EOF'
@@ -186,7 +186,7 @@ kubectl rollout status deployment/alien-geeko -n alien-geeko
 
 ## 7.3 Open the dashboard
 
-Because `rodeo-ippool` addresses (`192.168.122.200-220`) sit on the same NAT network as your host, the LoadBalancer IP is reachable directly — no port-forward needed.
+Because `rodeo-ippool` addresses (`192.168.122.200-220`) sit on the same NAT network as your host, the LoadBalancer IP is reachable directly. No port-forward needed.
 
 ```bash
 kubectl get svc alien-geeko -n alien-geeko
@@ -204,7 +204,7 @@ kubectl rollout restart deployment/alien-geeko -n alien-geeko
 kubectl rollout status deployment/alien-geeko -n alien-geeko
 ```
 
-Refresh the dashboard — it now identifies this instance as `AEROGRID-NOC-TERMINAL-1`.
+Refresh the dashboard. It now identifies this instance as `AEROGRID-NOC-TERMINAL-1`.
 
 ## 7.5 Verify the IP pool connection
 
@@ -214,7 +214,7 @@ LB_IP=$(kubectl get svc alien-geeko -n alien-geeko \
 curl -s http://$LB_IP/health
 ```
 
-The `EXTERNAL-IP` came from `rodeo-ippool` — the same pool created in Exercise 2.
+The `EXTERNAL-IP` came from `rodeo-ippool`: the same pool created in Exercise 2.
 
 ## The full stack
 

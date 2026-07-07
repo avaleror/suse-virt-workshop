@@ -1,8 +1,8 @@
-# Exercise 4 — Networking and isolation
+# Exercise 4: Networking and isolation
 
 **Time:** 30 min
-**Previous:** [Exercise 3 — First VM and live migration](03-first-vm.md)
-**Next:** [Exercise 5 — Snapshots and DR](05-storage-snapshots.md)
+**Previous:** [Exercise 3: First VM and live migration](03-first-vm.md)
+**Next:** [Exercise 5: Snapshots and DR](05-storage-snapshots.md)
 
 ---
 
@@ -15,9 +15,9 @@ AeroGrid hosts three airlines on shared infrastructure. Each one's passenger dat
 | L2 / VLAN bridging | Multus | Backbone VLAN, VM attachment | Distributed Switch |
 | SDN / isolated zones | Kube-OVN | Airline tenant isolation | NSX micro-segmentation |
 
-**Multus** attaches multiple network interfaces to a VM and bridges them to physical VLANs on the host — this is how a workload gets onto a dedicated backbone VLAN.
+**Multus** attaches multiple network interfaces to a VM and bridges them to physical VLANs on the host. This is how a workload gets onto a dedicated backbone VLAN.
 
-**Kube-OVN** (v1.15.4, non-primary CNI mode) owns VM overlay and VPC traffic only, while the management bridge handles pod networking. It adds a full SDN layer with isolated subnets, NAT gateways, and support for **overlapping CIDR ranges** — two tenants can each use `10.0.0.0/24` in their own zone with zero traffic crossing between them.
+**Kube-OVN** (v1.15.4, non-primary CNI mode) owns VM overlay and VPC traffic only, while the management bridge handles pod networking. It adds a full SDN layer with isolated subnets, NAT gateways, and support for **overlapping CIDR ranges**: two tenants can each use `10.0.0.0/24` in their own zone with zero traffic crossing between them.
 
 Check current state:
 
@@ -69,7 +69,7 @@ spec:
 EOF
 ```
 
-Second tenant (NordAir) — same CIDR, fully isolated from the first, demonstrating Kube-OVN's overlapping-CIDR support:
+Second tenant (NordAir): same CIDR, fully isolated from the first, demonstrating Kube-OVN's overlapping-CIDR support:
 
 ```bash
 cat << EOF | kubectl apply -f -
@@ -88,7 +88,7 @@ spec:
 EOF
 ```
 
-> **Note:** if the second apply returns a validation error about duplicate CIDRs, use `172.16.1.0/24` for `containment-beta` instead — the isolation demonstration still holds, just with different addresses.
+> **Note:** if the second apply returns a validation error about duplicate CIDRs, use `172.16.1.0/24` for `containment-beta` instead. The isolation demonstration still holds, just with different addresses.
 
 Verify both zones are live with no outgoing NAT:
 
@@ -96,7 +96,7 @@ Verify both zones are live with no outgoing NAT:
 kubectl get subnets.kubeovn.io -o custom-columns=NAME:.metadata.name,CIDR:.spec.cidrBlock,NAT:.spec.natOutgoing
 ```
 
-Both subnets should show `natOutgoing: false`. Neither airline zone can reach the other, and neither has a path to the outside — the NSX capability AeroGrid was paying for, now running on open-source Kube-OVN.
+Both subnets should show `natOutgoing: false`. Neither airline zone can reach the other, and neither has a path to the outside: the NSX capability AeroGrid was paying for, now running on open-source Kube-OVN.
 
 ## 4.4 Full network inventory
 
@@ -107,10 +107,10 @@ kubectl get subnets.kubeovn.io
 
 You should have:
 
-- `vmnet` — untagged management bridge (Exercise 2)
-- `vlan100` — VLAN 100 ramp control backbone (this exercise)
-- `containment-alpha` / `containment-beta` — isolated Kube-OVN airline zones (this exercise)
+- `vmnet`: untagged management bridge (Exercise 2)
+- `vlan100`: VLAN 100 ramp control backbone (this exercise)
+- `containment-alpha` / `containment-beta`: isolated Kube-OVN airline zones (this exercise)
 
 ---
 
-**Next:** [Exercise 5 — Snapshots and DR](05-storage-snapshots.md)
+**Next:** [Exercise 5: Snapshots and DR](05-storage-snapshots.md)

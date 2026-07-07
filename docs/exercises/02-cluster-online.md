@@ -1,8 +1,8 @@
-# Exercise 2 — Bring the cluster online
+# Exercise 2: Bring the cluster online
 
 **Time:** 30 min
-**Previous:** [Exercise 1 — Import into Rancher](01-import-into-rancher.md)
-**Next:** [Exercise 3 — First VM and live migration](03-first-vm.md)
+**Previous:** [Exercise 1: Import into Rancher](01-import-into-rancher.md)
+**Next:** [Exercise 3: First VM and live migration](03-first-vm.md)
 
 ---
 
@@ -31,10 +31,10 @@ Each Harvester node has five NICs, each carrying a specific traffic type:
 | eth0 | Management | Cluster API, node communication |
 | eth1 | Storage | Longhorn distributed storage traffic |
 | eth2 | Migration | KubeVirt live migration |
-| eth3 | Service network 1 | VM workloads — primary |
-| eth4 | Service network 2 | VM workloads — secondary |
+| eth3 | Service network 1 | VM workloads, primary |
+| eth4 | Service network 2 | VM workloads, secondary |
 
-This separation keeps VM traffic, storage I/O, and live migration off the management path entirely — the same isolation NSX provided on VMware, built directly into the platform.
+This separation keeps VM traffic, storage I/O, and live migration off the management path entirely: the same isolation NSX provided on VMware, built directly into the platform.
 
 ## 2.3 Create the VM traffic cluster network
 
@@ -72,7 +72,7 @@ kubectl get network-attachment-definitions -n default
 
 ## 2.5 Set up the LoadBalancer IP pool
 
-Harvester can provision guest Kubernetes clusters. Those clusters need LoadBalancer IPs to expose services externally — an **IP Pool** pre-allocates a range for that purpose. This pool is used in every remaining exercise.
+Harvester can provision guest Kubernetes clusters. Those clusters need LoadBalancer IPs to expose services externally, and an **IP Pool** pre-allocates a range for that purpose. This pool is used in every remaining exercise.
 
 In the Harvester UI, go to **Networks > IP Pools** → **Create**:
 
@@ -90,4 +90,4 @@ kubectl get ippools.network.harvesterhci.io -n default
 
 ---
 
-**Next:** [Exercise 3 — First VM and live migration](03-first-vm.md)
+**Next:** [Exercise 3: First VM and live migration](03-first-vm.md)

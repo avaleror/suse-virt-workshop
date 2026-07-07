@@ -4,7 +4,7 @@ hide:
 ---
 
 <div class="hero">
-  <div class="subtitle">SUSE Virtualization — Hands-on Workshop</div>
+  <div class="subtitle">SUSE Virtualization: Hands-on Workshop</div>
   <h1>The Virtualization Rodeo</h1>
   <div class="tagline">Harvester HCI &bull; Rancher Prime &bull; Kube-OVN &bull; Longhorn &bull; alien-geeko</div>
 
@@ -18,9 +18,9 @@ hide:
 ## The scenario
 
 <div class="scenario">
-AeroGrid Operations runs the IT stack for a regional international airport — baggage handling, gate assignment, check-in kiosks, ramp control, three airline tenants sharing the same infrastructure. When Broadcom's acquisition of VMware closed, the renewal quote came in at 3.2x the previous cost, with NSX, vSAN, and vCenter billed separately.
+AeroGrid Operations runs the IT stack for a regional international airport: baggage handling, gate assignment, check-in kiosks, ramp control, three airline tenants sharing the same infrastructure. When Broadcom's acquisition of VMware closed, the renewal quote came in at 3.2x the previous cost, with NSX, vSAN, and vCenter billed separately.
 
-The decision was made: migrate to SUSE Virtualization. This workshop puts you in the seat of the AeroGrid infrastructure team, bringing the new platform online end to end — from importing the cluster into Rancher to running a passenger-facing K3s workload on top of it.
+The decision was made: migrate to SUSE Virtualization. This workshop puts you in the seat of the AeroGrid infrastructure team, bringing the new platform online end to end, from importing the cluster into Rancher to running a passenger-facing K3s workload on top of it.
 </div>
 
 ## Lab topology
@@ -38,7 +38,7 @@ VIP (kube-vip): 192.168.122.10
 </pre>
 </div>
 
-This is the same 3-node Harvester + Rancher Prime topology used in SUSE's customer-facing Harvester Rodeo — deployed here on your own bare metal host via `rodeo-cli` instead of a hosted sandbox, so you can run it, break it, and rerun it as many times as you like.
+This is the same 3-node Harvester + Rancher Prime topology used in SUSE's customer-facing Harvester Rodeo, deployed here on your own bare metal host via `rodeo-cli` instead of a hosted sandbox. Run it, break it, rerun it as many times as you like.
 
 ---
 
