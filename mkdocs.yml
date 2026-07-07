@@ -1,0 +1,84 @@
+site_name: SUSE Virtualization Workshop
+site_description: Hands-on workshop — 3-node Harvester HCI + Rancher Prime on bare metal KVM
+site_url: https://avaleror.github.io/suse-virt-workshop/
+repo_url: https://github.com/avaleror/suse-virt-workshop
+repo_name: avaleror/suse-virt-workshop
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  palette:
+    - scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+  font:
+    text: SUSE
+    code: JetBrains Mono
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - content.code.copy
+    - content.code.annotate
+    - toc.follow
+    - search.suggest
+    - search.highlight
+
+extra_css:
+  - stylesheets/suse.css
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Exercises:
+    - "01 — Import into Rancher": exercises/01-import-into-rancher.md
+    - "02 — Bring the cluster online": exercises/02-cluster-online.md
+    - "03 — First VM and live migration": exercises/03-first-vm.md
+    - "04 — Networking and isolation": exercises/04-networking.md
+    - "05 — Snapshots and DR": exercises/05-storage-snapshots.md
+    - "06 — Provision a K3s cluster": exercises/06-provision-k3s.md
+    - "07 — NOC dashboard": exercises/07-noc-dashboard.md
+  - Reference:
+    - Lab overview: reference/lab-overview.md
+    - Quick reference: reference/quick-reference.md
+    - Full lab guide (print): lab-guide.md
+  - Instructor:
+    - Host setup: instructor/host-setup.md
+    - Pre-lab checklist: instructor/pre-lab-checklist.md
