@@ -15,9 +15,9 @@ Your environment is already running: a bare metal host with three Harvester node
 
 ## The scenario
 
-AeroGrid Operations runs the IT stack for a regional international airport: baggage handling, gate assignment, check-in kiosks, ramp control, three airline tenants sharing the same infrastructure. When Broadcom's acquisition of VMware closed, the renewal quote came in at 3.2x the previous cost, with NSX, vSAN, and vCenter billed separately.
+Vertex Trust Bank runs its core stack on ISAware, an aging legacy hypervisor: ledger processing, fraud detection, teller terminal fleets, interbank settlement, retail and wealth management divisions sharing the same infrastructure. When ISAware's enterprise license renewal quote came in at 3.2x the previous term, with clustering, storage replication, and centralized management billed as separate line items, the decision was made: migrate to SUSE Virtualization.
 
-The decision was made: migrate to SUSE Virtualization. This lab puts you in the seat of the AeroGrid infrastructure team, bringing the new platform online end to end.
+This lab puts you in the seat of the Vertex Trust Bank platform team, bringing the new platform online end to end.
 
 ## Lab topology
 
@@ -126,7 +126,7 @@ Full detail: [Exercise 2](exercises/02-cluster-online.md)
 
 *(30 min)*
 
-**1. Provision virt1**: Rancher UI → Virtualization Management → Virtual Machines → Create: name `virt1`, 2 CPU / 2 GiB, SSH key `default/workshop-host`, volume from image `default/leap16` (20 GiB), network `default/vmnet` with static IP `192.168.122.50` via cloud-init Network Data:
+**1. Provision legacy-ledger-vm**: Rancher UI → Virtualization Management → Virtual Machines → Create: name `legacy-ledger-vm`, 2 CPU / 2 GiB, SSH key `default/workshop-host`, volume from image `default/leap16` (20 GiB), network `default/vmnet` with static IP `192.168.122.50` via cloud-init Network Data:
 
 ```yaml
 version: 2
@@ -147,10 +147,10 @@ until ssh -o StrictHostKeyChecking=no opensuse@192.168.122.50 "uname -a" 2>/dev/
 ssh opensuse@192.168.122.50 "cat /etc/os-release"
 ```
 
-**3. Live-migrate it:** Rancher UI → Virtual Machines → `virt1` → **⋮** → **Migrate** → pick a different node → **Apply**.
+**3. Live-migrate it:** Rancher UI → Virtual Machines → `legacy-ledger-vm` → **⋮** → **Migrate** → pick a different node → **Apply**.
 
 ```bash
-kubectl get vmi virt1 -n default -o jsonpath='{.status.nodeName}'
+kubectl get vmi legacy-ledger-vm -n default -o jsonpath='{.status.nodeName}'
 ssh opensuse@192.168.122.50 "hostname && uptime"   # confirms zero downtime
 ```
 
@@ -164,14 +164,14 @@ Full detail: [Exercise 3](exercises/03-first-vm.md)
 
 **1. VLAN backbone**: Harvester UI → **Networks > VM Networks** → Create: name `vlan100`, type `L2VlanNetwork`, cluster network `mgmt`, VLAN ID `100`.
 
-**2. Two isolated tenant zones** (same CIDR, fully isolated via Kube-OVN):
+**2. Two isolated division zones** (same CIDR, fully isolated via Kube-OVN):
 
 ```bash
 cat << EOF | kubectl apply -f -
 apiVersion: kubeovn.io/v1
 kind: Subnet
 metadata:
-  name: containment-alpha
+  name: containment-retail
 spec:
   cidrBlock: "172.16.0.0/24"
   gateway: "172.16.0.1"
@@ -182,7 +182,7 @@ spec:
 EOF
 ```
 
-Repeat for `containment-beta` (same CIDR; use `172.16.1.0/24` if validation rejects the duplicate).
+Repeat for `containment-wealth` (same CIDR; use `172.16.1.0/24` if validation rejects the duplicate).
 
 ```bash
 kubectl get subnets.kubeovn.io -o custom-columns=NAME:.metadata.name,CIDR:.spec.cidrBlock,NAT:.spec.natOutgoing
@@ -215,18 +215,18 @@ parameters:
 EOF
 ```
 
-**2. Snapshot virt1**: Harvester UI → Virtual Machines → `virt1` → **⋮** → **Take Snapshot** → name `virt1-snap1`.
+**2. Snapshot legacy-ledger-vm**: Harvester UI → Virtual Machines → `legacy-ledger-vm` → **⋮** → **Take Snapshot** → name `legacy-ledger-vm-snap1`.
 
 **3. Simulate corruption and restore:**
 
 ```bash
-ssh opensuse@192.168.122.50 "echo 'CRITICAL: GATE ASSIGNMENT DATABASE CORRUPTED' | sudo tee /etc/incident-report.txt"
+ssh opensuse@192.168.122.50 "echo 'CRITICAL: LEDGER INTEGRITY CHECK FAILED' | sudo tee /etc/incident-report.txt"
 ```
 
-Harvester UI → `virt1` → **⋮** → **Restore Snapshot** → `virt1-snap1` → **Create new VM** → name `virt1-restored`.
+Harvester UI → `legacy-ledger-vm` → **⋮** → **Restore Snapshot** → `legacy-ledger-vm-snap1` → **Create new VM** → name `legacy-ledger-vm-restored`.
 
 ```bash
-kubectl get vm -n default   # both virt1 and virt1-restored
+kubectl get vm -n default   # both legacy-ledger-vm and legacy-ledger-vm-restored
 ```
 
 **4. Check replica spread across nodes:**
@@ -244,18 +244,18 @@ Full detail: [Exercise 5](exercises/05-storage-snapshots.md)
 
 *(45 min)*
 
-**1. Project RBAC**: Rancher UI → Projects/Namespaces → Create Project `terminal-ops`, add `admin` as Project Member.
+**1. Project RBAC**: Rancher UI → Projects/Namespaces → Create Project `ledger-ops`, add `admin` as Project Member.
 
 ```bash
-kubectl create namespace checkin-workloads
-kubectl annotate namespace checkin-workloads \
+kubectl create namespace vertex-bank
+kubectl annotate namespace vertex-bank \
   field.cattle.io/projectId=$(kubectl get projects.management.cattle.io -n local \
-    -o jsonpath='{.items[?(@.spec.displayName=="terminal-ops")].metadata.name}') --overwrite
+    -o jsonpath='{.items[?(@.spec.displayName=="ledger-ops")].metadata.name}') --overwrite
 ```
 
 **2. Cloud credential**: Rancher UI → Cloud Credentials → Create → Harvester → name `harvester-local`, cluster `harvester`.
 
-**3. Provision `checkin-cluster`**: Cluster Management → Create → RKE2/K3s → Infrastructure Harvester: cloud credential `harvester-local`, node pool 1x (2 CPU / 4 GiB / 40 GiB, image `default/leap16`, network `default/vmnet`, SSH user `opensuse`). Enable **Harvester CSI Driver** and **Harvester Cloud Provider**.
+**3. Provision `ledger-cluster`**: Cluster Management → Create → RKE2/K3s → Infrastructure Harvester: cloud credential `harvester-local`, node pool 1x (2 CPU / 4 GiB / 40 GiB, image `default/leap16`, network `default/vmnet`, SSH user `opensuse`). Enable **Harvester CSI Driver** and **Harvester Cloud Provider**.
 
 ```bash
 watch kubectl get clusters.provisioning.cattle.io -A
@@ -265,40 +265,40 @@ watch kubectl get clusters.provisioning.cattle.io -A
 
 ```bash
 CLUSTER_ID=$(curl -sk -H "Authorization: Bearer $RANCHER_TOKEN" \
-  "${RANCHER_URL}/v3/clusters?name=checkin-cluster" | jq -r '.data[0].id')
+  "${RANCHER_URL}/v3/clusters?name=ledger-cluster" | jq -r '.data[0].id')
 curl -sk -X POST -H "Authorization: Bearer $RANCHER_TOKEN" \
   "${RANCHER_URL}/v3/clusters/${CLUSTER_ID}?action=generateKubeconfig" \
-  | jq -r .config > ~/.kube/checkin-cluster.yaml
+  | jq -r .config > ~/.kube/ledger-cluster.yaml
 ```
 
 Full detail: [Exercise 6](exercises/06-provision-k3s.md)
 
 ---
 
-## Exercise 7: NOC dashboard
+## Exercise 7: Platform ops console
 
 *(20 min)*
 
-**1. Deploy alien-geeko** on `checkin-cluster` (namespace, ServiceAccount + ClusterRole, ConfigMap with `CLUSTER_NAME`, Deployment + LoadBalancer Service). Full manifests in [Exercise 7](exercises/07-noc-dashboard.md).
+**1. Deploy vertex-bank-app** on `ledger-cluster` (namespace, ServiceAccount + ClusterRole, ConfigMap with `CLUSTER_NAME`, Deployment + LoadBalancer Service). Full manifests in [Exercise 7](exercises/07-noc-dashboard.md).
 
 ```bash
-export KUBECONFIG=~/.kube/checkin-cluster.yaml
-kubectl rollout status deployment/alien-geeko -n alien-geeko
+export KUBECONFIG=~/.kube/ledger-cluster.yaml
+kubectl rollout status deployment/vertex-bank -n vertex-bank
 ```
 
 **2. Open it directly**: no port-forward needed, the LoadBalancer IP is on your local network:
 
 ```bash
-kubectl get svc alien-geeko -n alien-geeko
+kubectl get svc vertex-bank -n vertex-bank
 # open http://<EXTERNAL-IP> in a browser
 ```
 
 **3. Rename the instance:**
 
 ```bash
-kubectl patch configmap alien-geeko-config -n alien-geeko \
-  --patch '{"data":{"CLUSTER_NAME":"AEROGRID-NOC-TERMINAL-1"}}'
-kubectl rollout restart deployment/alien-geeko -n alien-geeko
+kubectl patch configmap vertex-bank-config -n vertex-bank \
+  --patch '{"data":{"CLUSTER_NAME":"VERTEX-OPS-CONSOLE-1"}}'
+kubectl rollout restart deployment/vertex-bank -n vertex-bank
 ```
 
 ---
@@ -308,8 +308,8 @@ kubectl rollout restart deployment/alien-geeko -n alien-geeko
 ```
 Bare metal (3 nodes)
   └── Harvester (KubeVirt + Longhorn + Kube-OVN)
-        └── checkin-cluster VM (K3s, provisioned by Rancher)
-              └── alien-geeko (NOC dashboard, LoadBalancer via rodeo-ippool)
+        └── ledger-cluster VM (K3s, provisioned by Rancher)
+              └── vertex-bank-app (platform ops console, LoadBalancer via rodeo-ippool)
 ```
 
-Every component is open source. Every component is SUSE-supported. AeroGrid's platform is live.
+Every component is open source. Every component is SUSE-supported. Vertex Trust Bank's platform is live.

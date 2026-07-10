@@ -6,7 +6,7 @@ hide:
 <div class="hero">
   <div class="subtitle">SUSE Virtualization: Hands-on Workshop</div>
   <h1>The Virtualization Rodeo</h1>
-  <div class="tagline">Harvester HCI &bull; Rancher Prime &bull; Kube-OVN &bull; Longhorn &bull; alien-geeko</div>
+  <div class="tagline">Harvester HCI &bull; Rancher Prime &bull; Kube-OVN &bull; Longhorn &bull; vertex-bank-app</div>
 
   <a href="exercises/01-import-into-rancher/" class="md-button md-button--primary">Start the lab &rarr;</a>
   &nbsp;
@@ -18,9 +18,9 @@ hide:
 ## The scenario
 
 <div class="scenario">
-AeroGrid Operations runs the IT stack for a regional international airport: baggage handling, gate assignment, check-in kiosks, ramp control, three airline tenants sharing the same infrastructure. When Broadcom's acquisition of VMware closed, the renewal quote came in at 3.2x the previous cost, with NSX, vSAN, and vCenter billed separately.
+Vertex Trust Bank runs its core stack on ISAware, an aging legacy hypervisor: ledger processing, fraud detection, teller terminal fleets, interbank settlement, retail and wealth management divisions sharing the same infrastructure. When ISAware's enterprise license renewal quote came in at 3.2x the previous term, with clustering, storage replication, and centralized management billed as separate line items, the decision was made: migrate to SUSE Virtualization.
 
-The decision was made: migrate to SUSE Virtualization. This workshop puts you in the seat of the AeroGrid infrastructure team, bringing the new platform online end to end, from importing the cluster into Rancher to running a passenger-facing K3s workload on top of it.
+This workshop puts you in the seat of the Vertex Trust Bank platform team, bringing the new platform online end to end, from importing the cluster into Rancher to running a customer-facing K3s workload on top of it.
 </div>
 
 ## Lab topology
@@ -71,7 +71,7 @@ This is the same 3-node Harvester + Rancher Prime topology used in SUSE's custom
   <div class="ex-number">Exercise 04</div>
   <div class="ex-title">Networking and isolation</div>
   <div class="ex-time">⏱ 30 min</div>
-  <div class="ex-desc">Build a VLAN backbone with Multus, then isolate two airline tenants on overlapping CIDRs with Kube-OVN.</div>
+  <div class="ex-desc">Build a VLAN backbone with Multus, then isolate two banking divisions on overlapping CIDRs with Kube-OVN.</div>
 </a>
 
 <a href="exercises/05-storage-snapshots/" class="exercise-card">
@@ -90,9 +90,9 @@ This is the same 3-node Harvester + Rancher Prime topology used in SUSE's custom
 
 <a href="exercises/07-noc-dashboard/" class="exercise-card">
   <div class="ex-number">Exercise 07</div>
-  <div class="ex-title">NOC dashboard</div>
+  <div class="ex-title">Platform ops console</div>
   <div class="ex-time">⏱ 20 min</div>
-  <div class="ex-desc">Deploy alien-geeko on the new cluster and expose it via LoadBalancer, pulling an IP straight from the pool you built in Exercise 2.</div>
+  <div class="ex-desc">Deploy vertex-bank-app on the new cluster and expose it via LoadBalancer, pulling an IP straight from the pool you built in Exercise 2.</div>
 </a>
 
 </div>
@@ -101,12 +101,12 @@ This is the same 3-node Harvester + Rancher Prime topology used in SUSE's custom
 
 ## What replaces what
 
-| VMware (Broadcom pricing) | SUSE Virtualization | Version in this lab |
+| ISAware (legacy hypervisor) | SUSE Virtualization | Version in this lab |
 |---|---|---|
-| ESXi | KubeVirt + KVM | KubeVirt v1.7.0 |
-| vSAN | Longhorn distributed storage | Longhorn v1.11.1 |
-| NSX | Kube-OVN + Multus | Kube-OVN v1.15.4 |
-| vCenter | SUSE Rancher Prime | Rancher Prime v2.14.1 |
+| ISAware Hypervisor | KubeVirt + KVM | KubeVirt v1.7.0 |
+| ISAware storage replication | Longhorn distributed storage | Longhorn v1.11.1 |
+| ISAware network segmentation add-on | Kube-OVN + Multus | Kube-OVN v1.15.4 |
+| ISAware Manager | SUSE Rancher Prime | Rancher Prime v2.14.1 |
 
 No vendor lock-in, no per-feature license tiers, one platform and one bill.
 

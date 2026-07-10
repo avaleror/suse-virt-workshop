@@ -13,9 +13,16 @@ network:
   vip: "192.168.122.10"   # kube-vip floating IP, must not be a node IP
   rancher_ip: "192.168.122.9"
   gateway: "192.168.122.1"
-  dns_domain: "aerogrid.com"
+  dns_domain: "vertextrust.bank"
   # bridge mode only:
   # host_bridge: br0
+
+# Vertex Trust Bank story: node hostnames renamed from the generic alpha/bravo/charlie
+# defaults (see rodeo-cli's suse-virt platform definition) to fit the bank narrative.
+node_overrides:
+  harvester1: { hostname: ledger-alpha }
+  harvester2: { hostname: ledger-bravo }
+  harvester3: { hostname: ledger-charlie }
 
 resources:
   harvester:

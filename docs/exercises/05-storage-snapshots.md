@@ -6,18 +6,18 @@
 
 ---
 
-Flight operations data retention is an ICAO regulatory requirement: 7 years minimum. Before any risky change to `virt1`, take a checkpoint. This exercise configures storage policies, snapshots before a change, simulates corruption, and restores clean.
+Transaction record retention is a Basel III operational resilience requirement: 7 years minimum. Before any risky change to `legacy-ledger-vm`, take a checkpoint. This exercise configures storage policies, snapshots before a change, simulates corruption, and restores clean.
 
-## 5.1 AeroGrid's storage architecture
+## 5.1 Vertex Trust Bank's storage architecture
 
 Harvester uses **Longhorn** as its distributed block storage engine: local disks from every cluster node pooled into a replicated volume, no external SAN, no NFS, no proprietary array.
 
-| VMware (Broadcom) | SUSE Virtualization |
+| ISAware | SUSE Virtualization |
 |---|---|
-| vSAN | Longhorn |
-| vSAN storage policies | Longhorn StorageClasses |
+| ISAware storage replication | Longhorn |
+| ISAware storage policies | Longhorn StorageClasses |
 | VM snapshots | Longhorn volume snapshots |
-| vSphere Data Protection | S3/NFS backup targets |
+| ISAware Data Protection | S3/NFS backup targets |
 
 Longhorn writes multiple replicas of each volume across different nodes. One node can fail entirely with no data loss and no downtime.
 
@@ -62,11 +62,11 @@ Two policies now exist: `harvester-longhorn` (3 replicas, production data) and `
 
 ## 5.3 Checkpoint before a risky change
 
-Before a configuration change on `virt1`, take a snapshot: a point-in-time rollback target.
+Before a configuration change on `legacy-ledger-vm`, take a snapshot: a point-in-time rollback target.
 
 > **Note:** Harvester snapshots are crash-consistent by default. For application-consistent snapshots (filesystem freeze) use the QEMU guest agent, already pre-installed in the `leap16` image.
 
-In the Harvester UI: **Virtual Machines** → `virt1` → **⋮** → **Take Snapshot** → name it `virt1-snap1` → **Create**.
+In the Harvester UI: **Virtual Machines** → `legacy-ledger-vm` → **⋮** → **Take Snapshot** → name it `legacy-ledger-vm-snap1` → **Create**.
 
 ```bash
 kubectl get vmsnapshots -n default
@@ -80,16 +80,16 @@ Simulate the incident:
 
 ```bash
 ssh opensuse@192.168.122.50 \
-  "echo 'CRITICAL: GATE ASSIGNMENT DATABASE CORRUPTED, GROUND OPS AT RISK' | sudo tee /etc/incident-report.txt"
+  "echo 'CRITICAL: LEDGER INTEGRITY CHECK FAILED, SETTLEMENT AT RISK' | sudo tee /etc/incident-report.txt"
 ```
 
-Restore from the checkpoint via the Harvester UI: **Virtual Machines** → `virt1` → **⋮** → **Restore Snapshot** → select `virt1-snap1` → **Create new VM** (leaves `virt1` intact for comparison) → name it `virt1-restored` → **Restore**.
+Restore from the checkpoint via the Harvester UI: **Virtual Machines** → `legacy-ledger-vm` → **⋮** → **Restore Snapshot** → select `legacy-ledger-vm-snap1` → **Create new VM** (leaves `legacy-ledger-vm` intact for comparison) → name it `legacy-ledger-vm-restored` → **Restore**.
 
 ```bash
 kubectl get vm -n default
 ```
 
-You should see both `virt1` (post-incident) and `virt1-restored` (clean checkpoint, no trace of the corruption).
+You should see both `legacy-ledger-vm` (post-incident) and `legacy-ledger-vm-restored` (clean checkpoint, no trace of the corruption).
 
 ## 5.5 Off-site backup configuration
 
@@ -113,7 +113,7 @@ VOLUME:.spec.volumeName,\
 STATE:.status.currentState
 ```
 
-Each volume should have replicas spread across different nodes: vSAN resilience without the vSAN license.
+Each volume should have replicas spread across different nodes: ISAware-grade resilience without the ISAware storage license.
 
 ---
 

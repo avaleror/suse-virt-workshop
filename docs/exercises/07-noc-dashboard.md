@@ -1,16 +1,16 @@
-# Exercise 7: NOC dashboard
+# Exercise 7: Platform ops console
 
 **Time:** 20 min
 **Previous:** [Exercise 6: Provision a K3s cluster](06-provision-k3s.md)
 
 ---
 
-`checkin-cluster` is running but dark: the NOC has no visibility into node count, architecture, Kubernetes version, or load. This exercise deploys **alien-geeko**, a small Node.js app that queries the Kubernetes API at runtime and renders live cluster vitals, then exposes it with a LoadBalancer IP pulled straight from `rodeo-ippool`.
+`ledger-cluster` is running but dark: the platform team has no visibility into node count, architecture, Kubernetes version, or load. This exercise deploys **vertex-bank-app**, a small Node.js app that queries the Kubernetes API at runtime and renders live cluster vitals in a fintech ops console, then exposes it with a LoadBalancer IP pulled straight from `rodeo-ippool`.
 
-## 7.1 Connect to the check-in cluster
+## 7.1 Connect to the ledger cluster
 
 ```bash
-export KUBECONFIG=~/.kube/checkin-cluster.yaml
+export KUBECONFIG=~/.kube/ledger-cluster.yaml
 kubectl get nodes
 ```
 
@@ -27,7 +27,7 @@ kubectl apply -f - << 'EOF'
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: alien-geeko
+  name: vertex-bank
   labels:
     pod-security.kubernetes.io/enforce: baseline
     pod-security.kubernetes.io/warn: restricted
@@ -41,13 +41,13 @@ kubectl apply -f - << 'EOF'
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: alien-geeko
-  namespace: alien-geeko
+  name: vertex-bank
+  namespace: vertex-bank
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: alien-geeko-reader
+  name: vertex-bank-reader
 rules:
   - apiGroups: [""]
     resources: ["nodes"]
@@ -58,54 +58,54 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: alien-geeko-reader
+  name: vertex-bank-reader
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: alien-geeko-reader
+  name: vertex-bank-reader
 subjects:
   - kind: ServiceAccount
-    name: alien-geeko
-    namespace: alien-geeko
+    name: vertex-bank
+    namespace: vertex-bank
 EOF
 ```
 
-**Cluster display name**: this is what shows on the dashboard:
+**Cluster display name**: this is what shows on the console:
 
 ```bash
 kubectl apply -f - << 'EOF'
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: alien-geeko-config
-  namespace: alien-geeko
+  name: vertex-bank-config
+  namespace: vertex-bank
 data:
-  CLUSTER_NAME: "AEROGRID-CHECKIN-01"
+  CLUSTER_NAME: "LEDGER-CORE-01"
 EOF
 ```
 
-**Dashboard deployment and LoadBalancer Service:**
+**Console deployment and LoadBalancer Service:**
 
 ```bash
 kubectl apply -f - << 'EOF'
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: alien-geeko
-  namespace: alien-geeko
+  name: vertex-bank
+  namespace: vertex-bank
   labels:
-    app: alien-geeko
+    app: vertex-bank
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: alien-geeko
+      app: vertex-bank
   template:
     metadata:
       labels:
-        app: alien-geeko
+        app: vertex-bank
     spec:
-      serviceAccountName: alien-geeko
+      serviceAccountName: vertex-bank
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
@@ -113,8 +113,8 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       containers:
-        - name: alien-geeko
-          image: docker.io/avaleror/alien-geeko:latest
+        - name: vertex-bank
+          image: docker.io/avaleror/vertex-bank-app:latest
           ports:
             - containerPort: 3000
           env:
@@ -133,7 +133,7 @@ spec:
             - name: CLUSTER_NAME
               valueFrom:
                 configMapKeyRef:
-                  name: alien-geeko-config
+                  name: vertex-bank-config
                   key: CLUSTER_NAME
           resources:
             requests:
@@ -166,11 +166,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: alien-geeko
-  namespace: alien-geeko
+  name: vertex-bank
+  namespace: vertex-bank
 spec:
   selector:
-    app: alien-geeko
+    app: vertex-bank
   type: LoadBalancer
   ports:
     - port: 80
@@ -181,35 +181,35 @@ EOF
 Wait for it to come up:
 
 ```bash
-kubectl rollout status deployment/alien-geeko -n alien-geeko
+kubectl rollout status deployment/vertex-bank -n vertex-bank
 ```
 
-## 7.3 Open the dashboard
+## 7.3 Open the console
 
 Because `rodeo-ippool` addresses (`192.168.122.200-220`) sit on the same NAT network as your host, the LoadBalancer IP is reachable directly. No port-forward needed.
 
 ```bash
-kubectl get svc alien-geeko -n alien-geeko
+kubectl get svc vertex-bank -n vertex-bank
 ```
 
-Open `http://<EXTERNAL-IP>` in a browser. You should see `checkin-cluster`'s live vitals: node count, OS, Kubernetes version, memory, CPU, and load average.
+Open `http://<EXTERNAL-IP>` in a browser. You should see `ledger-cluster`'s live vitals: node count, OS, Kubernetes version, memory, CPU, and load average.
 
-## 7.4 Set the NOC terminal instance name
+## 7.4 Set the ops console instance name
 
 ```bash
-kubectl patch configmap alien-geeko-config -n alien-geeko \
-  --patch '{"data":{"CLUSTER_NAME":"AEROGRID-NOC-TERMINAL-1"}}'
+kubectl patch configmap vertex-bank-config -n vertex-bank \
+  --patch '{"data":{"CLUSTER_NAME":"VERTEX-OPS-CONSOLE-1"}}'
 
-kubectl rollout restart deployment/alien-geeko -n alien-geeko
-kubectl rollout status deployment/alien-geeko -n alien-geeko
+kubectl rollout restart deployment/vertex-bank -n vertex-bank
+kubectl rollout status deployment/vertex-bank -n vertex-bank
 ```
 
-Refresh the dashboard. It now identifies this instance as `AEROGRID-NOC-TERMINAL-1`.
+Refresh the console. It now identifies this instance as `VERTEX-OPS-CONSOLE-1`.
 
 ## 7.5 Verify the IP pool connection
 
 ```bash
-LB_IP=$(kubectl get svc alien-geeko -n alien-geeko \
+LB_IP=$(kubectl get svc vertex-bank -n vertex-bank \
   -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 curl -s http://$LB_IP/health
 ```
@@ -221,8 +221,8 @@ The `EXTERNAL-IP` came from `rodeo-ippool`: the same pool created in Exercise 2.
 ```
 Bare metal (3 nodes)
   └── Harvester (KubeVirt + Longhorn + Kube-OVN)
-        └── checkin-cluster VM (K3s, provisioned by Rancher)
-              └── alien-geeko (NOC dashboard, LoadBalancer via rodeo-ippool)
+        └── ledger-cluster VM (K3s, provisioned by Rancher)
+              └── vertex-bank-app (platform ops console, LoadBalancer via rodeo-ippool)
 ```
 
-Every component is open source. Every component is SUSE-supported. AeroGrid's platform is live.
+Every component is open source. Every component is SUSE-supported. Vertex Trust Bank's platform is live.

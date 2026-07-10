@@ -34,7 +34,7 @@ Each Harvester node has five NICs, each carrying a specific traffic type:
 | eth3 | Service network 1 | VM workloads, primary |
 | eth4 | Service network 2 | VM workloads, secondary |
 
-This separation keeps VM traffic, storage I/O, and live migration off the management path entirely: the same isolation NSX provided on VMware, built directly into the platform.
+This separation keeps VM traffic, storage I/O, and live migration off the management path entirely: the same isolation ISAware's network segmentation add-on provided, built directly into the platform.
 
 ## 2.3 Create the VM traffic cluster network
 

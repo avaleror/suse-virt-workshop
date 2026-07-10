@@ -10,7 +10,7 @@
 | Admin user | `admin` |
 | Admin passwords | `cat ~/.rodeo/secrets.yaml` (`harvester_admin_password`, `rancher_admin_password`) |
 | kubectl (Harvester, via Rancher proxy) | see [Exercise 1.6](../exercises/01-import-into-rancher.md#16-configure-kubectl-to-reach-harvester-through-rancher) |
-| virt1 SSH | `ssh opensuse@192.168.122.50` (direct, host routes to virbr0) |
+| legacy-ledger-vm SSH | `ssh opensuse@192.168.122.50` (direct, host routes to virbr0) |
 
 ## Node reference
 
@@ -21,7 +21,7 @@
 | harvester3 | 192.168.122.13 | Join |
 | rancher | 192.168.122.9 | Rancher Prime + K3s |
 | VIP | 192.168.122.10 | Harvester API / UI |
-| virt1 | 192.168.122.50 | Workshop VM (Exercise 3) |
+| legacy-ledger-vm | 192.168.122.50 | Workshop VM (Exercise 3) |
 
 ## Key commands
 
@@ -44,10 +44,10 @@ kubectl get volumes.longhorn.io -n longhorn-system
 kubectl get clusters.provisioning.cattle.io -A
 watch kubectl get clusters.provisioning.cattle.io -A
 
-# alien-geeko dashboard (Exercise 7)
-export KUBECONFIG=~/.kube/checkin-cluster.yaml
-kubectl get svc alien-geeko -n alien-geeko
-kubectl rollout status deployment/alien-geeko -n alien-geeko
+# vertex-bank-app console (Exercise 7)
+export KUBECONFIG=~/.kube/ledger-cluster.yaml
+kubectl get svc vertex-bank -n vertex-bank
+kubectl rollout status deployment/vertex-bank -n vertex-bank
 ```
 
 ## rodeo-cli lifecycle
