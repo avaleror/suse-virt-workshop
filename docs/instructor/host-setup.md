@@ -1,17 +1,29 @@
-# Host Setup: SUSE Virtualization Workshop
+# Host setup — SUSE Virtualization Workshop
 
-This workshop deploys on a bare metal Linux host with KVM. These steps cover host prep and initial deploy.
+Deploy the same 3-node Harvester + Rancher Prime stack used by
+[suse-virt-rodeo](https://github.com/avaleror/suse-virt-rodeo) on a bare-metal
+KVM host you own. Automation is entirely
+[rodeo-cli](https://github.com/avaleror/rodeo-cli); this repo only ships the
+plan and the lab chapters.
 
 ## Requirements
 
 | Resource | Minimum |
 |---|---|
-| OS | SLES 16 / SLES 15 SP6 / openSUSE Leap 15.6 |
-| RAM | 64 GiB |
-| vCPU | 32 |
-| Disk | 900 GiB (free in `/var/lib/libvirt/images`) |
-| Nested virtualization | Enabled (`cat /sys/module/kvm_intel/parameters/nested` should print `Y`) |
-| Network | Internet access during deploy; exercises run against the local cluster only |
+| OS | SLES 16 / Leap 16 (Ubuntu 22.04+ and Fedora also work via `install-deps`) |
+| RAM | 64 GiB available (~72 GiB total recommended for the `harvester` profile) |
+| vCPU | ~32 free |
+| Disk | ~1050 GiB free in `/var/lib/libvirt/images` (320 GB × 3 Harvester + Rancher + ISO cache) |
+| KVM | `/dev/kvm` present. Nested virt only needed if the host itself is a VM |
+| Network | Internet access during deploy |
+
+Confirm readiness:
+
+```bash
+rodeo doctor
+```
+
+You want a recommendation of **harvester** (or enough RAM to run it).
 
 ## Install rodeo-cli
 
@@ -19,70 +31,131 @@ This workshop deploys on a bare metal Linux host with KVM. These steps cover hos
 curl -fsSL https://raw.githubusercontent.com/avaleror/rodeo-cli/main/install.sh | bash
 ```
 
-This installs prerequisites (python3, pip, git), clones the repo to `/opt/rodeo-cli`, creates a venv with system-site-packages (needed for libvirt-python), and symlinks `rodeo` to `/usr/local/bin`.
+This clones the CLI, sets up its Python environment, and links `rodeo` as a
+system command. No venv to activate, no PATH tweaks, no `sudo` prefix on day-2
+commands — `rodeo up` self-escalates when it needs root.
 
-To pin a specific version:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/avaleror/rodeo-cli/main/install.sh | bash -s -- --ref v0.10.6
-```
-
-## Generate secrets
+Pin a release if you need a known-good build:
 
 ```bash
-rodeo init --profile harvester --dir /path/to/suse-virt-workshop
+curl -fsSL https://raw.githubusercontent.com/avaleror/rodeo-cli/main/install.sh | bash -s -- --ref v0.14.2
 ```
 
-This creates `~/.rodeo/secrets.yaml` with generated passwords. The `rodeo-plan.yaml` in this repo references them via `??placeholder` notation.
-
-## Deploy
-
-From the workshop directory:
+## Deploy this workshop
 
 ```bash
-sudo rodeo deploy --config-dir .
+git clone https://github.com/avaleror/suse-virt-workshop.git
+cd suse-virt-workshop
+rodeo up
 ```
 
-The deploy runs in phases: `kvm_host → vms → pxe_server → cluster → rancher → finalise`. Total time is **1-2.5 hours**, and the `cluster` phase is the long pole. Nested KVM makes the Harvester install slow (VIP wait up to 60 min, all-3-nodes-Ready up to 90 min). This is expected; do not interrupt it. See [Lab overview](../reference/lab-overview.md) for the full phase breakdown.
+Because you are inside a directory that already contains `rodeo-plan.yaml`,
+`rodeo up` auto-detects the lab. It will:
 
-When complete, the success screen shows:
+1. Wrap itself in a tmux session so a dropped SSH does not kill the deploy
+2. Re-run host checks and offer to install missing packages
+3. Generate `~/.rodeo/secrets.yaml` with random credentials
+4. Drive the pipeline: `kvm_host → vms → pxe_server → cluster → rancher → finalise`
+5. Print Harvester / Rancher URLs and where to find passwords
 
-- Harvester and Rancher URLs
-- Admin password locations
-- First commands to try
+**Typical time:** 90–150 minutes. The `cluster` phase (iPXE install of Harvester
+inside nested KVM) is the long pole.
+
+### Survive disconnects
+
+```bash
+tmux attach -t rodeo-harvester    # session name matches the profile / lab
+# Detach without stopping: Ctrl+b  d
+```
+
+### Watch progress
+
+From a second shell on the host:
+
+```bash
+rodeo watch                 # phases + serial consoles
+rodeo logs harvester1       # one node's serial log
+rodeo status                # VM state + VIP reachability
+```
 
 ## harvester_auto_import stays false
 
-`rodeo-plan.yaml` sets `harvester_auto_import: false` on purpose: importing Harvester into Rancher is Exercise 1. Don't do it for students; if you do, skip straight to Exercise 2 when handing off, or redeploy from a clean state.
+`rodeo-plan.yaml` sets `harvester_auto_import: false` on purpose. Importing
+Harvester into Rancher is **Chapter 1 — The Arrival**. Do not import it before
+handing the lab to students.
 
-## Verify before handing to students
+## Verify before students start
 
 ```bash
 # All 3 Harvester nodes Ready
 rodeo ssh harvester1 "kubectl get nodes"
 
-# Rancher API reachable
+# Rancher + Harvester APIs reachable
 curl -sk https://192.168.122.9:30002/v3 | jq -r '.type'
-
-# Harvester API reachable
 curl -sk https://192.168.122.10/v1 | jq -r '.apiVersion'
 
-# Neither system is imported into the other yet
+# Only "local" in Rancher — Harvester not imported yet
 curl -sk -u admin:$(grep rancher_admin_password ~/.rodeo/secrets.yaml | cut -d'"' -f2) \
   https://192.168.122.9:30002/v3/clusters | jq -r '.data[].name'
-# should list only "local"
 ```
 
-Everything should be green, and only `local` should appear in the Rancher cluster list. That confirms Exercise 1 hasn't been done yet.
-
-## Tear down
+External DNAT (from a laptop on the same network):
 
 ```bash
-sudo rodeo clean --config-dir . --yes
+curl -sk https://<host-ip>:8443/v1 | jq -r '.apiVersion'
+curl -sk https://<host-ip>:30002/v3 | jq -r '.type'
 ```
 
-This removes all VMs, disk images, and libvirt network config. The host is left clean.
+See the [pre-lab checklist](pre-lab-checklist.md) for the full gate.
 
-## Reruns
+## Hand students
 
-Nothing here is one-shot. If a cluster gets into a bad state during a workshop, `sudo rodeo clean --config-dir . --yes` followed by `sudo rodeo deploy --config-dir .` gets you back to a known-good starting point.
+| Item | Value |
+|---|---|
+| Harvester UI | `https://<host-ip>:8443` |
+| Rancher UI | `https://<host-ip>:30002` |
+| Username | `admin` |
+| Passwords | `harvester_admin_password` and `rancher_admin_password` in `~/.rodeo/secrets.yaml` |
+| Lab guide | https://avaleror.github.io/suse-virt-workshop/ |
+
+Both UIs use self-signed certificates — students must accept the browser warning.
+
+## Tear down / redeploy
+
+```bash
+rodeo clean --yes                     # destroy this lab's VMs and disks
+rodeo up                              # fresh deploy (reuses secrets)
+
+rodeo clean --all --yes --secrets     # full host reset, wipe credentials
+rodeo up                              # new secrets + fresh deploy
+```
+
+## Resume a failed deploy
+
+```bash
+rodeo status
+rodeo deploy --from cluster           # resume from the failed phase
+# or
+rodeo deploy --force                  # redo every phase
+```
+
+## Optional: dedicated data disk
+
+If the host has a second disk for lab images:
+
+```yaml
+# in rodeo-plan.yaml
+storage:
+  device: /dev/nvme1n1          # verify with lsblk first
+  mount_point: /var/lib/libvirt/images
+  image_dir: /var/lib/libvirt/images
+  fs_type: xfs
+```
+
+The `kvm_host` phase partitions, formats, and mounts it before creating VMs.
+
+## Further reading
+
+- [rodeo-cli Harvester guide](https://github.com/avaleror/rodeo-cli/blob/main/docs/guide-harvester.md)
+- [Bare-metal example](https://github.com/avaleror/rodeo-cli/blob/main/docs/examples/bare-metal.md)
+- [Lab overview](../reference/lab-overview.md) — phase-by-phase pipeline detail

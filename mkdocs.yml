@@ -1,5 +1,5 @@
 site_name: SUSE Virtualization Workshop
-site_description: Hands-on workshop, 3-node Harvester HCI + Rancher Prime on bare metal KVM
+site_description: Self-hosted Virtualization Rodeo — 3-node Harvester HCI + Rancher Prime on bare-metal KVM via rodeo-cli
 site_url: https://avaleror.github.io/suse-virt-workshop/
 repo_url: https://github.com/avaleror/suse-virt-workshop
 repo_name: avaleror/suse-virt-workshop
@@ -67,14 +67,16 @@ markdown_extensions:
 
 nav:
   - Home: index.md
-  - Exercises:
-    - "01: Import into Rancher": exercises/01-import-into-rancher.md
-    - "02: Bring the cluster online": exercises/02-cluster-online.md
-    - "03: First VM and live migration": exercises/03-first-vm.md
-    - "04: Networking and isolation": exercises/04-networking.md
-    - "05: Snapshots and DR": exercises/05-storage-snapshots.md
-    - "06: Provision a K3s cluster": exercises/06-provision-k3s.md
-    - "07: NOC dashboard": exercises/07-noc-dashboard.md
+  - Chapters:
+    - "01: The Arrival": exercises/01-the-arrival.md
+    - "02: The Subterranean Divide": exercises/02-subterranean-divide.md
+    - "03: The Flash Crash": exercises/03-flash-crash.md
+    - "04: The Rising Tide": exercises/04-rising-tide.md
+    - "05: The Invisible Intruder": exercises/05-invisible-intruder.md
+    - "06: The Unthinkable Error": exercises/06-unthinkable-error.md
+    - "07: The Stampede": exercises/07-stampede.md
+    - "08: The Final Showdown": exercises/08-final-showdown.md
+    - "09: A New Horizon": exercises/09-new-horizon.md
   - Reference:
     - Lab overview: reference/lab-overview.md
     - Quick reference: reference/quick-reference.md

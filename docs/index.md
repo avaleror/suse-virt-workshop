@@ -1,14 +1,15 @@
----
 hide:
   - toc
 ---
 
 <div class="hero">
-  <div class="subtitle">SUSE Virtualization: Hands-on Workshop</div>
+  <div class="subtitle">SUSE Virtualization · Self-hosted Rodeo</div>
   <h1>The Virtualization Rodeo</h1>
-  <div class="tagline">Harvester HCI &bull; Rancher Prime &bull; Kube-OVN &bull; Longhorn &bull; vertex-bank-app</div>
+  <div class="tagline">Vertex Trust Bank &bull; Harvester HCI &bull; Rancher Prime &bull; deployed with rodeo-cli</div>
 
-  <a href="exercises/01-import-into-rancher/" class="md-button md-button--primary">Start the lab &rarr;</a>
+  <a href="instructor/host-setup/" class="md-button md-button--primary">Deploy on a host &rarr;</a>
+  &nbsp;
+  <a href="exercises/01-the-arrival/" class="md-button">Start Chapter 1</a>
   &nbsp;
   <a href="reference/quick-reference/" class="md-button">Quick reference</a>
 </div>
@@ -18,10 +19,31 @@ hide:
 ## The scenario
 
 <div class="scenario">
-Vertex Trust Bank runs its core stack on ISAware, an aging legacy hypervisor: ledger processing, fraud detection, teller terminal fleets, interbank settlement, retail and wealth management divisions sharing the same infrastructure. When ISAware's enterprise license renewal quote came in at 3.2x the previous term, with clustering, storage replication, and centralized management billed as separate line items, the decision was made: migrate to SUSE Virtualization.
-
-This workshop puts you in the seat of the Vertex Trust Bank platform team, bringing the new platform online end to end, from importing the cluster into Rancher to running a customer-facing K3s workload on top of it.
+Vertex Trust Bank is drowning in legacy hypervisor renewal costs. Sarah, the CTO, hands you the keys to a fresh <strong>SUSE Virtualization</strong> platform and a list of problems that will not wait. Across nine chapters you bring the cluster online, ship a VM under pressure, dodge a hardware failure with live migration, wall off a sensitive network, recover a deleted record, scale a fleet from templates, and pull the last workload off the old vendor.
 </div>
+
+This workshop is the **self-hosted** twin of SUSE's customer-facing
+[Virtualization Rodeo](https://github.com/avaleror/suse-virt-rodeo). Same story,
+same skills — you build the nested lab on your own KVM host with
+[`rodeo-cli`](https://github.com/avaleror/rodeo-cli) instead of joining Instruqt.
+
+---
+
+## Deploy first
+
+On a bare-metal host with ≥64 GiB RAM and ~1 TB free disk:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/avaleror/rodeo-cli/main/install.sh | bash
+git clone https://github.com/avaleror/suse-virt-workshop.git
+cd suse-virt-workshop
+rodeo doctor
+rodeo up
+```
+
+`rodeo up` takes **90–150 minutes**, survives SSH drops via tmux, and prints
+Harvester (`:8443`) and Rancher (`:30002`) URLs when done. Full instructor steps:
+[Host setup](instructor/host-setup.md).
 
 ## Lab topology
 
@@ -29,99 +51,97 @@ This workshop puts you in the seat of the Vertex Trust Bank platform team, bring
 <pre>
 KVM host (bare metal, yours)
 │
-├── harvester1   192.168.122.11   8 vCPU / 16 GiB / 270 GB   bootstrap node
-├── harvester2   192.168.122.12   8 vCPU / 16 GiB / 270 GB   join node
-├── harvester3   192.168.122.13   8 vCPU / 16 GiB / 270 GB   join node
+├── harvester1   192.168.122.11   8 vCPU / 16 GiB / 320 GB   bootstrap
+├── harvester2   192.168.122.12   8 vCPU / 16 GiB / 320 GB   join
+├── harvester3   192.168.122.13   8 vCPU / 16 GiB / 320 GB   join
 └── rancher      192.168.122.9    4 vCPU / 8 GiB  / 60 GB    Rancher Prime + K3s
 
 VIP (kube-vip): 192.168.122.10
+DNAT: host:8443 → VIP:443 · host:30002 → rancher:30002
 </pre>
 </div>
 
-This is the same 3-node Harvester + Rancher Prime topology used in SUSE's customer-facing Harvester Rodeo, deployed here on your own bare metal host via `rodeo-cli` instead of a hosted sandbox. Run it, break it, rerun it as many times as you like.
-
 ---
 
-## Exercises
+## Chapters
 
 <div class="exercise-grid">
 
-<a href="exercises/01-import-into-rancher/" class="exercise-card">
-  <div class="ex-number">Exercise 01</div>
-  <div class="ex-title">Import Harvester into Rancher</div>
+<a href="exercises/01-the-arrival/" class="exercise-card">
+  <div class="ex-number">Chapter 01</div>
+  <div class="ex-title">The Arrival</div>
   <div class="ex-time">⏱ 30 min</div>
-  <div class="ex-desc">Connect the two systems with a registration URL, then wire up kubectl to talk to the cluster through Rancher's proxy.</div>
+  <div class="ex-desc">Import Harvester into Rancher, tour both UIs, confirm storage and terminal access.</div>
 </a>
 
-<a href="exercises/02-cluster-online/" class="exercise-card">
-  <div class="ex-number">Exercise 02</div>
-  <div class="ex-title">Bring the cluster online</div>
+<a href="exercises/02-subterranean-divide/" class="exercise-card">
+  <div class="ex-number">Chapter 02</div>
+  <div class="ex-title">The Subterranean Divide</div>
   <div class="ex-time">⏱ 30 min</div>
-  <div class="ex-desc">Confirm node and pod health, build the primary VM cluster network and VM network, and set up the LoadBalancer IP pool.</div>
+  <div class="ex-desc">Map node topology, create prod/dev workspaces, tune Longhorn tiers, build the service network.</div>
 </a>
 
-<a href="exercises/03-first-vm/" class="exercise-card">
-  <div class="ex-number">Exercise 03</div>
-  <div class="ex-title">First VM and live migration</div>
+<a href="exercises/03-flash-crash/" class="exercise-card">
+  <div class="ex-number">Chapter 03</div>
+  <div class="ex-title">The Flash Crash</div>
   <div class="ex-time">⏱ 30 min</div>
-  <div class="ex-desc">Provision a cloud-image VM with cloud-init, SSH into it, then move it live between nodes with zero downtime.</div>
+  <div class="ex-desc">Provision algo-trader-01 with volumes, network, cloud-init, and a fixed IP under pressure.</div>
 </a>
 
-<a href="exercises/04-networking/" class="exercise-card">
-  <div class="ex-number">Exercise 04</div>
-  <div class="ex-title">Networking and isolation</div>
+<a href="exercises/04-rising-tide/" class="exercise-card">
+  <div class="ex-number">Chapter 04</div>
+  <div class="ex-title">The Rising Tide</div>
+  <div class="ex-time">⏱ 25 min</div>
+  <div class="ex-desc">Zero-downtime live migration of the payment gateway, then evacuate a damaged node.</div>
+</a>
+
+<a href="exercises/05-invisible-intruder/" class="exercise-card">
+  <div class="ex-number">Chapter 05</div>
+  <div class="ex-title">The Invisible Intruder</div>
   <div class="ex-time">⏱ 30 min</div>
-  <div class="ex-desc">Build a VLAN backbone with Multus, then isolate two banking divisions on overlapping CIDRs with Kube-OVN.</div>
+  <div class="ex-desc">Build a closed-loop cluster network and an overlay vault so lateral movement dies.</div>
 </a>
 
-<a href="exercises/05-storage-snapshots/" class="exercise-card">
-  <div class="ex-number">Exercise 05</div>
-  <div class="ex-title">Snapshots and DR</div>
+<a href="exercises/06-unthinkable-error/" class="exercise-card">
+  <div class="ex-number">Chapter 06</div>
+  <div class="ex-title">The Unthinkable Error</div>
   <div class="ex-time">⏱ 30 min</div>
-  <div class="ex-desc">Add a second Longhorn storage policy, checkpoint a VM, simulate corruption, and restore it clean.</div>
+  <div class="ex-desc">Snapshot, clone to staging, restore production, wire an NFS backup target and schedule.</div>
 </a>
 
-<a href="exercises/06-provision-k3s/" class="exercise-card">
-  <div class="ex-number">Exercise 06</div>
-  <div class="ex-title">Provision a K3s cluster</div>
-  <div class="ex-time">⏱ 45 min</div>
-  <div class="ex-desc">Set up project RBAC and a Harvester cloud credential, then let Rancher provision a full K3s cluster as VMs on the platform.</div>
+<a href="exercises/07-stampede/" class="exercise-card">
+  <div class="ex-number">Chapter 07</div>
+  <div class="ex-title">The Stampede</div>
+  <div class="ex-time">⏱ 25 min</div>
+  <div class="ex-desc">Forge a golden VM template and stamp out a calculation fleet on demand.</div>
 </a>
 
-<a href="exercises/07-noc-dashboard/" class="exercise-card">
-  <div class="ex-number">Exercise 07</div>
-  <div class="ex-title">Platform ops console</div>
-  <div class="ex-time">⏱ 20 min</div>
-  <div class="ex-desc">Deploy vertex-bank-app on the new cluster and expose it via LoadBalancer, pulling an IP straight from the pool you built in Exercise 2.</div>
+<a href="exercises/08-final-showdown/" class="exercise-card">
+  <div class="ex-number">Chapter 08</div>
+  <div class="ex-title">The Final Showdown</div>
+  <div class="ex-time">⏱ 25 min</div>
+  <div class="ex-desc">Extract the last legacy ledger onto SUSE Virtualization and enable guest telemetry.</div>
+</a>
+
+<a href="exercises/09-new-horizon/" class="exercise-card">
+  <div class="ex-number">Chapter 09</div>
+  <div class="ex-title">A New Horizon</div>
+  <div class="ex-time">⏱ 10 min</div>
+  <div class="ex-desc">Recap what you mastered and where the skills go next.</div>
 </a>
 
 </div>
 
 ---
 
-## What replaces what
+## Legacy → SUSE mapping
 
-| ISAware (legacy hypervisor) | SUSE Virtualization | Version in this lab |
-|---|---|---|
-| ISAware Hypervisor | KubeVirt + KVM | KubeVirt v1.7.0 |
-| ISAware storage replication | Longhorn distributed storage | Longhorn v1.11.1 |
-| ISAware network segmentation add-on | Kube-OVN + Multus | Kube-OVN v1.15.4 |
-| ISAware Manager | SUSE Rancher Prime | Rancher Prime v2.14.1 |
-
-No vendor lock-in, no per-feature license tiers, one platform and one bill.
-
-## Resources
-
-<div class="link-row">
-  <a href="reference/quick-reference/">📋 Quick reference</a>
-  <a href="reference/lab-overview/">🗺️ Lab overview</a>
-  <a href="lab-guide/">📄 Full lab guide (print)</a>
-  <a href="instructor/host-setup/">🔧 Instructor: host setup</a>
-  <a href="instructor/pre-lab-checklist/">✅ Instructor: pre-lab checklist</a>
-  <a href="https://github.com/avaleror/rodeo-cli" target="_blank">⚙️ rodeo-cli</a>
-</div>
-
----
+| Old world (ISAware) | SUSE Virtualization |
+|---|---|
+| Proprietary hypervisor | KubeVirt + KVM/QEMU |
+| Storage array | Longhorn (or any CSI driver) |
+| Closed-source SDN | Kube-OVN + Multus |
+| Command console | Rancher Prime + Harvester UI |
 
 ## Component versions
 
@@ -129,8 +149,6 @@ No vendor lock-in, no per-feature license tiers, one platform and one bill.
 |---|---|
 | Harvester | 1.8.1 |
 | Rancher Prime | 2.14.1 |
-| K3s (management cluster) | v1.35.3+k3s1 |
+| K3s | v1.35.3+k3s1 |
 | cert-manager | v1.20.1 |
-| KubeVirt | v1.7.0 |
-| Longhorn | v1.11.1 |
-| Kube-OVN | v1.15.4 |
+| rodeo-cli | v0.14.x |

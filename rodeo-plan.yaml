@@ -1,12 +1,13 @@
-# rodeo-plan.yaml: deployment plan for the SUSE Virtualization Workshop
-# Run: rodeo init  to (re)generate the secrets this plan references.
-# Secrets go in ~/.rodeo/secrets.yaml (chmod 600, never committed).
+# rodeo-plan.yaml — SUSE Virtualization Workshop
+# Deploy from this directory:  rodeo up
+# Secrets live in ~/.rodeo/secrets.yaml (chmod 600, never committed).
 #
-# Harvester nodes install via iPXE (pxe_server phase). NAT mode only for PXE today.
+# Same topology as the customer-facing suse-virt-rodeo Instruqt lab,
+# brought up from scratch on a host you own.
 
 name: suse-virt-workshop
 
-deployment_target: baremetal   # a clean host you own, instruqt is for the internal customer lab
+deployment_target: baremetal   # baremetal | instruqt
 
 network:
   mode: nat              # nat | bridge
@@ -17,18 +18,13 @@ network:
   # bridge mode only:
   # host_bridge: br0
 
-# Vertex Trust Bank story: node hostnames renamed from the generic alpha/bravo/charlie
-# defaults (see rodeo-cli's suse-virt platform definition) to fit the bank narrative.
-node_overrides:
-  harvester1: { hostname: ledger-alpha }
-  harvester2: { hostname: ledger-bravo }
-  harvester3: { hostname: ledger-charlie }
-
 resources:
   harvester:
     memory_mib: 16384    # 16 GiB, meets Harvester minimum
     vcpu: 8
-    disk_gb: 270         # Longhorn needs room; 270 GB works for nested KVM
+    # 150 GB persistent partition is a fixed Harvester floor;
+    # 320 GB leaves Longhorn ~165 GB of real room
+    disk_gb: 320
   rancher:
     memory_mib: 8192
     vcpu: 4
@@ -42,22 +38,24 @@ versions:
 
 storage:
   image_dir: /var/lib/libvirt/images
+  # Optional dedicated data disk (verify with lsblk first):
+  # device: /dev/nvme1n1
+  # mount_point: /var/lib/libvirt/images
+  # fs_type: xfs
 
 libvirt:
   uri: qemu:///system
 
-harvester_auto_import: false   # you import Harvester into Rancher yourself, as Exercise 1
+# Students import Harvester into Rancher in Chapter 1 (The Arrival).
+harvester_auto_import: false
 
 credentials:
-  # ??placeholders are resolved at load time. Supported forms:
-  #   ??key                  -> ~/.rodeo/secrets.yaml (rodeo init creates it)
+  # ??placeholders resolve at load time:
+  #   ??key                  -> ~/.rodeo/secrets.yaml (rodeo up / init creates it)
   #   ??env:RODEO_PASSWORD   -> environment variable
-  #   ??file:/run/secrets/pw -> file contents (mounted secrets)
-  #   ??cmd:pass show rodeo  -> command stdout (pass, op, vault CLI...)
-  # If a source returns nothing, deploy fails fast instead of using
-  # an empty password.
+  #   ??file:/run/secrets/pw -> file contents
+  #   ??cmd:pass show rodeo  -> command stdout
   harvester_os_password: "??harvester_os_password"
   harvester_admin_password: "??harvester_admin_password"
   rancher_admin_password: "??rancher_admin_password"
-  # Cluster join token, random per environment (rodeo init generates it)
   harvester_token: "??harvester_token"
