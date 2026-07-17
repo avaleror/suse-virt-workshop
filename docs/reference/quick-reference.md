@@ -1,16 +1,16 @@
-# Quick reference
+# Quick Reference
 
 ## Access
 
 | Resource | Value |
 |---|---|
-| KVM host IP | your host's IP |
+| KVM host IP | your host's IP (or lab-assigned) |
 | Harvester UI | `https://<host-ip>:8443` · from host: `https://192.168.122.10` |
 | Rancher UI | `https://<host-ip>:30002` · from host: `https://192.168.122.9:30002` |
 | Admin user | `admin` |
 | Passwords | `cat ~/.rodeo/secrets.yaml` (`harvester_admin_password`, `rancher_admin_password`) |
-| kubectl (Harvester) | download kubeconfig from Harvester **Support → Download KubeConfig**, or via Rancher after Chapter 1 |
-| Guest SSH (after Ch 3) | `ssh opensuse@192.168.122.50` |
+| kubectl (Harvester) | download kubeconfig from Harvester **Support → Download KubeConfig**, or via Rancher after Exercise 1 |
+| Guest SSH (after Ex 3) | `ssh opensuse@192.168.122.50` |
 
 ## Node reference
 
@@ -21,11 +21,11 @@
 | harvester3 | 192.168.122.13 | Join |
 | rancher | 192.168.122.9 | Rancher Prime + K3s |
 | VIP | 192.168.122.10 | Harvester API / UI |
-| algo-trader-01 | 192.168.122.50 | Chapter 3 calculation engine |
+| algo-trader-01 | 192.168.122.50 | Exercise 3 calculation engine |
 
-## Key lab objects (created during chapters)
+## Key lab objects (created during exercises)
 
-| Object | Chapter |
+| Object | Exercise |
 |---|---|
 | Import cluster name `harvester` | 1 |
 | Namespaces `prod`, `dev` | 2 |

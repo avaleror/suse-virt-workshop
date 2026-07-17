@@ -1,24 +1,16 @@
-# Chapter 2 — The Subterranean Divide
+# Exercise 2: The Subterranean Divide
 
-**Time:** ~30 min  
-**Prev:** [Chapter 1](01-the-arrival.md) · **Next:** [Chapter 3 — The Flash Crash](03-flash-crash.md)
-
----
-
-Sarah takes you into the subterranean datacenter. One side of the room is
-containerized APIs; the other still runs heavy ledgers. Both will share the
-same SUSE Virtualization fabric — but first you map the nodes, carve workspaces,
-set storage policy, and build the production service network the later chapters
-need.
-
-!!! tip "Bare-metal vs Instruqt"
-    The customer Rodeo image pre-creates `prod`, `prod/service`, and an SSH
-    key. On this self-hosted lab you create them here so Chapter 3 can launch
-    a VM on a clean cluster.
+**Time:** 30 min  
+**Previous:** [Exercise 1: The Arrival](01-the-arrival.md)  
+**Next:** [Exercise 3: The Flash Crash](03-flash-crash.md)
 
 ---
 
-## Task 1: Inspect node topology and Longhorn on disk
+Sarah takes you into the subterranean datacenter. One side of the room is containerized APIs; the other still runs heavy ledgers. Both will share the same SUSE Virtualization fabric. First you map the nodes, carve workspaces, set storage policy, and build the production service network the later exercises need.
+
+> **Tip:** The customer Rodeo image pre-creates `prod`, `prod/service`, and an SSH key. On this self-hosted lab you create them here so Exercise 3 can launch a VM on a clean cluster.
+
+## 2.1 Inspect node topology and Longhorn on disk
 
 In the Harvester UI → **Hosts**:
 
@@ -36,9 +28,7 @@ exit
 
 Replicas on disk are how Longhorn keeps VM data alive across node loss.
 
----
-
-## Task 2: Create `prod` and `dev` namespaces
+## 2.2 Create `prod` and `dev` namespaces
 
 **Namespaces** → **Create**:
 
@@ -49,18 +39,13 @@ Replicas on disk are how Longhorn keeps VM data alive across node loss.
 
 `prod` holds bank production VMs; `dev` is for cheaper sandboxes.
 
----
-
-## Task 3: Understand the default storage class
+## 2.3 Understand the default storage class
 
 **Advanced → Storage Classes** → open `harvester-longhorn`.
 
-Note **Number Of Replicas = 3**. Production ledgers want that. Disposable quant
-sandboxes do not — replica count is a policy, not a law of physics.
+Note **Number Of Replicas = 3**. Production ledgers want that. Disposable quant sandboxes do not. Replica count is a policy, not a law of physics.
 
----
-
-## Task 4: Build a cost-tier StorageClass
+## 2.4 Build a cost-tier StorageClass
 
 **Advanced → Storage Classes → Create**:
 
@@ -80,9 +65,7 @@ staleReplicaTimeout: "30"
 migratable: "true"
 ```
 
----
-
-## Task 5: Create the production VM network
+## 2.5 Create the production VM network
 
 VMs need a network on the management fabric so you can SSH them from the host.
 
@@ -97,9 +80,7 @@ VMs need a network on the management fabric so you can SSH them from the host.
 
 Confirm `prod/service` shows **Active**.
 
----
-
-## Task 6: Register an SSH key
+## 2.6 Register an SSH key
 
 Generate a key on the KVM host if you do not already have one:
 
@@ -116,11 +97,9 @@ In Harvester: **Advanced → SSH Keys → Create**:
 | Name | `default` |
 | SSH Public Key | paste the `.pub` contents |
 
-Later chapters select **SSH Key: `prod/default`**.
+Later exercises select **SSH Key: `prod/default`**.
 
----
-
-## Task 7: Upload a cloud image
+## 2.7 Upload a cloud image
 
 **Images → Create**:
 
@@ -138,13 +117,9 @@ https://pkg.adfinis.com/opensuse/distribution/leap-micro/6.2/appliances/openSUSE
 
 Wait until the image is **Active** (download is server-side via Longhorn).
 
-If your environment already mirrors a SLES 16 Minimal VM cloud image, prefer
-that and note the exact image name — Chapter 3 will reference whatever you
-upload here as **the golden OS image**.
+If your environment already mirrors a SLES 16 Minimal VM cloud image, prefer that and note the exact image name. Exercise 3 will reference whatever you upload here as the golden OS image.
 
----
-
-## Task 8 (optional): Cloud-init user-data template
+## 2.8 Optional: cloud-init user-data template
 
 **Advanced → Cloud Config Templates → Create** (User Data):
 
@@ -153,8 +128,7 @@ upload here as **the golden OS image**.
 | Namespace | `prod` |
 | Name | `prod` |
 
-Minimal user-data (adjust user to match your image — `opensuse` for Leap Micro,
-`sles` / `ec2-user` variants for SLES cloud images):
+Minimal user-data (adjust user to match your image: `opensuse` for Leap Micro, or the default user for your SLES cloud image):
 
 ```yaml
 #cloud-config
@@ -165,16 +139,8 @@ runcmd:
   - systemctl enable --now qemu-guest-agent
 ```
 
-Chapter 3 can select **User Data Template: `prod/prod`**.
+Exercise 3 can select **User Data Template: `prod/prod`**.
 
 ---
 
-## Checkpoint
-
-- [ ] `prod` and `dev` namespaces exist
-- [ ] `harvester-longhorn-1rep` StorageClass exists
-- [ ] `prod/service` network is Active
-- [ ] `prod/default` SSH key registered
-- [ ] Cloud image in `official-images` is Active
-
-**Next:** [Chapter 3 — The Flash Crash](03-flash-crash.md)
+**Next:** [Exercise 3: The Flash Crash](03-flash-crash.md)

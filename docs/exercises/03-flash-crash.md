@@ -1,24 +1,18 @@
-# Chapter 3 — The Flash Crash
+# Exercise 3: The Flash Crash
 
-**Time:** ~30 min  
-**Prev:** [Chapter 2](02-subterranean-divide.md) · **Next:** [Chapter 4 — The Rising Tide](04-rising-tide.md)
-
----
-
-Asian markets are melting down. The quants need a calculation engine **now**.
-You will provision a fully configured VM — disk, secondary volume, production
-network, SSH key, cloud-init, fixed IP — in one pass.
+**Time:** 30 min  
+**Previous:** [Exercise 2: The Subterranean Divide](02-subterranean-divide.md)  
+**Next:** [Exercise 4: The Rising Tide](04-rising-tide.md)
 
 ---
 
-## Task 1: Confirm the OS image
+Asian markets are melting down. The quants need a calculation engine **now**. You will provision a fully configured VM (disk, secondary volume, production network, SSH key, cloud-init, fixed IP) in one pass.
 
-**Images** — confirm your Chapter 2 cloud image is **Active**
-(for example `official-images/sles16` or the Leap Micro image you uploaded).
+## 3.1 Confirm the OS image
 
----
+**Images** - confirm your Exercise 2 cloud image is **Active** (for example `official-images/sles16` or the Leap Micro image you uploaded).
 
-## Task 2: Create `algo-trader-01`
+## 3.2 Create `algo-trader-01`
 
 **Virtual Machines → Create**:
 
@@ -38,9 +32,7 @@ network, SSH key, cloud-init, fixed IP — in one pass.
 
 Do **not** click Create yet.
 
----
-
-## Task 3: Volumes and network
+## 3.3 Volumes and network
 
 **Volumes** tab:
 
@@ -53,9 +45,7 @@ Do **not** click Create yet.
 |---|---|
 | Network | `prod/service` |
 
----
-
-## Task 4: Cloud-init and fixed IP
+## 3.4 Cloud-init and fixed IP
 
 **Advanced Options → Cloud Configuration**:
 
@@ -74,20 +64,15 @@ ethernets:
         - 192.168.122.1
 ```
 
-!!! note
-    Interface name may be `eth0` on some images. If the VM boots without the
-    static address, check `ip link` in the web console and adjust.
+> **Note:** Interface name may be `eth0` on some images. If the VM boots without the static address, check `ip link` in the web console and adjust.
 
-**Node Scheduling (optional):** run on nodes matching label `stage=prod` only
-if you labeled hosts; otherwise leave default (any node).
+**Node Scheduling (optional):** run on nodes matching label `stage=prod` only if you labeled hosts; otherwise leave default (any node).
 
 Click **Create**. Wait until the VM is **Running** and shows an IP.
 
----
+## 3.5 Web console and SSH
 
-## Task 5: Web console and SSH
-
-1. Open the VM → **Console** — confirm login / cloud-init finished.
+1. Open the VM → **Console** and confirm login / cloud-init finished.
 2. From the KVM host:
 
 ```bash
@@ -99,10 +84,4 @@ exit
 
 ---
 
-## Checkpoint
-
-- [ ] `algo-trader-01` Running in `prod`
-- [ ] Secondary volume `market-data-vol` attached
-- [ ] SSH works at `192.168.122.50` with `prod/default`
-
-**Next:** [Chapter 4 — The Rising Tide](04-rising-tide.md)
+**Next:** [Exercise 4: The Rising Tide](04-rising-tide.md)

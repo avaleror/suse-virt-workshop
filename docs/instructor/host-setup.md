@@ -1,10 +1,6 @@
-# Host setup — SUSE Virtualization Workshop
+# Host Setup: SUSE Virtualization Workshop
 
-Deploy the same 3-node Harvester + Rancher Prime stack used by
-[suse-virt-rodeo](https://github.com/avaleror/suse-virt-rodeo) on a bare-metal
-KVM host you own. Automation is entirely
-[rodeo-cli](https://github.com/avaleror/rodeo-cli); this repo only ships the
-plan and the lab chapters.
+This workshop deploys on a bare metal Linux host with KVM. These steps cover host prep and initial deploy. Automation is entirely [rodeo-cli](https://github.com/avaleror/rodeo-cli); this repo ships the plan and the lab exercises. Same topology as [suse-virt-rodeo](https://github.com/avaleror/suse-virt-rodeo).
 
 ## Requirements
 
@@ -31,11 +27,9 @@ You want a recommendation of **harvester** (or enough RAM to run it).
 curl -fsSL https://raw.githubusercontent.com/avaleror/rodeo-cli/main/install.sh | bash
 ```
 
-This clones the CLI, sets up its Python environment, and links `rodeo` as a
-system command. No venv to activate, no PATH tweaks, no `sudo` prefix on day-2
-commands — `rodeo up` self-escalates when it needs root.
+This clones the CLI, sets up its Python environment, and links `rodeo` as a system command. No venv to activate, no PATH tweaks, no `sudo` prefix on day-2 commands. `rodeo up` self-escalates when it needs root.
 
-Pin a release if you need a known-good build:
+To pin a release:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/avaleror/rodeo-cli/main/install.sh | bash -s -- --ref v0.14.2
@@ -49,8 +43,7 @@ cd suse-virt-workshop
 rodeo up
 ```
 
-Because you are inside a directory that already contains `rodeo-plan.yaml`,
-`rodeo up` auto-detects the lab. It will:
+Because you are inside a directory that already contains `rodeo-plan.yaml`, `rodeo up` auto-detects the lab. It will:
 
 1. Wrap itself in a tmux session so a dropped SSH does not kill the deploy
 2. Re-run host checks and offer to install missing packages
@@ -58,8 +51,7 @@ Because you are inside a directory that already contains `rodeo-plan.yaml`,
 4. Drive the pipeline: `kvm_host → vms → pxe_server → cluster → rancher → finalise`
 5. Print Harvester / Rancher URLs and where to find passwords
 
-**Typical time:** 90–150 minutes. The `cluster` phase (iPXE install of Harvester
-inside nested KVM) is the long pole.
+**Typical time:** 90-150 minutes. The `cluster` phase (iPXE install of Harvester inside nested KVM) is the long pole.
 
 ### Survive disconnects
 
@@ -80,9 +72,7 @@ rodeo status                # VM state + VIP reachability
 
 ## harvester_auto_import stays false
 
-`rodeo-plan.yaml` sets `harvester_auto_import: false` on purpose. Importing
-Harvester into Rancher is **Chapter 1 — The Arrival**. Do not import it before
-handing the lab to students.
+`rodeo-plan.yaml` sets `harvester_auto_import: false` on purpose. Importing Harvester into Rancher is **Exercise 1**. Do not import it before handing the lab to students.
 
 ## Verify before students start
 
@@ -94,7 +84,7 @@ rodeo ssh harvester1 "kubectl get nodes"
 curl -sk https://192.168.122.9:30002/v3 | jq -r '.type'
 curl -sk https://192.168.122.10/v1 | jq -r '.apiVersion'
 
-# Only "local" in Rancher — Harvester not imported yet
+# Only "local" in Rancher - Harvester not imported yet
 curl -sk -u admin:$(grep rancher_admin_password ~/.rodeo/secrets.yaml | cut -d'"' -f2) \
   https://192.168.122.9:30002/v3/clusters | jq -r '.data[].name'
 ```
@@ -118,7 +108,7 @@ See the [pre-lab checklist](pre-lab-checklist.md) for the full gate.
 | Passwords | `harvester_admin_password` and `rancher_admin_password` in `~/.rodeo/secrets.yaml` |
 | Lab guide | https://avaleror.github.io/suse-virt-workshop/ |
 
-Both UIs use self-signed certificates — students must accept the browser warning.
+Both UIs use self-signed certificates. Students must accept the browser warning.
 
 ## Tear down / redeploy
 
@@ -158,4 +148,4 @@ The `kvm_host` phase partitions, formats, and mounts it before creating VMs.
 
 - [rodeo-cli Harvester guide](https://github.com/avaleror/rodeo-cli/blob/main/docs/guide-harvester.md)
 - [Bare-metal example](https://github.com/avaleror/rodeo-cli/blob/main/docs/examples/bare-metal.md)
-- [Lab overview](../reference/lab-overview.md) — phase-by-phase pipeline detail
+- [Lab overview](../reference/lab-overview.md)

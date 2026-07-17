@@ -67,7 +67,7 @@ markdown_extensions:
 
 nav:
   - Home: index.md
-  - Chapters:
+  - Exercises:
     - "01: The Arrival": exercises/01-the-arrival.md
     - "02: The Subterranean Divide": exercises/02-subterranean-divide.md
     - "03: The Flash Crash": exercises/03-flash-crash.md

@@ -1,7 +1,6 @@
 # Pre-lab checklist
 
-Run this after `rodeo up` finishes and before students open Chapter 1. Deploy
-takes 90–150 minutes on nested KVM; budget extra time for this gate.
+Run this after `rodeo up` finishes and before students open Exercise 1. Deploy takes 90-150 minutes on nested KVM; budget extra time for this gate.
 
 ## After deploy completes
 
@@ -20,7 +19,7 @@ curl -sk https://192.168.122.9:30002/v3 | jq -r '.type'
 curl -sk https://192.168.122.10/v1 | jq -r '.apiVersion'
 # expect: harvesterhci.io/v1beta1 (or similar)
 
-# 5. Rancher shows only "local" — Harvester NOT imported yet
+# 5. Rancher shows only "local" - Harvester NOT imported yet
 curl -sk -u admin:$(grep rancher_admin_password ~/.rodeo/secrets.yaml | cut -d'"' -f2) \
   https://192.168.122.9:30002/v3/clusters | jq -r '.data[].name'
 # expect: local only
@@ -36,18 +35,17 @@ virsh list --all --autostart | grep -E 'harvester|rancher'
 rodeo status
 ```
 
-Nothing beyond this checklist should be pre-done. Chapter 1 is the import;
-Chapters 2+ build namespaces, networks, images, and VMs.
+Nothing beyond this checklist should be pre-done. Exercise 1 is the import; Exercises 2+ build namespaces, networks, images, and VMs.
 
 ## Timing notes
 
 | Phase | Expect |
 |---|---|
-| `rodeo up` total | 90–150 min |
+| `rodeo up` total | 90-150 min |
 | `cluster` phase | VIP wait up to ~60 min; all-3-Ready up to ~90 min on nested KVM |
-| Chapter 1 (import + tour) | ~25–30 min |
-| Chapters 2–8 | UI-heavy; keep ~20–30 min each |
-| Chapter 9 (recap) | ~10 min |
+| Exercise 1 (import + tour) | ~25-30 min |
+| Exercises 2-8 | UI-heavy; keep ~20-30 min each |
+| Exercise 9 (recap) | ~10 min |
 
 ## Student credentials
 
@@ -57,7 +55,7 @@ Chapters 2+ build namespaces, networks, images, and VMs.
 | Rancher admin password | `rancher_admin_password` in `~/.rodeo/secrets.yaml` |
 | KVM host IP | `rodeo up` success screen, or `hostname -I` |
 | SSH into nested nodes | `rodeo ssh harvester1` |
-| Guest VM SSH (later chapters) | `ssh opensuse@192.168.122.50` (after Chapter 3); key from the host's `~/.ssh/id_rsa` or `id_ed25519` registered in Chapter 2 |
+| Guest VM SSH (later exercises) | `ssh opensuse@192.168.122.50` (after Exercise 3); key from the host's `~/.ssh/id_rsa` or `id_ed25519` registered in Exercise 2 |
 
 ## Common failure points
 
@@ -65,7 +63,7 @@ Chapters 2+ build namespaces, networks, images, and VMs.
 - **External DNAT fails:** multi-NIC ARP ambiguity. The `kvm_host` phase sets `net.ipv4.conf.all.arp_announce=2`; confirm it if clients cannot reach `:8443`.
 - **`sudo rodeo` → command not found:** do not wrap day-2 commands in sudo. `rodeo up` / `rodeo deploy` self-escalate. If you must use sudo, call the full path (`sudo /usr/local/bin/rodeo …`).
 - **SSH drops mid-deploy:** re-attach with `tmux attach -t rodeo-harvester`. Do not start a second deploy while one is running.
-- **Import already done:** if Virtualization Management already lists `harvester`, skip Chapter 1 import steps or `rodeo clean --yes && rodeo up` for a clean start.
+- **Import already done:** if Virtualization Management already lists `harvester`, skip Exercise 1 import steps or `rodeo clean --yes && rodeo up` for a clean start.
 
 ## Day-2 ops cheat sheet
 
