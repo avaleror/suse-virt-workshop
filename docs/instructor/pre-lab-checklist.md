@@ -33,19 +33,25 @@ virsh list --all --autostart | grep -E 'harvester|rancher'
 
 # 8. Day-2 CLI works
 rodeo status
+
+# 9. custom_scripts pre-lab state (Exercise 4 / 6 foundations)
+rodeo ssh harvester1 "kubectl get vm -n prod webserver-prod daily-batch-processor"
+rodeo ssh harvester1 "kubectl get network-attachment-definitions.k8s.cni.cncf.io -n prod service"
+showmount -e <host-ip>   # expect /srv/backups
 ```
 
-Nothing beyond this checklist should be pre-done. Exercise 1 is the import; Exercises 2+ build namespaces, networks, images, and VMs.
+Exercise 1 is the import; Exercises 2-7 (and the optional bonus) build namespaces, networks, images, and VMs on top of what deploy automation pre-creates. That pre-created state — `prod` namespace, node labels, `prod/service` network, the cached VM image, the NFS backup target, and the `webserver-prod`/`daily-batch-processor` pair — mirrors what the Instruqt Rodeo image bakes in, so Exercises 4 and 6 start from parity with the customer-facing track instead of asking the student to build those foundations by hand. See [Lab overview → custom_scripts](../reference/lab-overview.md#custom-scripts) for what each script does.
 
 ## Timing notes
 
 | Phase | Expect |
 |---|---|
-| `rodeo up` total | 90-150 min |
+| `rodeo up` total | 90-150 min (includes `custom_scripts`: ~10-15 min, mostly the image download) |
 | `cluster` phase | VIP wait up to ~60 min; all-3-Ready up to ~90 min on nested KVM |
 | Exercise 1 (import + tour) | ~25-30 min |
-| Exercises 2-8 | UI-heavy; keep ~20-30 min each |
-| Exercise 9 (recap) | ~10 min |
+| Exercises 2-7 | UI-heavy; keep ~20-30 min each |
+| Exercise 8 (recap) | ~10 min |
+| Bonus: Final Showdown (optional, self-hosted only) | ~25 min |
 
 ## Student credentials
 
@@ -64,6 +70,8 @@ Nothing beyond this checklist should be pre-done. Exercise 1 is the import; Exer
 - **`sudo rodeo` → command not found:** do not wrap day-2 commands in sudo. `rodeo up` / `rodeo deploy` self-escalate. If you must use sudo, call the full path (`sudo /usr/local/bin/rodeo …`).
 - **SSH drops mid-deploy:** re-attach with `tmux attach -t rodeo-harvester`. Do not start a second deploy while one is running.
 - **Import already done:** if Virtualization Management already lists `harvester`, skip Exercise 1 import steps or `rodeo clean --yes && rodeo up` for a clean start.
+- **`webserver-prod`/`daily-batch-processor` missing or `ErrorUnschedulable`:** check `custom_scripts` ran (`rodeo deploy --from custom_scripts` to re-run just that phase) — it needs outbound internet access on first run to download the cached image (~308 MiB from `download.opensuse.org`); an air-gapped host will fail here.
+- **`showmount -e <host-ip>` shows nothing:** `custom_scripts`' NFS step needs a package manager it recognizes (zypper/apt/dnf); an unsupported distro will fail this step non-fatally (rest of the lab still works, Exercise 6.5 falls back to manual setup).
 
 ## Day-2 ops cheat sheet
 

@@ -20,7 +20,7 @@ hide:
 ## The scenario
 
 <div class="scenario">
-Vertex Trust Bank is drowning in legacy hypervisor renewal costs. Sarah, the CTO, hands you the keys to a fresh <strong>SUSE Virtualization</strong> platform and a list of problems that will not wait. Across nine exercises you bring the cluster online, ship a VM under pressure, dodge a hardware failure with live migration, wall off a sensitive network, recover a deleted record, scale a fleet from templates, and pull the last workload off the old vendor.
+Vertex Trust Bank is drowning in legacy hypervisor renewal costs. Sarah, the CTO, hands you the keys to a fresh <strong>SUSE Virtualization</strong> platform and a list of problems that will not wait. Across eight exercises you bring the cluster online, ship a VM under pressure, dodge a hardware failure with live migration, wall off a sensitive network, recover a deleted record, and scale a fleet from templates.
 </div>
 
 This workshop is the **self-hosted** twin of SUSE's customer-facing
@@ -117,18 +117,24 @@ DNAT: host:8443 → VIP:443 · host:30002 → rancher:30002
   <div class="ex-desc">Forge a golden VM template and stamp out a calculation fleet on demand.</div>
 </a>
 
-<a href="exercises/08-final-showdown/" class="exercise-card">
+<a href="exercises/08-new-horizon/" class="exercise-card">
   <div class="ex-number">Exercise 08</div>
-  <div class="ex-title">The Final Showdown</div>
-  <div class="ex-time">⏱ 25 min</div>
-  <div class="ex-desc">Extract the last legacy ledger onto SUSE Virtualization and enable guest telemetry.</div>
-</a>
-
-<a href="exercises/09-new-horizon/" class="exercise-card">
-  <div class="ex-number">Exercise 09</div>
   <div class="ex-title">A New Horizon</div>
   <div class="ex-time">⏱ 10 min</div>
   <div class="ex-desc">Recap what you mastered and where the skills go next.</div>
+</a>
+
+</div>
+
+### Bonus (self-hosted only, no rodeo counterpart)
+
+<div class="exercise-grid">
+
+<a href="exercises/bonus-final-showdown/" class="exercise-card">
+  <div class="ex-number">Bonus</div>
+  <div class="ex-title">The Final Showdown</div>
+  <div class="ex-time">⏱ 25 min</div>
+  <div class="ex-desc">Explore Harvester's real Migration UI and extract a stand-in legacy ledger onto SUSE Virtualization.</div>
 </a>
 
 </div>

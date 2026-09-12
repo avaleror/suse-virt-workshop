@@ -3,7 +3,7 @@
 **Version:** 2.0 | **Duration:** ~3 hours (after deploy)  
 **Author:** Andres Valero, Principal Technology Advocate, SUSE
 
-Self-hosted twin of [suse-virt-rodeo](https://github.com/avaleror/suse-virt-rodeo). Same nine exercises, deployed with [rodeo-cli](https://github.com/avaleror/rodeo-cli).
+Self-hosted twin of [suse-virt-rodeo](https://github.com/avaleror/suse-virt-rodeo). Same eight exercises (plus one self-hosted-only bonus), deployed with [rodeo-cli](https://github.com/avaleror/rodeo-cli).
 
 **Versions:** Harvester 1.8.1 · Rancher 2.14.1 · K3s v1.35.3+k3s1 · rodeo-cli v0.14.x
 
@@ -53,7 +53,7 @@ Create VM `prod/algo-trader-01`: 2 CPU / 2 GiB, SSH `prod/default`, label `stage
 
 ## Exercise 4: The Rising Tide (25 min)
 
-1. Create `webserver-prod` and `daily-batch-processor` on `prod/service`.
+1. `webserver-prod` and `daily-batch-processor` are already running on `prod/service` (deploy-time automation) — confirm both and note `webserver-prod`'s node.
 2. Pause the batch VM; `ping` the gateway IP; leave it running.
 3. Migrate `webserver-prod` to another node; confirm ping/uptime survive.
 4. Unpause batch; put the old node in **Maintenance Mode**; watch evacuation.
@@ -70,7 +70,7 @@ Create VM `prod/algo-trader-01`: 2 CPU / 2 GiB, SSH `prod/default`, label `stage
 1. On `transaction-ledger` (create if needed): write `ledger.txt`, snapshot `pre-disaster-backup`, delete the file.
 2. Restore snapshot to new VM `ledger-staging-verify`; verify file.
 3. Power off prod → Restore snapshot → power on → verify.
-4. Set **backup-target** NFS to `192.168.122.1:/srv/backups/` (lab NFS on host).
+4. Attach the **backup-target** NFS setting to `192.168.122.1:/srv/backups/` — already exported by deploy-time automation, no host setup needed.
 5. Create a recurring backup/snapshot schedule.
 
 ## Exercise 7: The Stampede (25 min)
@@ -78,16 +78,16 @@ Create VM `prod/algo-trader-01`: 2 CPU / 2 GiB, SSH `prod/default`, label `stage
 1. Template `harvester-public/prod-basic` (1 CPU / 1 GiB, `prod/default`, cloud image, `prod/service`, label `stage=prod`).
 2. Create `calc-engine-01`…`03` from template; scale to five; delete extras.
 
-## Exercise 8: The Final Showdown (25 min)
+## Exercise 8: A New Horizon (10 min)
 
-1. Open **Advanced → Migration → Sources** (Instruqt has `isaware-legacy-01`; bare metal may be empty - learn the form).
+Review the skill table; bookmark SUSE Virtualization docs; tear down with `rodeo clean --yes` when finished.
+
+## Bonus: The Final Showdown (25 min, self-hosted only — no rodeo counterpart)
+
+1. Open **Advanced → Migration → Sources** (empty unless you point it at a real legacy hypervisor — learn the form).
 2. Create stand-in `legacy-ledger-vm` on `prod/service`.
 3. `systemctl enable --now qemu-guest-agent` inside the guest.
 4. Snapshot `post-migration-baseline`; live-migrate once.
-
-## Exercise 9: A New Horizon (10 min)
-
-Review the skill table; bookmark SUSE Virtualization docs; tear down with `rodeo clean --yes` when finished.
 
 ---
 

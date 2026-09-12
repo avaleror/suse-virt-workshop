@@ -1,6 +1,6 @@
 # SUSE Virtualization Workshop
 
-Self-hosted companion to the [SUSE Virtualization Rodeo](https://github.com/avaleror/suse-virt-rodeo). Same Vertex Trust Bank story and nine chapters — but you deploy the lab yourself on a bare-metal KVM host with [rodeo-cli](https://github.com/avaleror/rodeo-cli), instead of joining a pre-built Instruqt sandbox.
+Self-hosted companion to the [SUSE Virtualization Rodeo](https://github.com/avaleror/suse-virt-rodeo). Same Vertex Trust Bank story and eight chapters (plus one self-hosted-only bonus chapter) — but you deploy the lab yourself on a bare-metal KVM host with [rodeo-cli](https://github.com/avaleror/rodeo-cli), instead of joining a pre-built Instruqt sandbox.
 
 **Workshop site:** https://avaleror.github.io/suse-virt-workshop/
 
@@ -86,11 +86,16 @@ rodeo clean --all --yes --secrets          # full host reset
 ```
 docs/
   index.md                  # Landing page
-  exercises/                # Nine chapters (aligned with suse-virt-rodeo)
+  exercises/                # Eight chapters, one-to-one with suse-virt-rodeo,
+                             # plus bonus-final-showdown.md (self-hosted only,
+                             # no rodeo counterpart)
   reference/                # Lab overview and quick reference
   instructor/               # Host setup and pre-lab checklist
   lab-guide.md              # Single-file printable guide
 rodeo-plan.yaml             # Plan consumed by rodeo-cli
+custom/scripts/             # Pre-lab automation: image cache, NFS backup
+                             # target, Exercise 4's webserver-prod +
+                             # daily-batch-processor (see lab-overview.md)
 mkdocs.yml
 ```
 
@@ -110,8 +115,10 @@ Open http://127.0.0.1:8000
 | | **suse-virt-rodeo** | **This workshop** |
 |--|---------------------|-------------------|
 | Runtime | Instruqt (pre-built image) | Your bare-metal KVM host |
-| Infra bring-up | Already done in the image | `rodeo up` (~90–150 min) |
-| Lab content | Nine Instruqt chapters | Same nine chapters, adapted for self-host |
+| Infra bring-up | Already done in the image | `rodeo up` (~90–150 min), including `custom/scripts/` pre-lab automation |
+| Lab content | Eight Instruqt chapters | Same eight chapters, adapted for self-host, plus one bonus chapter with no rodeo counterpart |
 | Import Harvester | Chapter 1 / image state | Chapter 1 (plan sets `harvester_auto_import: false`) |
+| Exercise 4 pre-lab state (`webserver-prod`, `daily-batch-processor`) | Baked into the image | Pre-created by `custom/scripts/70-webserver-prod.sh` on every `rodeo up` |
+| Exercise 6 NFS backup target | Baked into the image | Pre-created by `custom/scripts/60-nfs-backup-target.sh` on every `rodeo up` |
 
 Infrastructure automation lives in [rodeo-cli](https://github.com/avaleror/rodeo-cli). Lab narrative lives in [suse-virt-rodeo](https://github.com/avaleror/suse-virt-rodeo). This repo wires the two together for self-serve hosts.

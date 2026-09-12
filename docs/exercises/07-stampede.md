@@ -2,7 +2,7 @@
 
 **Time:** 25 min  
 **Previous:** [Exercise 6: The Unthinkable Error](06-unthinkable-error.md)  
-**Next:** [Exercise 8: The Final Showdown](08-final-showdown.md)
+**Next:** [Exercise 8: A New Horizon](08-new-horizon.md) &nbsp;·&nbsp; optional bonus: [The Final Showdown](bonus-final-showdown.md)
 
 ---
 
@@ -55,4 +55,4 @@ When the spike passes, delete `calc-engine-04` and `calc-engine-05` (and optiona
 
 ---
 
-**Next:** [Exercise 8: The Final Showdown](08-final-showdown.md)
+**Next:** [Exercise 8: A New Horizon](08-new-horizon.md) &nbsp;·&nbsp; optional bonus: [The Final Showdown](bonus-final-showdown.md)

@@ -8,7 +8,7 @@
 
 Sarah takes you into the subterranean datacenter. One side of the room is containerized APIs; the other still runs heavy ledgers. Both will share the same SUSE Virtualization fabric. First you map the nodes, carve workspaces, set storage policy, and build the production service network the later exercises need.
 
-> **Tip:** The customer Rodeo image pre-creates `prod`, `prod/service`, and an SSH key. On this self-hosted lab you create them here so Exercise 3 can launch a VM on a clean cluster.
+> **Tip:** The customer Rodeo image pre-creates `prod`, `prod/service`, and an SSH key. This lab's deploy automation now pre-creates `prod` and `prod/service` too (plus node labels) — so 2.2 and 2.5 below are a confirm, not a create. You still register your own SSH key in 2.6, since the automation only embeds it directly into pre-created VMs' cloud-init, not into a reusable Harvester `SSHKey` object.
 
 ## 2.1 Inspect node topology and Longhorn on disk
 
@@ -28,13 +28,14 @@ exit
 
 Replicas on disk are how Longhorn keeps VM data alive across node loss.
 
-## 2.2 Create `prod` and `dev` namespaces
+## 2.2 Confirm `prod`, create `dev`
+
+**Namespaces**: `prod` already exists — deploy automation created it, along with two VMs already running inside it (you'll meet them in Exercise 4). Open it and confirm it's there.
 
 **Namespaces** → **Create**:
 
 | Name |
 |------|
-| `prod` |
 | `dev` |
 
 `prod` holds bank production VMs; `dev` is for cheaper sandboxes.
@@ -65,11 +66,13 @@ staleReplicaTimeout: "30"
 migratable: "true"
 ```
 
-## 2.5 Create the production VM network
+## 2.5 Confirm the production VM network
 
-VMs need a network on the management fabric so you can SSH them from the host.
+VMs need a network on the management fabric so you can SSH them from the host. Deploy automation already created it:
 
-**Networks → Virtual Machine Networks → Create**:
+**Networks → Virtual Machine Networks**: confirm `prod/service` shows **Active** (Type `UntaggedNetwork`, bridged on the management fabric).
+
+If it's ever missing (a previous run failed before this step), create it yourself:
 
 | Field | Value |
 |---|---|
@@ -77,8 +80,6 @@ VMs need a network on the management fabric so you can SSH them from the host.
 | Name | `service` |
 | Type | `UntaggedNetwork` |
 | Cluster Network | `mgmt` |
-
-Confirm `prod/service` shows **Active**.
 
 ## 2.6 Register an SSH key
 

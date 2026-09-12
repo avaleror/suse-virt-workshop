@@ -52,11 +52,11 @@ Harvester installs via **iPXE UEFI network boot**: empty disk → DHCP → `ipxe
 
 ## The deploy pipeline
 
-`rodeo up` (or `rodeo deploy`) runs six phases. Each is idempotent; resume with `rodeo deploy --from PHASE`.
+`rodeo up` (or `rodeo deploy`) runs seven phases. Each is idempotent; resume with `rodeo deploy --from PHASE`.
 
 ```mermaid
 flowchart LR
-    P1["1\nkvm_host"] --> P2["2\nvms"] --> P3["3\npxe_server"] --> P4["4\ncluster"] --> P5["5\nrancher"] --> P6["6\nfinalise"]
+    P1["1\nkvm_host"] --> P2["2\nvms"] --> P3["3\npxe_server"] --> P4["4\ncluster"] --> P5["5\nrancher"] --> P6["6\nfinalise"] --> P7["7\ncustom_scripts"]
 ```
 
 ### Phase 1: kvm_host (~5 min)
@@ -83,6 +83,18 @@ K3s + cert-manager + Rancher Prime on the rancher VM (NodePort 30002). **`harves
 
 Enables VM autostart and `libvirt-guests.service`, prints URLs and credentials.
 
+### Phase 7: custom_scripts (~10-15 min, mostly the image download) {#custom-scripts}
+
+Runs every executable file in `custom/scripts/` at the repo root, in sorted (numbered) order, with `KUBECONFIG` and a few identifying env vars set. Idempotent and re-run on every `rodeo up`, same as `apply`. This repo ships three:
+
+| Script | What it does |
+|---|---|
+| `50-image-cache.sh` | Downloads openSUSE Leap 16.0's KVM cloud image (~308 MiB, freely redistributable) and serves it over HTTP on `192.168.122.1:8889` via a systemd unit — feeds the `VirtualMachineImage` the next script needs |
+| `60-nfs-backup-target.sh` | Exports `/srv/backups` over NFS to `192.168.122.0/24` — the exact endpoint Exercise 6's backup-target setting expects |
+| `70-webserver-prod.sh` | Creates the `prod` namespace, node labels (`stage=prod` on harvester1/2, `stage=dev` on harvester3), the `prod/service` VM network, and both `webserver-prod` and `daily-batch-processor` VMs Exercise 4 needs |
+
+This is the same mechanism (and the same scripts, adapted for a generic KVM host instead of AWS) as [rodeo-cli's `virt-workshop-aws` profile](https://github.com/avaleror/rodeo-cli/tree/main/rodeo/data/examples/virt-workshop-aws) — see that profile's README for the live-verified details (PVC sizing from the image's real virtual size, the hand-derived `prod/service` network shape, the node-pin-then-release sequence for a guaranteed first collision between the two VMs).
+
 ---
 
 ## What exists when deploy finishes
@@ -95,21 +107,27 @@ Enables VM autostart and `libvirt-guests.service`, prints URLs and credentials.
 | DNAT :8443 / :30002 | kvm_host |
 | Credentials in `~/.rodeo/secrets.yaml` | `rodeo up` / `init` |
 | Harvester **not** listed in Rancher Virtualization Management | by design |
+| `prod` namespace, node labels, `prod/service` VM network | custom_scripts |
+| Cached VM image in `official-images` | custom_scripts |
+| NFS export `192.168.122.1:/srv/backups/` | custom_scripts |
+| `webserver-prod` and `daily-batch-processor` VMs (`prod`) | custom_scripts |
 
-Everything else (namespaces, VM networks, images, SSH keys, guest VMs) is built by students across Exercises 1-8. That differs from the Instruqt Rodeo image, which bakes some of those foundations in; this workshop has you create them so the path is complete on a clean host.
+`custom_scripts` pre-creates the same foundations the Instruqt Rodeo image bakes in for Exercise 4 (webserver-prod/daily-batch-processor) and Exercise 6 (the NFS backup target), so those exercises match the Instruqt track's pre-lab state instead of asking the student to build it by hand. Everything else — the `dev` namespace, the cost-tier StorageClass, your own SSH key, additional VMs and networks — is still built by students across Exercises 2-7, same as before.
 
 ---
 
 ## How this maps to suse-virt-rodeo
 
+suse-virt-rodeo has exactly 8 chapters — the table below is 1:1, no gaps or renumbering:
+
 | Rodeo chapter | This workshop |
 |---|---|
 | 1 The Arrival | Exercise 1 (+ import, which the image often already has) |
-| 2 Subterranean Divide | Exercise 2 (+ create `prod/service`, SSH key, image) |
+| 2 Subterranean Divide | Exercise 2 (`prod` namespace and `prod/service` network are now pre-created by `custom_scripts`, same as the Instruqt image — you still create `dev`, the cost-tier StorageClass, and your own SSH key) |
 | 3 Flash Crash | Exercise 3 |
-| 4 Rising Tide | Exercise 4 |
+| 4 Rising Tide | Exercise 4 (`webserver-prod`/`daily-batch-processor` pre-created by `custom_scripts`, same as the Instruqt image) |
 | 5 Invisible Intruder | Exercise 5 |
-| 6 Unthinkable Error | Exercise 6 |
+| 6 Unthinkable Error | Exercise 6 (NFS backup target pre-created by `custom_scripts`, same as the Instruqt image) |
 | 7 Stampede | Exercise 7 |
-| 8 Final Showdown | Exercise 8 (ISAware source is simulated on bare metal) |
-| 9 New Horizon | Exercise 9 |
+| 8 A New Horizon | Exercise 8 |
+| *(no rodeo counterpart)* | [Bonus: The Final Showdown](../exercises/bonus-final-showdown.md) — self-hosted only, explores Harvester's real Migration UI |

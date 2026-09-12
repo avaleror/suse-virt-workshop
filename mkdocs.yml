@@ -75,8 +75,9 @@ nav:
     - "05: The Invisible Intruder": exercises/05-invisible-intruder.md
     - "06: The Unthinkable Error": exercises/06-unthinkable-error.md
     - "07: The Stampede": exercises/07-stampede.md
-    - "08: The Final Showdown": exercises/08-final-showdown.md
-    - "09: A New Horizon": exercises/09-new-horizon.md
+    - "08: A New Horizon": exercises/08-new-horizon.md
+  - "Bonus (self-hosted only)":
+    - "The Final Showdown": exercises/bonus-final-showdown.md
   - Reference:
     - Lab overview: reference/lab-overview.md
     - Quick reference: reference/quick-reference.md

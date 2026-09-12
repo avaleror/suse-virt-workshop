@@ -8,18 +8,25 @@
 
 A coolant leak is flooding the rack under the payment gateway. You need a **zero-downtime live migration** while transactions keep flowing, then put the damaged node into maintenance so everything else evacuates automatically.
 
-On the Instruqt Rodeo, `webserver-prod` is pre-baked. Here you create it (and a batch VM to pause) so the story has something to migrate.
+On the Instruqt Rodeo, `webserver-prod` and `daily-batch-processor` are pre-baked into the image. This lab's deploy automation builds the same pair from scratch as its last phase, so they're already there waiting for you — same as the Instruqt track, not something you build by hand.
 
-## 4.1 Provision the payment gateway and a batch VM
+## 4.1 Confirm the payment gateway and batch VM
 
-Create two VMs in namespace `prod` on network `prod/service`, using the same cloud image and `prod/default` SSH key as Exercise 3:
+**Virtual Machines** (namespace `prod`): confirm both are **Running**, on network `prod/service`, DHCP-assigned:
 
 | Name | CPU | Memory | Disk | Purpose |
 |---|---|---|---|---|
-| `webserver-prod` | 1 | 1 GiB | 5 GiB | Payment gateway (will migrate) |
-| `daily-batch-processor` | 1 | 1 GiB | 5 GiB | Non-critical (will pause) |
+| `webserver-prod` | 1 | 1 GiB | ~25 GiB (image size, not a typo) | Payment gateway (will migrate) |
+| `daily-batch-processor` | 1 | 1 GiB | ~25 GiB | Non-critical (will pause) |
 
-Use DHCP on `prod/service` (no static network-data required). Wait until both are **Running** and note the IP of `webserver-prod` from the UI.
+Note the **Node** column for both — `daily-batch-processor` started on the same node as `webserver-prod` (deploy automation pins it there on first boot, then releases the pin), so the two are already sharing hardware exactly like a real "everything running production on one rack" scenario. Note the IP of `webserver-prod` from the UI.
+
+If either VM is missing (a previous deploy attempt failed before this step), re-run just that phase:
+
+```bash
+# from a host with harvester kubeconfig
+rodeo deploy --from custom_scripts
+```
 
 You may delete `algo-trader-01` first if the host is tight on RAM:
 

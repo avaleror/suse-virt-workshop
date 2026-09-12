@@ -23,23 +23,25 @@
 | VIP | 192.168.122.10 | Harvester API / UI |
 | algo-trader-01 | 192.168.122.50 | Exercise 3 calculation engine |
 
-## Key lab objects (created during exercises)
+## Key lab objects
 
-| Object | Exercise |
+| Object | Created by |
 |---|---|
-| Import cluster name `harvester` | 1 |
-| Namespaces `prod`, `dev` | 2 |
-| StorageClass `harvester-longhorn-1rep` | 2 |
-| Network `prod/service` (UntaggedNetwork on `mgmt`) | 2 |
-| KeyPair `prod/default` | 2 |
-| Image `official-images/sles16` (or SLES cloud image) | 2 |
-| VM `prod/algo-trader-01` | 3 |
-| VM `prod/webserver-prod` | 4 |
-| Cluster network `closed-loop` / NAD `prod/secure-loop-prod` | 5 |
-| Overlay `dev/secure-loop-dev` + subnet | 5 |
-| Snapshot `pre-disaster-backup` | 6 |
-| Template `harvester-public/prod-basic` | 7 |
-| VM `prod/legacy-ledger-vm` | 8 |
+| Namespace `prod`, node labels, network `prod/service` | deploy automation (`custom_scripts`) |
+| Cached image `official-images/Leap-16.0-...` | deploy automation (`custom_scripts`) |
+| NFS export `192.168.122.1:/srv/backups/` | deploy automation (`custom_scripts`) |
+| VMs `prod/webserver-prod`, `prod/daily-batch-processor` | deploy automation (`custom_scripts`) |
+| Import cluster name `harvester` | Exercise 1 |
+| Namespace `dev` | Exercise 2 |
+| StorageClass `harvester-longhorn-1rep` | Exercise 2 |
+| KeyPair `prod/default` | Exercise 2 |
+| Image `official-images/sles16` (or SLES cloud image) | Exercise 2 |
+| VM `prod/algo-trader-01` | Exercise 3 |
+| Cluster network `closed-loop` / NAD `prod/secure-loop-prod` | Exercise 5 |
+| Overlay `dev/secure-loop-dev` + subnet | Exercise 5 |
+| Snapshot `pre-disaster-backup` | Exercise 6 |
+| Template `harvester-public/prod-basic` | Exercise 7 |
+| VM `prod/legacy-ledger-vm` | Bonus (self-hosted only) |
 
 ## Deploy and day-2 (rodeo-cli)
 
