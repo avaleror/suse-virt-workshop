@@ -8,7 +8,7 @@ hide:
   <h1>The Virtualization Rodeo</h1>
   <div class="tagline">Vertex Trust Bank &bull; Harvester HCI &bull; Rancher Prime &bull; deployed with rodeo-cli</div>
 
-  <a href="instructor/host-setup/" class="md-button md-button--primary">Deploy on a host &rarr;</a>
+  <a href="#choose-your-platform" class="md-button md-button--primary">Choose your platform &rarr;</a>
   &nbsp;
   <a href="exercises/01-the-arrival/" class="md-button">Start the lab &rarr;</a>
   &nbsp;
@@ -25,14 +25,41 @@ Vertex Trust Bank is drowning in legacy hypervisor renewal costs. Sarah, the CTO
 
 This workshop is the **self-hosted** twin of SUSE's customer-facing
 [Virtualization Rodeo](https://github.com/avaleror/suse-virt-rodeo). Same story,
-same skills. You build the nested lab on your own KVM host with
+same skills, same 8 exercises regardless of where you deploy it — only the
+infrastructure bring-up step differs per platform, with its own precise
+instructions below, driven by
 [`rodeo-cli`](https://github.com/avaleror/rodeo-cli) instead of joining Instruqt.
 
 ---
 
-## Deploy first
+## Choose your platform
 
-On a bare-metal host with ≥64 GiB RAM and ~1 TB free disk:
+<div class="exercise-grid">
+
+<a href="instructor/host-setup/" class="exercise-card">
+  <div class="ex-number">Bare metal</div>
+  <div class="ex-title">Your own KVM host</div>
+  <div class="ex-time">⏱ 90-150 min</div>
+  <div class="ex-desc">≥64 GiB RAM, ~1 TB free disk, /dev/kvm present. Survives SSH drops via tmux.</div>
+</a>
+
+<a href="instructor/aws-setup/" class="exercise-card">
+  <div class="ex-number">AWS</div>
+  <div class="ex-title">Fresh EC2 host</div>
+  <div class="ex-time">⏱ 30-90 min</div>
+  <div class="ex-desc">No spare bare-metal box needed — rodeo provisions an m8id.8xlarge and deploys onto it.</div>
+</a>
+
+<div class="exercise-card" style="opacity:0.6; cursor:default;">
+  <div class="ex-number">GCP</div>
+  <div class="ex-title">Coming soon</div>
+  <div class="ex-time">⏱ —</div>
+  <div class="ex-desc">Not yet available. Use bare metal or AWS for now.</div>
+</div>
+
+</div>
+
+**Quick start (bare metal):**
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/avaleror/rodeo-cli/main/install.sh | bash
@@ -43,8 +70,9 @@ rodeo up
 ```
 
 `rodeo up` takes **90-150 minutes**, survives SSH drops via tmux, and prints
-Harvester (`:8443`) and Rancher (`:30002`) URLs when done. Full instructor steps:
-[Host setup](instructor/host-setup.md).
+Harvester (`:8443`) and Rancher (`:30002`) URLs when done. Full instructor steps,
+and the AWS equivalent: [Host setup: bare metal](instructor/host-setup.md) ·
+[Host setup: AWS](instructor/aws-setup.md).
 
 ## Lab topology
 

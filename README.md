@@ -1,6 +1,6 @@
 # SUSE Virtualization Workshop
 
-Self-hosted companion to the [SUSE Virtualization Rodeo](https://github.com/avaleror/suse-virt-rodeo). Same Vertex Trust Bank story and eight chapters (plus one self-hosted-only bonus chapter) — but you deploy the lab yourself on a bare-metal KVM host with [rodeo-cli](https://github.com/avaleror/rodeo-cli), instead of joining a pre-built Instruqt sandbox.
+Self-hosted companion to the [SUSE Virtualization Rodeo](https://github.com/avaleror/suse-virt-rodeo). Same Vertex Trust Bank story and eight chapters (plus one self-hosted-only bonus chapter) — but you deploy the lab yourself with [rodeo-cli](https://github.com/avaleror/rodeo-cli), instead of joining a pre-built Instruqt sandbox. Deploy on your own **bare-metal** KVM host or on **AWS** — **GCP support is coming soon**. Each platform has its own precise instructions below.
 
 **Workshop site:** https://avaleror.github.io/suse-virt-workshop/
 
@@ -24,7 +24,7 @@ Harvester is **not** imported into Rancher at deploy time — that is Chapter 1,
 
 ---
 
-## Deploy on a KVM host
+## Deploy on a KVM host (bare metal)
 
 ### 1. Requirements
 
@@ -81,6 +81,31 @@ rodeo clean --all --yes --secrets          # full host reset
 
 ---
 
+## Deploy on AWS instead
+
+No spare 64 GiB bare-metal box? `aws/` deploys the exact same lab on a fresh EC2 host instead — same 8 exercises, same `custom/scripts/` pre-lab automation, only the host differs.
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/avaleror/rodeo-cli/main/install.sh | bash
+git clone https://github.com/avaleror/suse-virt-workshop.git
+cd suse-virt-workshop/aws
+# edit rodeo-plan.yaml: set provider.region and provider.subnet_id
+# to your own AWS account (any VPC with an internet gateway works)
+rodeo up --profile virt-workshop-aws --target aws
+```
+
+Provisions an `m8id.8xlarge` (~$2.22/hr in eu-north-1 at time of writing — check current pricing). No local files are uploaded: rodeo boots the host, then the host bootstraps rodeo-cli and deploys itself, so nothing needs a live SSH session babysat for the ~30-90 minute deploy. No extra IAM beyond EC2 permissions — rodeo creates and scopes its own security group to your current public IP. `aws/rodeo-plan.yaml`'s `resources:`/`versions:` sections describe what gets deployed (kept in sync with rodeo-cli's own bundled profile) — only its `provider:` block (region/subnet/instance size) has a direct effect from here; see the comment at the top of that file for why.
+
+Live-verified end to end (3 nodes Ready, both pre-lab VMs Running, both UIs externally reachable) 2026-09-14. Full instructor steps: [Host setup: AWS](https://avaleror.github.io/suse-virt-workshop/instructor/aws-setup/).
+
+Tear down:
+
+```bash
+rodeo destroy --cloud --yes   # from suse-virt-workshop/aws
+```
+
+---
+
 ## Repo layout
 
 ```
@@ -92,10 +117,13 @@ docs/
   reference/                # Lab overview and quick reference
   instructor/               # Host setup and pre-lab checklist
   lab-guide.md              # Single-file printable guide
-rodeo-plan.yaml             # Plan consumed by rodeo-cli
+rodeo-plan.yaml             # Bare-metal plan consumed by rodeo-cli
 custom/scripts/             # Pre-lab automation: image cache, NFS backup
                              # target, Exercise 4's webserver-prod +
                              # daily-batch-processor (see lab-overview.md)
+aws/                        # AWS deploy variant — rodeo-plan.yaml (region/
+                             # subnet/instance size) + custom/ symlinked to
+                             # the one above
 mkdocs.yml
 ```
 
@@ -114,8 +142,8 @@ Open http://127.0.0.1:8000
 
 | | **suse-virt-rodeo** | **This workshop** |
 |--|---------------------|-------------------|
-| Runtime | Instruqt (pre-built image) | Your bare-metal KVM host |
-| Infra bring-up | Already done in the image | `rodeo up` (~90–150 min), including `custom/scripts/` pre-lab automation |
+| Runtime | Instruqt (pre-built image) | Your own KVM host, or AWS (GCP coming soon) |
+| Infra bring-up | Already done in the image | `rodeo up` (~90–150 min bare metal, ~30–90 min AWS), including `custom/scripts/` pre-lab automation |
 | Lab content | Eight Instruqt chapters | Same eight chapters, adapted for self-host, plus one bonus chapter with no rodeo counterpart |
 | Import Harvester | Chapter 1 / image state | Chapter 1 (plan sets `harvester_auto_import: false`) |
 | Exercise 4 pre-lab state (`webserver-prod`, `daily-batch-processor`) | Baked into the image | Pre-created by `custom/scripts/70-webserver-prod.sh` on every `rodeo up` |

@@ -83,5 +83,6 @@ nav:
     - Quick reference: reference/quick-reference.md
     - Full lab guide (print): lab-guide.md
   - Instructor:
-    - Host setup: instructor/host-setup.md
+    - "Host setup: bare metal": instructor/host-setup.md
+    - "Host setup: AWS": instructor/aws-setup.md
     - Pre-lab checklist: instructor/pre-lab-checklist.md

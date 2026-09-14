@@ -1,0 +1,94 @@
+# aws/rodeo-plan.yaml — deploy this workshop on a fresh AWS EC2 host instead
+# of your own bare-metal KVM box. Same 8 exercises, same custom/scripts/
+# pre-lab automation (symlinked from ../custom) — only the host changes.
+#
+# Fill in provider.region and provider.subnet_id for your own AWS account,
+# then from this directory:
+#
+#   rodeo up --profile virt-workshop-aws --target aws
+#
+# HOW THIS ACTUALLY WORKS (worth knowing before you edit resources/versions
+# below): `rodeo up --target aws` provisions the EC2 host from THIS file's
+# own `provider:` block (region, subnet, instance size) — that part is fully
+# local and real. But the Harvester/Rancher/custom_scripts deploy itself runs
+# entirely on the freshly-provisioned host, which re-seeds its OWN lab
+# directory from rodeo-cli's bundled `virt-workshop-aws` profile by NAME
+# (via `--profile virt-workshop-aws` above) — it does not receive this
+# file over the network. The `resources:`/`versions:`/`network:` sections
+# below are kept identical to that bundled profile on purpose, so what you
+# read here is exactly what gets deployed — but if you want to actually
+# *change* Harvester/Rancher sizing, edit rodeo-cli's own
+# rodeo/data/examples/virt-workshop-aws/rodeo-plan.yaml (and re-verify),
+# not this file. Only `provider:` below has a real effect from here.
+#
+# Needs no extra IAM beyond EC2 (RunInstances/DescribeX/ModifyInstance...):
+# rodeo creates and scopes its own security group to your current public IP
+# unless you set provider.security_group_ids yourself. Live-verified
+# 2026-09-14 end to end (m8id.8xlarge, eu-north-1) — see
+# https://github.com/avaleror/rodeo-cli/tree/main/rodeo/data/examples/virt-workshop-aws
+# for that verification's details.
+#
+# Tear down: rodeo destroy --cloud --yes (from this directory)
+
+name: suse-virt-workshop-aws
+deployment_target: aws
+
+provider:
+  type: aws
+  region: eu-central-1          # <- set to your region
+  subnet_id: subnet-CHANGE-ME   # <- must be in a VPC with an internet gateway
+  instance_tier: recommended    # budget | recommended | performance
+  # instance_type: m8id.8xlarge   # or pin explicitly instead of a tier
+  associate_public_ip: true
+  # security_group_ids: [sg-...] # omit to let rodeo create/manage one,
+  #                               # scoped to this machine's public IP
+
+network:
+  mode: nat
+  vip: "192.168.122.10"
+  rancher_ip: "192.168.122.9"
+  gateway: "192.168.122.1"
+  dns_domain: "vertextrust.bank"
+
+resources:
+  harvester:
+    memory_mib: 24576    # 24 GiB per Harvester node — more headroom than the
+                         # bare-metal profile's 16 GiB, since m8id.8xlarge has
+                         # the RAM to spare. 3x24 + 16 (Rancher) = 88 GiB guest
+                         # RAM, leaving ~35 GiB of ~123 GiB usable for the host.
+    vcpu: 10
+    disk_gb: 500         # 3 nodes x 500 GB + 60 GB (Rancher) = 1560 GB,
+                         # comfortable margin under m8id.8xlarge's single
+                         # ~1.9 TiB NVMe device.
+  rancher:
+    memory_mib: 16384
+    vcpu: 4
+    disk_gb: 60
+
+versions:
+  harvester: "1.8.1"
+  rancher: "2.14.1"
+  k3s: "v1.35.3+k3s1"
+  cert_manager: "v1.20.1"
+
+storage:
+  image_dir: /var/lib/libvirt/images
+  backend: nvme
+
+libvirt:
+  uri: qemu:///system
+  disk_cache: none
+  disk_io: native
+
+ansible:
+  path: null
+  inventory: deployer/inventory.local
+
+# Students import Harvester into Rancher in Exercise 1 (The Arrival).
+harvester_auto_import: false
+
+credentials:
+  harvester_os_password: "??harvester_os_password"
+  harvester_admin_password: "??harvester_admin_password"
+  rancher_admin_password: "??rancher_admin_password"
+  harvester_token: "??harvester_token"

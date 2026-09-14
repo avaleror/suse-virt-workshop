@@ -2,6 +2,8 @@
 
 This workshop deploys on a bare metal Linux host with KVM. These steps cover host prep and initial deploy. Automation is entirely [rodeo-cli](https://github.com/avaleror/rodeo-cli); this repo ships the plan and the lab exercises. Same topology as [suse-virt-rodeo](https://github.com/avaleror/suse-virt-rodeo).
 
+> **No spare bare-metal host?** See [Deploy on AWS instead](https://github.com/avaleror/suse-virt-workshop#deploy-on-aws-instead) in the README — same lab, an EC2 host does the work.
+
 ## Requirements
 
 | Resource | Minimum |
@@ -149,3 +151,4 @@ The `kvm_host` phase partitions, formats, and mounts it before creating VMs.
 - [rodeo-cli Harvester guide](https://github.com/avaleror/rodeo-cli/blob/main/docs/guide-harvester.md)
 - [Bare-metal example](https://github.com/avaleror/rodeo-cli/blob/main/docs/examples/bare-metal.md)
 - [Lab overview](../reference/lab-overview.md)
+- [Deploy on AWS instead](https://github.com/avaleror/suse-virt-workshop#deploy-on-aws-instead) — no bare-metal host needed
