@@ -10,9 +10,19 @@ For a bare-metal host instead, see [Host Setup](host-setup.md).
 |---|---|
 | AWS account | Permissions for EC2 (`RunInstances`, `Describe*`, `ModifyInstanceAttribute`, security groups) — no extra IAM beyond that |
 | VPC/subnet | Any subnet with an internet gateway (public IP reachable) |
-| Instance | `m8id.8xlarge` recommended (32 vCPU / 128 GiB / single ~1.9 TiB NVMe) — [budget/performance tiers also available](https://github.com/avaleror/rodeo-cli/blob/main/rodeo/providers/instance_catalog.py) |
-| Cost | ~$2.22/hr in eu-north-1 at time of writing (check current AWS pricing) — the deploy itself takes ~30-90 min, plus however long you keep it running |
 | Local machine | Just needs `rodeo-cli` installed and AWS credentials configured (`aws configure` / SSO) — no bare-metal resources needed |
+
+### Instance tiers
+
+Set via `provider.instance_tier` in `rodeo-plan.yaml` (default: `recommended`), or pin `provider.instance_type` directly to bypass tiers entirely. Specs below are AWS's own instance-type data (`aws ec2 describe-instance-types`); prices are on-demand Linux, `eu-north-1`, fetched live from the AWS Price List API on 2026-09-14 — **always check current pricing for your region**, these change over time.
+
+| Tier | Instance | vCPU | RAM | Local storage | ~$/hr (eu-north-1) | Notes |
+|---|---|---|---|---|---|---|
+| `budget` | `m7i.16xlarge` | 64 | 256 GiB | EBS only (no instance store) | $3.43 | More vCPU/RAM than `recommended`, but *pricier* here — no local NVMe means EBS carries the Longhorn I/O, which is the actual bottleneck for nested Harvester, not raw CPU/RAM |
+| `recommended` | `m8id.8xlarge` | 32 | 128 GiB | 1× 1900 GB NVMe (single device) | $2.22 | Best fit for this profile's real ~1560 GB need (500 GB × 3 Harvester nodes + 60 GB Rancher) — live-verified end to end 2026-09-14 |
+| `performance` | `m7i.metal-24xl` | 96 | 384 GiB | EBS only (bare metal) | $5.14 | Bare-metal instance — max nested-virtualization performance, for when the extra vCPU/RAM matters more than local NVMe |
+
+The deploy itself takes ~30-90 min on `recommended`; total cost is that plus however long you keep the instance running afterward. `budget` being more expensive than `recommended` is not a typo — pick based on what you're optimizing for, not the label.
 
 Confirm your AWS credentials work before starting:
 
@@ -49,6 +59,8 @@ Then:
 
 ```bash
 rodeo up --profile virt-workshop-aws --target aws
+# or override the tier without editing the file:
+rodeo up --profile virt-workshop-aws --target aws --instance-tier performance
 ```
 
 This will:

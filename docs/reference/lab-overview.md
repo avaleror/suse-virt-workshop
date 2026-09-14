@@ -46,6 +46,8 @@ flowchart TB
 
 **VIP (kube-vip):** `192.168.122.10`, floating, not a node IP.
 
+These are `baremetal/rodeo-plan.yaml`'s numbers. The `aws/` variant runs larger per-node sizing (24 GiB/10 vCPU/500 GB per Harvester node, 16 GiB/4 vCPU/60 GB Rancher) since its recommended `m8id.8xlarge` instance has the headroom to spare — see [Host setup: AWS](../instructor/aws-setup.md#instance-tiers) for the full breakdown.
+
 Harvester installs via **iPXE UEFI network boot**: empty disk → DHCP → `ipxe.efi` (TFTP) → per-node HTTP script → kernel + initrd + squashfs → unattended install. This is the same mechanism the customer Rodeo image was built with.
 
 ---

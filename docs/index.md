@@ -40,14 +40,14 @@ instructions below, driven by
   <div class="ex-number">Bare metal</div>
   <div class="ex-title">Your own KVM host</div>
   <div class="ex-time">⏱ 90-150 min</div>
-  <div class="ex-desc">≥64 GiB RAM, ~1 TB free disk, /dev/kvm present. Survives SSH drops via tmux.</div>
+  <div class="ex-desc">Min: 64 GiB RAM / 32 vCPU / ~1 TB disk. Recommended: 80-96 GiB / 40+ vCPU. /dev/kvm present, survives SSH drops via tmux.</div>
 </a>
 
 <a href="instructor/aws-setup/" class="exercise-card">
   <div class="ex-number">AWS</div>
   <div class="ex-title">Fresh EC2 host</div>
   <div class="ex-time">⏱ 30-90 min</div>
-  <div class="ex-desc">No spare bare-metal box needed — rodeo provisions an m8id.8xlarge and deploys onto it.</div>
+  <div class="ex-desc">3 instance tiers, ~$2.22-5.14/hr. Recommended: m8id.8xlarge (32 vCPU / 128 GiB / 1.9 TB NVMe).</div>
 </a>
 
 <div class="exercise-card" style="opacity:0.6; cursor:default;">

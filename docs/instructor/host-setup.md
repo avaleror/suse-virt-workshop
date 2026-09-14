@@ -6,14 +6,18 @@ This workshop deploys on a bare metal Linux host with KVM. These steps cover hos
 
 ## Requirements
 
-| Resource | Minimum |
-|---|---|
-| OS | SLES 16 / Leap 16 (Ubuntu 22.04+ and Fedora also work via `install-deps`) |
-| RAM | 64 GiB available (~72 GiB total recommended for the `harvester` profile) |
-| vCPU | ~32 free |
-| Disk | ~1050 GiB free in `/var/lib/libvirt/images` (320 GB × 3 Harvester + Rancher + ISO cache) |
-| KVM | `/dev/kvm` present. Nested virt only needed if the host itself is a VM |
-| Network | Internet access during deploy |
+`baremetal/rodeo-plan.yaml` ships one fixed sizing (3× Harvester at 16 GiB/8 vCPU/320 GB + Rancher at 8 GiB/4 vCPU/60 GB = 56 GiB / 28 vCPU / 1020 GB guest total) — there's no separate tier system like AWS's budget/recommended/performance. "Minimum" below is that config with host overhead; "Recommended" is the same config with comfortable margin for the host OS, buffer/cache, and not fighting for CPU during the `cluster` phase's nested-KVM install.
+
+| Resource | Minimum | Recommended |
+|---|---|---|
+| OS | SLES 16 / Leap 16 (Ubuntu 22.04+ and Fedora also work via `install-deps`) | same |
+| RAM | 64 GiB available | 80-96 GiB available |
+| vCPU | ~32 free | ~40+ free |
+| Disk | ~1050 GiB free in `/var/lib/libvirt/images` (320 GB × 3 Harvester + Rancher + ISO cache) | same, or more if you'll create many extra VMs during the exercises |
+| KVM | `/dev/kvm` present. Nested virt only needed if the host itself is a VM | same |
+| Network | Internet access during deploy | same |
+
+If your host has real headroom above the minimum, consider raising `resources.harvester.memory_mib` in `rodeo-plan.yaml` from `16384` toward `24576` (24 GiB/node) before your first `rodeo up` — that's the exact sizing the AWS variant uses once it has RAM to spare, live-verified to leave a comfortable margin rather than just barely fitting.
 
 Confirm readiness:
 

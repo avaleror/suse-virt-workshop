@@ -94,7 +94,17 @@ cd suse-virt-workshop/aws
 rodeo up --profile virt-workshop-aws --target aws
 ```
 
-Provisions an `m8id.8xlarge` (~$2.22/hr in eu-north-1 at time of writing — check current pricing). No local files are uploaded: rodeo boots the host, then the host bootstraps rodeo-cli and deploys itself, so nothing needs a live SSH session babysat for the ~30-90 minute deploy. No extra IAM beyond EC2 permissions — rodeo creates and scopes its own security group to your current public IP. `aws/rodeo-plan.yaml`'s `resources:`/`versions:` sections describe what gets deployed (kept in sync with rodeo-cli's own bundled profile) — only its `provider:` block (region/subnet/instance size) has a direct effect from here; see the comment at the top of that file for why.
+Three instance tiers (`provider.instance_tier` in `rodeo-plan.yaml`, or `--instance-tier` on the CLI) — real AWS specs, prices are on-demand Linux in `eu-north-1` as of 2026-09-14, always check current pricing:
+
+| Tier | Instance | vCPU | RAM | Local storage | ~$/hr |
+|---|---|---|---|---|---|
+| `budget` | `m7i.16xlarge` | 64 | 256 GiB | EBS only | $3.43 |
+| `recommended` (default) | `m8id.8xlarge` | 32 | 128 GiB | 1× 1900 GB NVMe | $2.22 |
+| `performance` | `m7i.metal-24xl` | 96 | 384 GiB | EBS only (bare metal) | $5.14 |
+
+`budget` costing more than `recommended` isn't a typo — `m8id.8xlarge`'s local NVMe matters more for nested Harvester's I/O than `m7i.16xlarge`'s extra vCPU/RAM. Full breakdown: [Host setup: AWS](https://avaleror.github.io/suse-virt-workshop/instructor/aws-setup/#instance-tiers).
+
+No local files are uploaded: rodeo boots the host, then the host bootstraps rodeo-cli and deploys itself, so nothing needs a live SSH session babysat for the ~30-90 minute deploy. No extra IAM beyond EC2 permissions — rodeo creates and scopes its own security group to your current public IP. `aws/rodeo-plan.yaml`'s `resources:`/`versions:` sections describe what gets deployed (kept in sync with rodeo-cli's own bundled profile) — only its `provider:` block (region/subnet/instance size/tier) has a direct effect from here; see the comment at the top of that file for why.
 
 Live-verified end to end (3 nodes Ready, both pre-lab VMs Running, both UIs externally reachable) 2026-09-14. Full instructor steps: [Host setup: AWS](https://avaleror.github.io/suse-virt-workshop/instructor/aws-setup/).
 
