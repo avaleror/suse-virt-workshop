@@ -47,7 +47,7 @@ instructions below, driven by
   <div class="ex-number">AWS</div>
   <div class="ex-title">Fresh EC2 host</div>
   <div class="ex-time">⏱ 30-90 min</div>
-  <div class="ex-desc">3 instance tiers, ~$2.22-5.14/hr. Recommended: m8id.8xlarge (32 vCPU / 128 GiB / 1.9 TB NVMe).</div>
+  <div class="ex-desc">~$2.22-5.14/hr. Recommended: m8id.8xlarge (32 vCPU / 128 GiB / 1.9 TB NVMe).</div>
 </a>
 
 <div class="exercise-card" style="opacity:0.6; cursor:default;">

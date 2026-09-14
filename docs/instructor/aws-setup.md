@@ -18,11 +18,10 @@ Set via `provider.instance_tier` in `rodeo-plan.yaml` (default: `recommended`), 
 
 | Tier | Instance | vCPU | RAM | Local storage | ~$/hr (eu-north-1) | Notes |
 |---|---|---|---|---|---|---|
-| `budget` | `m7i.16xlarge` | 64 | 256 GiB | EBS only (no instance store) | $3.43 | More vCPU/RAM than `recommended`, but *pricier* here — no local NVMe means EBS carries the Longhorn I/O, which is the actual bottleneck for nested Harvester, not raw CPU/RAM |
 | `recommended` | `m8id.8xlarge` | 32 | 128 GiB | 1× 1900 GB NVMe (single device) | $2.22 | Best fit for this profile's real ~1560 GB need (500 GB × 3 Harvester nodes + 60 GB Rancher) — live-verified end to end 2026-09-14 |
 | `performance` | `m7i.metal-24xl` | 96 | 384 GiB | EBS only (bare metal) | $5.14 | Bare-metal instance — max nested-virtualization performance, for when the extra vCPU/RAM matters more than local NVMe |
 
-The deploy itself takes ~30-90 min on `recommended`; total cost is that plus however long you keep the instance running afterward. `budget` being more expensive than `recommended` is not a typo — pick based on what you're optimizing for, not the label.
+The deploy itself takes ~30-90 min on `recommended`; total cost is that plus however long you keep the instance running afterward. There is no `budget` tier for this 3-node profile: an EBS-only, more-vCPU/RAM instance (`m7i.16xlarge`) actually costs *more* than `recommended` here, since local NVMe matters more for nested Harvester's Longhorn I/O than raw compute — so it isn't a real budget option. `rodeo-cli` ships a genuinely cheaper path as a separate profile (`virt-workshop-aws-2n`, 2-node Harvester on a smaller instance) if you want one; it isn't wired into this repo's docs/deploy flow.
 
 Confirm your AWS credentials work before starting:
 
@@ -52,7 +51,7 @@ provider:
   type: aws
   region: eu-central-1          # <- your region
   subnet_id: subnet-CHANGE-ME   # <- must be in a VPC with an internet gateway
-  instance_tier: recommended    # budget | recommended | performance
+  instance_tier: recommended    # recommended | performance (no budget tier — see below)
 ```
 
 Then:
