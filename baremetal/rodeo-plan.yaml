@@ -1,15 +1,20 @@
-# rodeo-plan.yaml — SUSE Virtualization Workshop
+# baremetal/rodeo-plan.yaml — deploy this workshop on your own bare-metal KVM
+# host. One sibling directory per deploy target (baremetal/ here, aws/, and
+# gcp/ once it lands) — same 8 exercises regardless of which one you use,
+# only infra bring-up differs. See ../aws/rodeo-plan.yaml for that variant.
+#
 # Deploy from this directory:  rodeo up
 # Secrets live in ~/.rodeo/secrets.yaml (chmod 600, never committed).
 #
 # Same topology as the customer-facing suse-virt-rodeo Instruqt lab,
 # brought up from scratch on a host you own.
 #
-# custom/scripts/ (picked up automatically from this directory — see
-# docs/reference/lab-overview.md#custom-scripts) pre-creates the same
-# pre-lab state the Instruqt image bakes in: a cached VM image, an NFS
-# backup target, and Exercise 4's webserver-prod/daily-batch-processor
-# pair. Runs on every `rodeo up` as the deploy's last phase (idempotent).
+# custom/scripts/ (symlinked from ../custom — the single copy shared by
+# every platform directory; see docs/reference/lab-overview.md#custom-scripts)
+# pre-creates the same pre-lab state the Instruqt image bakes in: a cached
+# VM image, an NFS backup target, and Exercise 4's
+# webserver-prod/daily-batch-processor pair. Runs on every `rodeo up` as the
+# deploy's last phase (idempotent).
 
 name: suse-virt-workshop
 

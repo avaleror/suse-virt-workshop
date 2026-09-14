@@ -46,9 +46,9 @@ curl -fsSL https://raw.githubusercontent.com/avaleror/rodeo-cli/main/install.sh 
 
 ```bash
 git clone https://github.com/avaleror/suse-virt-workshop.git
-cd suse-virt-workshop
+cd suse-virt-workshop/baremetal
 rodeo doctor                  # confirm the host can run the harvester profile
-rodeo up                      # uses this repo's rodeo-plan.yaml
+rodeo up                      # uses this directory's rodeo-plan.yaml
 ```
 
 `rodeo up` self-escalates with sudo, generates `~/.rodeo/secrets.yaml`, wraps the deploy in tmux (`rodeo-harvester` / profile name), and prints login URLs when finished. Typical time: **90–150 minutes**.
@@ -117,13 +117,15 @@ docs/
   reference/                # Lab overview and quick reference
   instructor/               # Host setup and pre-lab checklist
   lab-guide.md              # Single-file printable guide
-rodeo-plan.yaml             # Bare-metal plan consumed by rodeo-cli
 custom/scripts/             # Pre-lab automation: image cache, NFS backup
                              # target, Exercise 4's webserver-prod +
-                             # daily-batch-processor (see lab-overview.md)
-aws/                        # AWS deploy variant — rodeo-plan.yaml (region/
-                             # subnet/instance size) + custom/ symlinked to
-                             # the one above
+                             # daily-batch-processor (see lab-overview.md) —
+                             # the single copy every platform below symlinks to
+baremetal/                  # Deploy on your own KVM host: rodeo-plan.yaml +
+                             # custom -> ../custom
+aws/                        # Deploy on AWS: rodeo-plan.yaml (region/subnet/
+                             # instance size) + custom -> ../custom
+                             # (gcp/ coming soon, same shape)
 mkdocs.yml
 ```
 

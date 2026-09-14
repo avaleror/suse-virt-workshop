@@ -14,7 +14,7 @@ Self-hosted twin of [suse-virt-rodeo](https://github.com/avaleror/suse-virt-rode
 ```bash
 curl -fsSL https://raw.githubusercontent.com/avaleror/rodeo-cli/main/install.sh | bash
 git clone https://github.com/avaleror/suse-virt-workshop.git
-cd suse-virt-workshop
+cd suse-virt-workshop/baremetal   # or aws/ — see README for the AWS path
 rodeo doctor
 rodeo up
 ```

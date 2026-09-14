@@ -41,7 +41,7 @@ curl -fsSL https://raw.githubusercontent.com/avaleror/rodeo-cli/main/install.sh 
 
 ```bash
 git clone https://github.com/avaleror/suse-virt-workshop.git
-cd suse-virt-workshop
+cd suse-virt-workshop/baremetal
 rodeo up
 ```
 

@@ -46,9 +46,9 @@
 ## Deploy and day-2 (rodeo-cli)
 
 ```bash
-# First-time deploy (from this repo)
+# First-time deploy (from this repo; use aws/ instead of baremetal/ for AWS)
 curl -fsSL https://raw.githubusercontent.com/avaleror/rodeo-cli/main/install.sh | bash
-cd suse-virt-workshop
+cd suse-virt-workshop/baremetal
 rodeo doctor
 rodeo up
 
