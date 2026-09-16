@@ -40,7 +40,7 @@ Expect a Harvester API version and `collection` from Rancher. `rodeo status` sho
 In the Harvester UI (`https://<host-ip>:8443`):
 
 1. Left sidebar → **Settings** (gear).
-2. Find **cluster-registration-url** → edit → paste the URL → **Save**.
+2. Find **cluster-registration-url** → edit → paste the URL → check **Insecure Skip TLS Verify** (Rancher's cert is self-signed) → **Save**.
 
 Wait 1-3 minutes. In Rancher → Virtualization Management the cluster moves `Pending` → `Waiting` → **Active**.
 
