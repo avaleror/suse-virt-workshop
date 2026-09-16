@@ -84,20 +84,11 @@ sudo tail -f /root/.rodeo/logs/aws-up.log
 
 ### `rodeo ssh <vm>` needs `sudo` on AWS
 
-The exercises (starting with `rodeo ssh harvester1` in Exercise 1) were written for the bare-metal deploy, where they work without `sudo`. On an AWS-deployed host, the same command fails as `ec2-user`:
-
-```
-✗  /root/.ssh/id_ed25519 is the key nested VMs trust, but it isn't readable as
-   the current user — re-run with sudo (e.g. `sudo rodeo ssh <vm>`).
-```
-
-This is expected, not a bug: the key the nested VMs trust is root's own personal key (generated during the AWS bootstrap), not the `~/.rodeo/ssh/` key `ec2-user` owns — a real security boundary, not an oversight. Live-verified 2026-09-15/16 on two separate deploys. Just prefix with `sudo`:
-
 ```bash
 sudo rodeo ssh harvester1
 ```
 
-`rodeo status` and other read-only commands still work fine without `sudo` (that's the ownership fix from this profile's own history — see the repo's git log if curious).
+`rodeo status` and other read-only commands don't need `sudo`.
 
 ## harvester_auto_import stays false
 
