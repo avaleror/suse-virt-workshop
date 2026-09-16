@@ -6,6 +6,8 @@
 
 ---
 
+![Exercise 2](../assets/ch2-header.jpg)
+
 Sarah takes you into the subterranean datacenter. One side of the room is containerized APIs; the other still runs heavy ledgers. Both will share the same SUSE Virtualization fabric. First you map the nodes, carve workspaces, set storage policy, and build the production service network the later exercises need.
 
 > **Tip:** The customer Rodeo image pre-creates `prod`, `prod/service`, and an SSH key. This lab's deploy automation now pre-creates `prod` and `prod/service` too, plus node labels. So 2.2 and 2.5 below are a confirm, not a create. You still register your own SSH key in 2.6, since the automation only embeds it directly into pre-created VMs' cloud-init, not into a reusable Harvester `SSHKey` object.
@@ -16,6 +18,8 @@ In the Harvester UI → **Hosts**:
 
 1. Open one host and review reserved vs used CPU/memory, IP, and disks.
 2. Each disk you see feeds the Longhorn pool that will hold VM volumes.
+
+![Inspecting host topology](../assets/ch2-task1-hosts.gif)
 
 From the KVM host terminal:
 
@@ -38,11 +42,15 @@ Replicas on disk are how Longhorn keeps VM data alive across node loss.
 |------|
 | `dev` |
 
+![Creating a namespace](../assets/ch2-task2-namespaces.gif)
+
 `prod` holds bank production VMs; `dev` is for cheaper sandboxes.
 
 ## 2.3 Understand the default storage class
 
 **Advanced → Storage Classes** → open `harvester-longhorn`.
+
+![Reviewing the default storage class](../assets/ch2-task3-longhorn.gif)
 
 Note **Number Of Replicas = 3**. Production ledgers want that. Disposable quant sandboxes do not. Replica count is a policy, not a law of physics.
 
@@ -65,6 +73,12 @@ numberOfReplicas: "1"
 staleReplicaTimeout: "30"
 migratable: "true"
 ```
+
+![Creating a cost-tier storage class](../assets/ch2-task4-storageclass.gif)
+
+> **Optional:** everything above is also visible through the Kubernetes API. Open the Harvester cluster terminal and run `kubectl get storageclass` to see both tiers as API objects.
+>
+> ![Bonus: storage classes from the terminal](../assets/ch2-bonus-drills.gif)
 
 ## 2.5 Confirm the production VM network
 

@@ -5,6 +5,8 @@
 
 ---
 
+![Exercise 1](../assets/ch1-header.jpg)
+
 Vertex Trust Bank is drowning in legacy hypervisor costs. Sarah, the CTO, hands you a fresh **SUSE Virtualization** (Harvester) cluster and a Rancher Prime instance that do not know about each other yet. Your first job: connect them, tour the UIs, and confirm you can drive the platform from a terminal.
 
 After `rodeo up`, Harvester and Rancher are up; import is intentionally left for you. Passwords are in `~/.rodeo/secrets.yaml` on the KVM host (`harvester_admin_password`, `rancher_admin_password`).
@@ -42,6 +44,8 @@ In the Harvester UI (`https://<host-ip>:8443`):
 1. Left sidebar → **Settings** (gear).
 2. Find **cluster-registration-url** → edit → paste the URL → check **Insecure Skip TLS Verify** (Rancher's cert is self-signed) → **Save**.
 
+![Importing Harvester into Rancher](../assets/ch1-import-harvester.gif)
+
 Wait 1-3 minutes. In Rancher → Virtualization Management the cluster moves `Pending` → `Waiting` → **Active**.
 
 > **Important:** the cluster name must be exactly `harvester`. Later exercises assume it.
@@ -49,6 +53,8 @@ Wait 1-3 minutes. In Rancher → Virtualization Management the cluster moves `Pe
 ## 1.3 Tour the SUSE Virtualization dashboard
 
 Open the Harvester UI (directly or via Rancher → Virtualization Management → **harvester**).
+
+![Touring the SUSE Virtualization dashboard](../assets/ch1-connect-to-cluster.gif)
 
 On the **Dashboard**, confirm:
 
@@ -79,6 +85,8 @@ kubectl get nodes
 kubectl get pods -n harvester-system | grep -v Completed
 exit
 ```
+
+![Terminal access to the cluster](../assets/ch1-longhorn-ui.gif)
 
 All three nodes should be `Ready`. Core Harvester pods should be running.
 

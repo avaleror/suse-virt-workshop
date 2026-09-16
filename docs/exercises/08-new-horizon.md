@@ -5,6 +5,8 @@
 
 ---
 
+![Exercise 8](../assets/ch8-header.jpg)
+
 The datacenter is quiet. Vertex Trust Bank runs on SUSE Virtualization end to end: containers and ledgers on one fabric, storage distributed, networks software-defined, licensing no longer a ransom note.
 
 ## 8.1 What you mastered

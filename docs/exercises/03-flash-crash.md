@@ -6,11 +6,15 @@
 
 ---
 
+![Exercise 3](../assets/ch3-header.jpg)
+
 Asian markets are melting down. The quants need a calculation engine **now**. You will provision a fully configured VM (disk, secondary volume, production network, SSH key, cloud-init, fixed IP) in one pass.
 
 ## 3.1 Confirm the OS image
 
 **Images** - confirm your Exercise 2 cloud image is **Active** (for example `official-images/sles16` or the Leap Micro image you uploaded).
+
+![Confirming the OS image](../assets/ch3-task1-verify-image.gif)
 
 ## 3.2 Create `algo-trader-01`
 
@@ -68,9 +72,13 @@ ethernets:
 
 **Node Scheduling (optional):** run on nodes matching label `stage=prod` only if you labeled hosts; otherwise leave default (any node).
 
+![Provisioning the VM](../assets/ch3-task2-provision-vm.gif)
+
 Click **Create**. Wait until the VM is **Running** and shows an IP.
 
 ## 3.5 Web console and SSH
+
+![Opening the web console](../assets/ch3-task3-web-console.gif)
 
 1. Open the VM → **Console** and confirm login / cloud-init finished.
 2. From the KVM host:

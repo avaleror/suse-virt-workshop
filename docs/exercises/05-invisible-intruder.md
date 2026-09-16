@@ -6,6 +6,8 @@
 
 ---
 
+![Exercise 5](../assets/ch5-header.jpg)
+
 Someone is probing lateral movement from a compromised app tier toward the ledger. You will build an isolated production path on a dedicated NIC fabric and a cheaper overlay vault for development, then show how to attach VMs.
 
 > **Note:** Nested Harvester nodes from rodeo-cli typically expose multiple virtio NICs. This exercise uses `ens5` as the uplink for the closed-loop cluster network. Confirm the interface name under **Hosts → node → Network** and adjust if your lab shows `enp*s*` or similar.
@@ -25,6 +27,8 @@ On the `closed-loop` row → **Create Network Configuration** (uplink):
 | Name | `closed-loop` |
 | Uplink NICs | `ens5` (or the spare NIC on your nodes) |
 
+![Creating the closed-loop cluster network](../assets/ch5-task1a-closed-loop.gif)
+
 Then **Virtual Machine Networks → Create**:
 
 | Field | Value |
@@ -33,6 +37,8 @@ Then **Virtual Machine Networks → Create**:
 | Name | `secure-loop-prod` |
 | Type | `UntaggedNetwork` |
 | Cluster Network | `closed-loop` |
+
+![Creating the production VM network](../assets/ch5-task1b-secure-loop-prod.gif)
 
 Confirm `prod/secure-loop-prod` is **Active**.
 
@@ -46,6 +52,8 @@ Confirm `prod/secure-loop-prod` is **Active**.
 | Name | `secure-loop-dev` |
 | Type | `OverlayNetwork` |
 
+![Creating the development overlay network](../assets/ch5-task2a-secure-loop-dev.gif)
+
 **Networks → Virtual Private Cloud** → on `ovn-cluster` → **Create Subnet**:
 
 | Field | Value |
@@ -56,6 +64,8 @@ Confirm `prod/secure-loop-prod` is **Active**.
 | Gateway IP | `192.168.32.1` |
 | DHCP | Enabled |
 | Private Subnet | Enabled |
+
+![Creating the development VPC subnet](../assets/ch5-task2b-secure-vpc-dev.gif)
 
 VMs on `dev/secure-loop-dev` only talk to peers on that overlay.
 
@@ -68,6 +78,8 @@ Pick a non-critical VM (for example `daily-batch-processor`):
 3. **Stop** the VM if required, then **Start** / **Restart** so the NIC change applies.
 
 > **Important:** Hot-plug of network changes is limited. Stopping first is the reliable path.
+
+![Attaching a VM to the new network](../assets/ch5-task3-webserver-secure-network.gif)
 
 You have shown the bank how production rides a dedicated fabric and how development gets isolation without new cables.
 

@@ -6,6 +6,8 @@
 
 ---
 
+![Exercise 7](../assets/ch7-header.jpg)
+
 Markets are in freefall. The Head of Quant needs the calculation fleet scaled from one engine to many, identical machines, on demand. Forge a golden template and stamp them out.
 
 ## 7.1 Forge the golden template
@@ -23,6 +25,8 @@ Markets are in freefall. The Head of Quant needs the calculation fleet scaled fr
 | Network | `prod/service` |
 | Label | `stage=prod` |
 | User Data Template | `prod/prod` (if present) |
+
+![Forging the golden template](../assets/ch7-task1-golden-template.gif)
 
 **Create**.
 
@@ -47,11 +51,15 @@ Create two more from the same template:
 | `calc-engine-04` |
 | `calc-engine-05` |
 
+![Scaling the fleet under pressure](../assets/ch7-task2-scale-fleet.gif)
+
 Confirm five identical engines in `prod`.
 
 ## 7.4 Stand the fleet down
 
 When the spike passes, delete `calc-engine-04` and `calc-engine-05` (and optionally the rest) so capacity returns to the bank. The **template** remains. The next spike is a few clicks, not a ticket queue.
+
+![Standing the fleet down](../assets/ch7-task3-stand-down-fleet.gif)
 
 ---
 
