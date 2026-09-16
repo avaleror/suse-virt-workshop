@@ -40,7 +40,9 @@ rodeo ssh harvester1 "kubectl get network-attachment-definitions.k8s.cni.cncf.io
 showmount -e <host-ip>   # expect /srv/backups
 ```
 
-Exercise 1 is the import; Exercises 2-7 (and the optional bonus) build namespaces, networks, images, and VMs on top of what deploy automation pre-creates. That pre-created state — `prod` namespace, node labels, `prod/service` network, the cached VM image, the NFS backup target, and the `webserver-prod`/`daily-batch-processor` pair — mirrors what the Instruqt Rodeo image bakes in, so Exercises 4 and 6 start from parity with the customer-facing track instead of asking the student to build those foundations by hand. See [Lab overview → custom_scripts](../reference/lab-overview.md#custom-scripts) for what each script does.
+Exercise 1 is the import. Exercises 2-7 (and the optional bonus) build namespaces, networks, images, and VMs on top of what deploy automation pre-creates.
+
+That pre-created state (`prod` namespace, node labels, `prod/service` network, the cached VM image, the NFS backup target, and the `webserver-prod`/`daily-batch-processor` pair) mirrors what the Instruqt Rodeo image bakes in. So Exercises 4 and 6 start from parity with the customer-facing track instead of asking the student to build those foundations by hand. See [Lab overview: custom_scripts](../reference/lab-overview.md#custom-scripts) for what each script does.
 
 ## Timing notes
 
@@ -70,7 +72,7 @@ Exercise 1 is the import; Exercises 2-7 (and the optional bonus) build namespace
 - **`sudo rodeo` → command not found:** do not wrap day-2 commands in sudo. `rodeo up` / `rodeo deploy` self-escalate. If you must use sudo, call the full path (`sudo /usr/local/bin/rodeo …`).
 - **SSH drops mid-deploy:** re-attach with `tmux attach -t rodeo-harvester`. Do not start a second deploy while one is running.
 - **Import already done:** if Virtualization Management already lists `harvester`, skip Exercise 1 import steps or `rodeo clean --yes && rodeo up` for a clean start.
-- **`webserver-prod`/`daily-batch-processor` missing or `ErrorUnschedulable`:** check `custom_scripts` ran (`rodeo deploy --from custom_scripts` to re-run just that phase) — it needs outbound internet access on first run to download the cached image (~308 MiB from `download.opensuse.org`); an air-gapped host will fail here.
+- **`webserver-prod`/`daily-batch-processor` missing or `ErrorUnschedulable`:** check `custom_scripts` ran (`rodeo deploy --from custom_scripts` to re-run just that phase). It needs outbound internet access on first run to download the cached image (~308 MiB from `download.opensuse.org`), so an air-gapped host will fail here.
 - **`showmount -e <host-ip>` shows nothing:** `custom_scripts`' NFS step needs a package manager it recognizes (zypper/apt/dnf); an unsupported distro will fail this step non-fatally (rest of the lab still works, Exercise 6.5 falls back to manual setup).
 
 ## Day-2 ops cheat sheet

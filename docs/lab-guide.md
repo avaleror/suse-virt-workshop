@@ -14,7 +14,7 @@ Self-hosted twin of [suse-virt-rodeo](https://github.com/avaleror/suse-virt-rode
 ```bash
 curl -fsSL https://raw.githubusercontent.com/avaleror/rodeo-cli/main/install.sh | bash
 git clone https://github.com/avaleror/suse-virt-workshop.git
-cd suse-virt-workshop/baremetal   # or aws/ — see README for the AWS path
+cd suse-virt-workshop/baremetal   # or aws/, see README for the AWS path
 rodeo doctor
 rodeo up
 ```
@@ -53,7 +53,7 @@ Create VM `prod/algo-trader-01`: 2 CPU / 2 GiB, SSH `prod/default`, label `stage
 
 ## Exercise 4: The Rising Tide (25 min)
 
-1. `webserver-prod` and `daily-batch-processor` are already running on `prod/service` (deploy-time automation) — confirm both and note `webserver-prod`'s node.
+1. `webserver-prod` and `daily-batch-processor` are already running on `prod/service` (deploy-time automation). Confirm both and note `webserver-prod`'s node.
 2. Pause the batch VM; `ping` the gateway IP; leave it running.
 3. Migrate `webserver-prod` to another node; confirm ping/uptime survive.
 4. Unpause batch; put the old node in **Maintenance Mode**; watch evacuation.
@@ -70,7 +70,7 @@ Create VM `prod/algo-trader-01`: 2 CPU / 2 GiB, SSH `prod/default`, label `stage
 1. On `transaction-ledger` (create if needed): write `ledger.txt`, snapshot `pre-disaster-backup`, delete the file.
 2. Restore snapshot to new VM `ledger-staging-verify`; verify file.
 3. Power off prod → Restore snapshot → power on → verify.
-4. Attach the **backup-target** NFS setting to `192.168.122.1:/srv/backups/` — already exported by deploy-time automation, no host setup needed.
+4. Attach the **backup-target** NFS setting to `192.168.122.1:/srv/backups/`. Already exported by deploy-time automation, no host setup needed.
 5. Create a recurring backup/snapshot schedule.
 
 ## Exercise 7: The Stampede (25 min)
@@ -82,9 +82,9 @@ Create VM `prod/algo-trader-01`: 2 CPU / 2 GiB, SSH `prod/default`, label `stage
 
 Review the skill table; bookmark SUSE Virtualization docs; tear down with `rodeo clean --yes` when finished.
 
-## Bonus: The Final Showdown (25 min, self-hosted only — no rodeo counterpart)
+## Bonus: The Final Showdown (25 min, self-hosted only, no rodeo counterpart)
 
-1. Open **Advanced → Migration → Sources** (empty unless you point it at a real legacy hypervisor — learn the form).
+1. Open **Advanced → Migration → Sources** (empty unless you point it at a real legacy hypervisor. Learn the form.)
 2. Create stand-in `legacy-ledger-vm` on `prod/service`.
 3. `systemctl enable --now qemu-guest-agent` inside the guest.
 4. Snapshot `post-migration-baseline`; live-migrate once.

@@ -1,6 +1,8 @@
 # Host Setup: AWS
 
-Deploy this workshop on a fresh AWS EC2 host instead of your own bare-metal box. Same 8 exercises, same [`custom/scripts/`](../reference/lab-overview.md#custom-scripts) pre-lab automation — only the host changes. Automation is entirely [rodeo-cli](https://github.com/avaleror/rodeo-cli); this repo's `aws/` directory ships the plan.
+Deploy this workshop on a fresh AWS EC2 host instead of your own bare-metal box. Same 8 exercises, same [`custom/scripts/`](../reference/lab-overview.md#custom-scripts) pre-lab automation. Only the host changes.
+
+Automation is entirely [rodeo-cli](https://github.com/avaleror/rodeo-cli). This repo's `aws/` directory ships the plan.
 
 For a bare-metal host instead, see [Host Setup](host-setup.md).
 
@@ -8,20 +10,24 @@ For a bare-metal host instead, see [Host Setup](host-setup.md).
 
 | Resource | Value |
 |---|---|
-| AWS account | Permissions for EC2 (`RunInstances`, `Describe*`, `ModifyInstanceAttribute`, security groups) — no extra IAM beyond that |
+| AWS account | Permissions for EC2 (`RunInstances`, `Describe*`, `ModifyInstanceAttribute`, security groups). No extra IAM needed. |
 | VPC/subnet | Any subnet with an internet gateway (public IP reachable) |
-| Local machine | Just needs `rodeo-cli` installed and AWS credentials configured (`aws configure` / SSO) — no bare-metal resources needed |
+| Local machine | Just `rodeo-cli` installed and AWS credentials configured (`aws configure` / SSO). No bare-metal resources needed. |
 
 ### Instance tiers
 
-Set via `provider.instance_tier` in `rodeo-plan.yaml` (default: `recommended`), or pin `provider.instance_type` directly to bypass tiers entirely. Specs below are AWS's own instance-type data (`aws ec2 describe-instance-types`); prices are on-demand Linux, `eu-north-1`, fetched live from the AWS Price List API on 2026-09-14 — **always check current pricing for your region**, these change over time.
+Set via `provider.instance_tier` in `rodeo-plan.yaml` (default: `recommended`), or pin `provider.instance_type` directly to skip tiers entirely. Specs below come from AWS's own instance-type data (`aws ec2 describe-instance-types`). Prices are on-demand Linux, `eu-north-1`, pulled live from the AWS Price List API on 2026-09-14.
+
+**Always check current pricing for your region.** These change over time.
 
 | Tier | Instance | vCPU | RAM | Local storage | ~$/hr (eu-north-1) | Notes |
 |---|---|---|---|---|---|---|
-| `recommended` | `m8id.8xlarge` | 32 | 128 GiB | 1× 1900 GB NVMe (single device) | $2.22 | Best fit for this profile's real ~1560 GB need (500 GB × 3 Harvester nodes + 60 GB Rancher) — live-verified end to end 2026-09-14 |
-| `performance` | `m7i.metal-24xl` | 96 | 384 GiB | EBS only (bare metal) | $5.14 | Bare-metal instance — max nested-virtualization performance, for when the extra vCPU/RAM matters more than local NVMe |
+| `recommended` | `m8id.8xlarge` | 32 | 128 GiB | 1× 1900 GB NVMe (single device) | $2.22 | Best fit for this profile's real ~1560 GB need (500 GB × 3 Harvester nodes + 60 GB Rancher). Live-verified end to end 2026-09-14. |
+| `performance` | `m7i.metal-24xl` | 96 | 384 GiB | EBS only (bare metal) | $5.14 | Bare-metal instance for max nested-virtualization performance, when extra vCPU/RAM matters more than local NVMe |
 
-The deploy itself takes ~30-90 min on `recommended`; total cost is that plus however long you keep the instance running afterward. There is no `budget` tier for this 3-node profile: an EBS-only, more-vCPU/RAM instance (`m7i.16xlarge`) actually costs *more* than `recommended` here, since local NVMe matters more for nested Harvester's Longhorn I/O than raw compute — so it isn't a real budget option. `rodeo-cli` ships a genuinely cheaper path as a separate profile (`virt-workshop-aws-2n`, 2-node Harvester on a smaller instance) if you want one; it isn't wired into this repo's docs/deploy flow.
+The deploy itself takes 30-90 minutes on `recommended`. Total cost is that plus however long you keep the instance running afterward.
+
+There's no `budget` tier for this 3-node profile. An EBS-only, more-vCPU/RAM instance (`m7i.16xlarge`) actually costs *more* than `recommended` here, since local NVMe matters more for nested Harvester's Longhorn I/O than raw compute. So it isn't a real budget option. `rodeo-cli` ships a genuinely cheaper path as a separate profile (`virt-workshop-aws-2n`, 2-node Harvester on a smaller instance) if you want one, but it isn't wired into this repo's docs or deploy flow.
 
 Confirm your AWS credentials work before starting:
 
@@ -35,7 +41,7 @@ aws sts get-caller-identity
 curl -fsSL https://raw.githubusercontent.com/avaleror/rodeo-cli/main/install.sh | bash
 ```
 
-Unlike the bare-metal path, this installs on **your laptop**, not the lab host — rodeo-cli here acts as the control plane that provisions EC2, then the EC2 host bootstraps its own copy of rodeo-cli to actually deploy.
+Unlike the bare-metal path, this installs on **your laptop**, not the lab host. rodeo-cli here acts as the control plane: it provisions EC2, then the EC2 host bootstraps its own copy of rodeo-cli to actually deploy.
 
 ## Deploy this workshop
 
@@ -51,7 +57,7 @@ provider:
   type: aws
   region: eu-central-1          # <- your region
   subnet_id: subnet-CHANGE-ME   # <- must be in a VPC with an internet gateway
-  instance_tier: recommended    # recommended | performance (no budget tier — see below)
+  instance_tier: recommended    # recommended | performance (no budget tier, see below)
 ```
 
 Then:
@@ -70,9 +76,9 @@ This will:
 4. Drive the full pipeline remotely: `kvm_host → vms → pxe_server → cluster → rancher → finalise → custom_scripts`
 5. Print Harvester / Rancher URLs and where to find passwords
 
-**Typical time:** 30-90 minutes (faster than bare-metal — AWS's NVMe and consistent CPU generation help). No tmux needed: the local `rodeo up` process holds the connection until the remote deploy finishes.
+**Typical time:** 30-90 minutes. Faster than bare-metal, thanks to AWS's NVMe and consistent CPU generation. No tmux needed: the local `rodeo up` process holds the connection until the remote deploy finishes.
 
-> **Known limitation:** on a very long remote deploy, the SSH connection between your machine and the EC2 host can occasionally drop silently (a network-level timeout, not a rodeo-cli bug). If `rodeo up` seems to hang with no new output for well past its usual phase timing, check whether the process is still alive; if the connection died, SSH into the host directly and check `rodeo status` — phases already completed are cached and won't re-run, so you can resume cleanly rather than starting over.
+> **Known limitation:** on a very long remote deploy, the SSH connection between your machine and the EC2 host can occasionally drop silently. That's a network-level timeout, not a rodeo-cli bug. If `rodeo up` seems to hang with no new output for well past its usual phase timing, check whether the process is still alive. If the connection died, SSH into the host directly and check `rodeo status`. Phases already completed are cached and won't re-run, so you can resume cleanly instead of starting over.
 
 ### Watch progress (from a second terminal)
 
@@ -116,7 +122,7 @@ curl -sk https://<host-ip>:8443/v1 | jq -r '.apiVersion'
 curl -sk https://<host-ip>:30002/v3 | jq -r '.type'
 ```
 
-See the [pre-lab checklist](pre-lab-checklist.md) for the full gate (bare-metal-focused, but the verification steps apply here too).
+See the [pre-lab checklist](pre-lab-checklist.md) for the full gate. It's written with bare-metal in mind, but the verification steps apply here too.
 
 ## Hand students
 
@@ -125,12 +131,12 @@ See the [pre-lab checklist](pre-lab-checklist.md) for the full gate (bare-metal-
 | Harvester UI | `https://<host-ip>:8443` |
 | Rancher UI | `https://<host-ip>:30002` |
 | Username | `admin` |
-| Passwords | `harvester_admin_password` and `rancher_admin_password` — `ssh ec2-user@<host-ip> "cat ~/.rodeo/secrets.yaml"` |
+| Passwords | `harvester_admin_password` and `rancher_admin_password`, via `ssh ec2-user@<host-ip> "cat ~/.rodeo/secrets.yaml"` |
 | Lab guide | https://avaleror.github.io/suse-virt-workshop/ |
 
-Both UIs use self-signed certificates. Students must accept the browser warning.
+Both UIs use self-signed certificates. Students need to accept the browser warning.
 
-If students need to SSH into the host themselves, share the private key file (`~/.rodeo/ssh/id_ed25519` on your machine) securely, or create per-student IAM/key access instead for a real multi-attendee workshop — this single-host setup assumes one instructor/student pair per instance.
+If students need to SSH into the host themselves, share the private key file (`~/.rodeo/ssh/id_ed25519` on your machine) securely. Or set up per-student IAM/key access for a real multi-attendee workshop. This single-host setup assumes one instructor/student pair per instance.
 
 ## Tear down
 
@@ -139,7 +145,7 @@ cd suse-virt-workshop/aws
 rodeo destroy --cloud --yes
 ```
 
-Terminates the EC2 instance and deletes the security group rodeo created. Nothing else in your AWS account is touched. Verify no billable resources remain:
+Terminates the EC2 instance and deletes the security group rodeo created. Nothing else in your AWS account gets touched. Verify no billable resources remain:
 
 ```bash
 aws ec2 describe-instances --region <region> \
@@ -151,7 +157,7 @@ An empty result means clean.
 
 ## Cost safety
 
-For a workshop you might forget to tear down, consider arming a self-terminate timer as a backstop:
+For a workshop you might forget to tear down, arm a self-terminate timer as a backstop:
 
 ```bash
 aws ec2 modify-instance-attribute --region <region> --instance-id <id> \
@@ -159,10 +165,10 @@ aws ec2 modify-instance-attribute --region <region> --instance-id <id> \
 ssh -i ~/.rodeo/ssh/id_ed25519 ec2-user@<host-ip> "sudo shutdown -h +180"   # 3 hours
 ```
 
-Verify with `sudo shutdown -c` to cancel, or check `who -b`/`last` style timing if unsure whether it's armed.
+Verify with `sudo shutdown -c` to cancel, or check `who -b`/`last` style timing if you're not sure it's armed.
 
 ## Further reading
 
 - [Deploy on a bare-metal host instead](host-setup.md)
 - [Lab overview](../reference/lab-overview.md)
-- [rodeo-cli's `virt-workshop-aws` profile](https://github.com/avaleror/rodeo-cli/tree/main/rodeo/data/examples/virt-workshop-aws) — this workshop's AWS deploy re-seeds from this bundled profile on the remote host; see its README for live-verification details
+- [rodeo-cli's `virt-workshop-aws` profile](https://github.com/avaleror/rodeo-cli/tree/main/rodeo/data/examples/virt-workshop-aws). This workshop's AWS deploy re-seeds from this bundled profile on the remote host. See its README for live-verification details.

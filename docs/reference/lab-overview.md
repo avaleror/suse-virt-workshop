@@ -46,7 +46,7 @@ flowchart TB
 
 **VIP (kube-vip):** `192.168.122.10`, floating, not a node IP.
 
-These are `baremetal/rodeo-plan.yaml`'s numbers. The `aws/` variant runs larger per-node sizing (24 GiB/10 vCPU/500 GB per Harvester node, 16 GiB/4 vCPU/60 GB Rancher) since its recommended `m8id.8xlarge` instance has the headroom to spare — see [Host setup: AWS](../instructor/aws-setup.md#instance-tiers) for the full breakdown.
+These are `baremetal/rodeo-plan.yaml`'s numbers. The `aws/` variant runs larger per-node sizing (24 GiB/10 vCPU/500 GB per Harvester node, 16 GiB/4 vCPU/60 GB Rancher) since its recommended `m8id.8xlarge` instance has the headroom to spare. See [Host setup: AWS](../instructor/aws-setup.md#instance-tiers) for the full breakdown.
 
 Harvester installs via **iPXE UEFI network boot**: empty disk → DHCP → `ipxe.efi` (TFTP) → per-node HTTP script → kernel + initrd + squashfs → unattended install. This is the same mechanism the customer Rodeo image was built with.
 
@@ -91,11 +91,13 @@ Runs every executable file in `custom/scripts/` at the repo root, in sorted (num
 
 | Script | What it does |
 |---|---|
-| `50-image-cache.sh` | Downloads openSUSE Leap 16.0's KVM cloud image (~308 MiB, freely redistributable) and serves it over HTTP on `192.168.122.1:8889` via a systemd unit — feeds the `VirtualMachineImage` the next script needs |
-| `60-nfs-backup-target.sh` | Exports `/srv/backups` over NFS to `192.168.122.0/24` — the exact endpoint Exercise 6's backup-target setting expects |
+| `50-image-cache.sh` | Downloads openSUSE Leap 16.0's KVM cloud image (~308 MiB, freely redistributable) and serves it over HTTP on `192.168.122.1:8889` via a systemd unit. Feeds the `VirtualMachineImage` the next script needs. |
+| `60-nfs-backup-target.sh` | Exports `/srv/backups` over NFS to `192.168.122.0/24`, the exact endpoint Exercise 6's backup-target setting expects |
 | `70-webserver-prod.sh` | Creates the `prod` namespace, node labels (`stage=prod` on harvester1/2, `stage=dev` on harvester3), the `prod/service` VM network, and both `webserver-prod` and `daily-batch-processor` VMs Exercise 4 needs |
 
-These same scripts (host-agnostic, no platform-specific assumptions) live once at `custom/scripts/` in the repo root and are symlinked from every platform directory (`baremetal/custom -> ../custom`, `aws/custom -> ../custom`, and `gcp/custom` once that lands) — one set of scripts, every deploy target. They also match [rodeo-cli's bundled `virt-workshop-aws` profile](https://github.com/avaleror/rodeo-cli/tree/main/rodeo/data/examples/virt-workshop-aws), which the AWS variant's remote deploy step actually re-seeds from (see the comment atop `aws/rodeo-plan.yaml` for why) — see that profile's README for the live-verified details (PVC sizing from the image's real virtual size, the hand-derived `prod/service` network shape, the node-pin-then-release sequence for a guaranteed first collision between the two VMs).
+These same scripts are host-agnostic, with no platform-specific assumptions. They live once at `custom/scripts/` in the repo root and are symlinked from every platform directory (`baremetal/custom -> ../custom`, `aws/custom -> ../custom`, and `gcp/custom` once that lands). One set of scripts, every deploy target.
+
+They also match [rodeo-cli's bundled `virt-workshop-aws` profile](https://github.com/avaleror/rodeo-cli/tree/main/rodeo/data/examples/virt-workshop-aws), which the AWS variant's remote deploy step actually re-seeds from (see the comment atop `aws/rodeo-plan.yaml` for why). See that profile's README for the live-verified details: PVC sizing from the image's real virtual size, the hand-derived `prod/service` network shape, and the node-pin-then-release sequence for a guaranteed first collision between the two VMs.
 
 ---
 
@@ -114,22 +116,24 @@ These same scripts (host-agnostic, no platform-specific assumptions) live once a
 | NFS export `192.168.122.1:/srv/backups/` | custom_scripts |
 | `webserver-prod` and `daily-batch-processor` VMs (`prod`) | custom_scripts |
 
-`custom_scripts` pre-creates the same foundations the Instruqt Rodeo image bakes in for Exercise 4 (webserver-prod/daily-batch-processor) and Exercise 6 (the NFS backup target), so those exercises match the Instruqt track's pre-lab state instead of asking the student to build it by hand. Everything else — the `dev` namespace, the cost-tier StorageClass, your own SSH key, additional VMs and networks — is still built by students across Exercises 2-7, same as before.
+`custom_scripts` pre-creates the same foundations the Instruqt Rodeo image bakes in for Exercise 4 (webserver-prod/daily-batch-processor) and Exercise 6 (the NFS backup target). Those exercises match the Instruqt track's pre-lab state instead of asking the student to build it by hand.
+
+Everything else is still built by students across Exercises 2-7, same as before: the `dev` namespace, the cost-tier StorageClass, your own SSH key, additional VMs and networks.
 
 ---
 
 ## How this maps to suse-virt-rodeo
 
-suse-virt-rodeo has exactly 8 chapters — the table below is 1:1, no gaps or renumbering:
+suse-virt-rodeo has exactly 8 chapters. The table below is 1:1, no gaps or renumbering.
 
 | Rodeo chapter | This workshop |
 |---|---|
 | 1 The Arrival | Exercise 1 (+ import, which the image often already has) |
-| 2 Subterranean Divide | Exercise 2 (`prod` namespace and `prod/service` network are now pre-created by `custom_scripts`, same as the Instruqt image — you still create `dev`, the cost-tier StorageClass, and your own SSH key) |
+| 2 Subterranean Divide | Exercise 2 (`prod` namespace and `prod/service` network are now pre-created by `custom_scripts`, same as the Instruqt image. You still create `dev`, the cost-tier StorageClass, and your own SSH key.) |
 | 3 Flash Crash | Exercise 3 |
 | 4 Rising Tide | Exercise 4 (`webserver-prod`/`daily-batch-processor` pre-created by `custom_scripts`, same as the Instruqt image) |
 | 5 Invisible Intruder | Exercise 5 |
 | 6 Unthinkable Error | Exercise 6 (NFS backup target pre-created by `custom_scripts`, same as the Instruqt image) |
 | 7 Stampede | Exercise 7 |
 | 8 A New Horizon | Exercise 8 |
-| *(no rodeo counterpart)* | [Bonus: The Final Showdown](../exercises/bonus-final-showdown.md) — self-hosted only, explores Harvester's real Migration UI |
+| *(no rodeo counterpart)* | [Bonus: The Final Showdown](../exercises/bonus-final-showdown.md), self-hosted only. Explores Harvester's real Migration UI. |

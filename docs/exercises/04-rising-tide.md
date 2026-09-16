@@ -8,7 +8,7 @@
 
 A coolant leak is flooding the rack under the payment gateway. You need a **zero-downtime live migration** while transactions keep flowing, then put the damaged node into maintenance so everything else evacuates automatically.
 
-On the Instruqt Rodeo, `webserver-prod` and `daily-batch-processor` are pre-baked into the image. This lab's deploy automation builds the same pair from scratch as its last phase, so they're already there waiting for you — same as the Instruqt track, not something you build by hand.
+On the Instruqt Rodeo, `webserver-prod` and `daily-batch-processor` are pre-baked into the image. This lab's deploy automation builds the same pair from scratch as its last phase, so they're already there waiting for you. Same as the Instruqt track, not something you build by hand.
 
 ## 4.1 Confirm the payment gateway and batch VM
 
@@ -19,7 +19,7 @@ On the Instruqt Rodeo, `webserver-prod` and `daily-batch-processor` are pre-bake
 | `webserver-prod` | 1 | 1 GiB | ~25 GiB (image size, not a typo) | Payment gateway (will migrate) |
 | `daily-batch-processor` | 1 | 1 GiB | ~25 GiB | Non-critical (will pause) |
 
-Note the **Node** column for both — `daily-batch-processor` started on the same node as `webserver-prod` (deploy automation pins it there on first boot, then releases the pin), so the two are already sharing hardware exactly like a real "everything running production on one rack" scenario. Note the IP of `webserver-prod` from the UI.
+Note the **Node** column for both. `daily-batch-processor` started on the same node as `webserver-prod` (deploy automation pins it there on first boot, then releases the pin), so the two are already sharing hardware, exactly like a real "everything running production on one rack" scenario. Note the IP of `webserver-prod` from the UI.
 
 If either VM is missing (a previous deploy attempt failed before this step), re-run just that phase:
 

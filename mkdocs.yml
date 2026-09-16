@@ -1,5 +1,5 @@
 site_name: SUSE Virtualization Workshop
-site_description: Self-hosted Virtualization Rodeo — 3-node Harvester HCI + Rancher Prime on bare-metal KVM via rodeo-cli
+site_description: Self-hosted Virtualization Rodeo. 3-node Harvester HCI + Rancher Prime on bare-metal KVM via rodeo-cli.
 site_url: https://avaleror.github.io/suse-virt-workshop/
 repo_url: https://github.com/avaleror/suse-virt-workshop
 repo_name: avaleror/suse-virt-workshop

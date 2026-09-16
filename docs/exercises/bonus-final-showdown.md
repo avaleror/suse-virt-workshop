@@ -6,17 +6,17 @@
 
 ---
 
-> **This is a self-hosted-only bonus, not one of the eight chapters.** [suse-virt-rodeo](https://github.com/avaleror/suse-virt-rodeo) (the Instruqt track this workshop mirrors) has exactly 8 chapters, ending at "A New Horizon" — there is no "Final Showdown" chapter there. This exercise exists here because Harvester's real **Migration** feature (importing VMs from a legacy hypervisor) is worth exploring hands-on if you have a vSphere/ISAware-compatible source to point it at, but it was never built into the graded rodeo track. Skip straight to [Exercise 8: A New Horizon](08-new-horizon.md) if you don't.
+> **This is a self-hosted-only bonus, not one of the eight chapters.** [suse-virt-rodeo](https://github.com/avaleror/suse-virt-rodeo) (the Instruqt track this workshop mirrors) has exactly 8 chapters, ending at "A New Horizon." There's no "Final Showdown" chapter there. This exercise exists here because Harvester's real **Migration** feature (importing VMs from a legacy hypervisor) is worth trying hands-on if you have a vSphere/ISAware-compatible source to point it at, but it was never built into the graded rodeo track. Skip straight to [Exercise 8: A New Horizon](08-new-horizon.md) if you don't.
 
 The legacy vendor wants forty percent more for the renewal. Sarah declines. The last critical workload, `legacy-ledger-vm`, must land on SUSE Virtualization while the old world is still running.
 
-> **Tip:** This lab has no legacy hypervisor to migrate from — that infrastructure doesn't exist in either this repo or suse-virt-rodeo's own automation. Below you walk the real **Migration** UI path, then complete the same verification steps on a stand-in ledger VM so the day-one-ops skills still stick.
+> **Tip:** This lab has no legacy hypervisor to migrate from. That infrastructure doesn't exist in either this repo or suse-virt-rodeo's own automation. Below you walk the real **Migration** UI path, then complete the same verification steps on a stand-in ledger VM so the day-one-ops skills still stick.
 
-## B.1 Explore the migration bridge
+## B.1 Look at the migration bridge
 
 In Harvester: **Advanced → Migration → Sources**.
 
-The list is empty unless you point a source at a real vSphere/ISAware-compatible endpoint — neither this repo nor suse-virt-rodeo's own automation ships one. Open **Create** and read the fields (source type, endpoint, credentials) so you know what production needs. Cancel without saving if you have no legacy cluster.
+The list is empty unless you point a source at a real vSphere/ISAware-compatible endpoint. Neither this repo nor suse-virt-rodeo's own automation ships one. Open **Create** and read the fields (source type, endpoint, credentials) so you know what production needs. Cancel without saving if you have no legacy cluster.
 
 ## B.2 How extraction works (when a source exists)
 

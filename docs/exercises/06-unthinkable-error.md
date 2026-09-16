@@ -61,7 +61,7 @@ exit
 
 Snapshots live on the same cluster. Real DR needs an off-cluster target.
 
-Deploy automation already exported `/srv/backups` from the KVM host over NFS — confirm it from the host if you want to see it (optional):
+Deploy automation already exported `/srv/backups` from the KVM host over NFS. Confirm it from the host if you want to see it (optional):
 
 ```bash
 showmount -e 192.168.122.1   # expect /srv/backups 192.168.122.0/24
@@ -76,7 +76,7 @@ In Harvester: **Advanced → Settings → backup-target** → Edit:
 
 **Save**.
 
-> **Tip:** If `showmount` shows nothing, `custom_scripts`' NFS step failed non-fatally (unsupported host OS package manager, most likely — see the [pre-lab checklist](../instructor/pre-lab-checklist.md#common-failure-points)). Fall back to setting it up by hand: `sudo mkdir -p /srv/backups && sudo chmod 777 /srv/backups`, then install and configure an NFS server exporting that path to `192.168.122.0/24` (package name differs by distro: `nfs-kernel-server` on Ubuntu, `nfs-server`/`nfs-utils` on SLES/Fedora). Either way, the skill is knowing where backup-target lives — S3 endpoints work the same way in production.
+> **Tip:** If `showmount` shows nothing, `custom_scripts`' NFS step failed non-fatally. Most likely an unsupported host OS package manager, see the [pre-lab checklist](../instructor/pre-lab-checklist.md#common-failure-points). Fall back to setting it up by hand: `sudo mkdir -p /srv/backups && sudo chmod 777 /srv/backups`, then install and configure an NFS server exporting that path to `192.168.122.0/24` (package name differs by distro: `nfs-kernel-server` on Ubuntu, `nfs-server`/`nfs-utils` on SLES/Fedora). Either way, the skill is knowing where backup-target lives. S3 endpoints work the same way in production.
 
 ## 6.6 Schedule backups
 

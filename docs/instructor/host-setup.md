@@ -2,11 +2,13 @@
 
 This workshop deploys on a bare metal Linux host with KVM. These steps cover host prep and initial deploy. Automation is entirely [rodeo-cli](https://github.com/avaleror/rodeo-cli); this repo ships the plan and the lab exercises. Same topology as [suse-virt-rodeo](https://github.com/avaleror/suse-virt-rodeo).
 
-> **No spare bare-metal host?** See [Deploy on AWS instead](https://github.com/avaleror/suse-virt-workshop#deploy-on-aws-instead) in the README — same lab, an EC2 host does the work.
+> **No spare bare-metal host?** See [Deploy on AWS instead](https://github.com/avaleror/suse-virt-workshop#deploy-on-aws-instead) in the README. Same lab, an EC2 host does the work.
 
 ## Requirements
 
-`baremetal/rodeo-plan.yaml` ships one fixed sizing (3× Harvester at 16 GiB/8 vCPU/320 GB + Rancher at 8 GiB/4 vCPU/60 GB = 56 GiB / 28 vCPU / 1020 GB guest total) — there's no separate tier system like AWS's budget/recommended/performance. "Minimum" below is that config with host overhead; "Recommended" is the same config with comfortable margin for the host OS, buffer/cache, and not fighting for CPU during the `cluster` phase's nested-KVM install.
+`baremetal/rodeo-plan.yaml` ships one fixed sizing: 3× Harvester at 16 GiB/8 vCPU/320 GB, plus Rancher at 8 GiB/4 vCPU/60 GB. That's 56 GiB / 28 vCPU / 1020 GB guest total, and there's no separate tier system like AWS's budget/recommended/performance.
+
+"Minimum" below is that config with host overhead. "Recommended" is the same config with comfortable margin for the host OS, buffer/cache, and not fighting for CPU during the `cluster` phase's nested-KVM install.
 
 | Resource | Minimum | Recommended |
 |---|---|---|
@@ -17,7 +19,7 @@ This workshop deploys on a bare metal Linux host with KVM. These steps cover hos
 | KVM | `/dev/kvm` present. Nested virt only needed if the host itself is a VM | same |
 | Network | Internet access during deploy | same |
 
-If your host has real headroom above the minimum, consider raising `resources.harvester.memory_mib` in `rodeo-plan.yaml` from `16384` toward `24576` (24 GiB/node) before your first `rodeo up` — that's the exact sizing the AWS variant uses once it has RAM to spare, live-verified to leave a comfortable margin rather than just barely fitting.
+If your host has real headroom above the minimum, raise `resources.harvester.memory_mib` in `rodeo-plan.yaml` from `16384` toward `24576` (24 GiB/node) before your first `rodeo up`. That's the exact sizing the AWS variant uses once it has RAM to spare, live-verified to leave a comfortable margin instead of just barely fitting.
 
 Confirm readiness:
 
@@ -155,4 +157,4 @@ The `kvm_host` phase partitions, formats, and mounts it before creating VMs.
 - [rodeo-cli Harvester guide](https://github.com/avaleror/rodeo-cli/blob/main/docs/guide-harvester.md)
 - [Bare-metal example](https://github.com/avaleror/rodeo-cli/blob/main/docs/examples/bare-metal.md)
 - [Lab overview](../reference/lab-overview.md)
-- [Deploy on AWS instead](https://github.com/avaleror/suse-virt-workshop#deploy-on-aws-instead) — no bare-metal host needed
+- [Deploy on AWS instead](https://github.com/avaleror/suse-virt-workshop#deploy-on-aws-instead), no bare-metal host needed

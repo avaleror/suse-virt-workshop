@@ -25,7 +25,7 @@ Vertex Trust Bank is drowning in legacy hypervisor renewal costs. Sarah, the CTO
 
 This workshop is the **self-hosted** twin of SUSE's customer-facing
 [Virtualization Rodeo](https://github.com/avaleror/suse-virt-rodeo). Same story,
-same skills, same 8 exercises regardless of where you deploy it — only the
+same skills, same 8 exercises regardless of where you deploy it. Only the
 infrastructure bring-up step differs per platform, with its own precise
 instructions below, driven by
 [`rodeo-cli`](https://github.com/avaleror/rodeo-cli) instead of joining Instruqt.
@@ -162,7 +162,7 @@ DNAT: host:8443 → VIP:443 · host:30002 → rancher:30002
   <div class="ex-number">Bonus</div>
   <div class="ex-title">The Final Showdown</div>
   <div class="ex-time">⏱ 25 min</div>
-  <div class="ex-desc">Explore Harvester's real Migration UI and extract a stand-in legacy ledger onto SUSE Virtualization.</div>
+  <div class="ex-desc">Look at Harvester's real Migration UI and extract a stand-in legacy ledger onto SUSE Virtualization.</div>
 </a>
 
 </div>

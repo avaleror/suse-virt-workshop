@@ -1,6 +1,8 @@
 # SUSE Virtualization Workshop
 
-Self-hosted companion to the [SUSE Virtualization Rodeo](https://github.com/avaleror/suse-virt-rodeo). Same Vertex Trust Bank story and eight chapters (plus one self-hosted-only bonus chapter) — but you deploy the lab yourself with [rodeo-cli](https://github.com/avaleror/rodeo-cli), instead of joining a pre-built Instruqt sandbox. Deploy on your own **bare-metal** KVM host or on **AWS** — **GCP support is coming soon**. Each platform has its own precise instructions below.
+Self-hosted companion to the [SUSE Virtualization Rodeo](https://github.com/avaleror/suse-virt-rodeo). Same Vertex Trust Bank story and eight chapters, plus one self-hosted-only bonus chapter. You deploy the lab yourself with [rodeo-cli](https://github.com/avaleror/rodeo-cli), instead of joining a pre-built Instruqt sandbox.
+
+Deploy on your own **bare-metal** KVM host or on **AWS**. **GCP support is coming soon.** Each platform has its own precise instructions below.
 
 **Workshop site:** https://avaleror.github.io/suse-virt-workshop/
 
@@ -20,7 +22,7 @@ Self-hosted companion to the [SUSE Virtualization Rodeo](https://github.com/aval
 | harvester1–3 | .11–.13 | `rodeo ssh harvester1` |
 | Rancher Prime | 192.168.122.9 | `https://<host>:30002` |
 
-Harvester is **not** imported into Rancher at deploy time — that is Chapter 1, same as the customer Rodeo.
+Harvester is **not** imported into Rancher at deploy time. That's Chapter 1, same as the customer Rodeo.
 
 ---
 
@@ -68,7 +70,7 @@ rodeo status
 
 ### 4. Open the lab guide
 
-After deploy succeeds, follow the chapters at https://avaleror.github.io/suse-virt-workshop/ — start with [Chapter 1 — The Arrival](https://avaleror.github.io/suse-virt-workshop/exercises/01-the-arrival/).
+After deploy succeeds, follow the chapters at https://avaleror.github.io/suse-virt-workshop/. Start with [Chapter 1: The Arrival](https://avaleror.github.io/suse-virt-workshop/exercises/01-the-arrival/).
 
 Credentials: `admin` / values in `~/.rodeo/secrets.yaml` on the host.
 
@@ -83,7 +85,7 @@ rodeo clean --all --yes --secrets          # full host reset
 
 ## Deploy on AWS instead
 
-No spare 64 GiB bare-metal box? `aws/` deploys the exact same lab on a fresh EC2 host instead — same 8 exercises, same `custom/scripts/` pre-lab automation, only the host differs.
+No spare 64 GiB bare-metal box? `aws/` deploys the exact same lab on a fresh EC2 host instead. Same 8 exercises, same `custom/scripts/` pre-lab automation. Only the host differs.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/avaleror/rodeo-cli/main/install.sh | bash
@@ -94,7 +96,7 @@ cd suse-virt-workshop/aws
 rodeo up --profile virt-workshop-aws --target aws
 ```
 
-Two instance tiers (`provider.instance_tier` in `rodeo-plan.yaml`, or `--instance-tier` on the CLI) — real AWS specs, prices are on-demand Linux in `eu-north-1` as of 2026-09-14, always check current pricing:
+Two instance tiers (`provider.instance_tier` in `rodeo-plan.yaml`, or `--instance-tier` on the CLI). Real AWS specs, prices on-demand Linux in `eu-north-1` as of 2026-09-14. Always check current pricing.
 
 | Tier | Instance | vCPU | RAM | Local storage | ~$/hr |
 |---|---|---|---|---|---|
@@ -103,7 +105,9 @@ Two instance tiers (`provider.instance_tier` in `rodeo-plan.yaml`, or `--instanc
 
 Full breakdown: [Host setup: AWS](https://avaleror.github.io/suse-virt-workshop/instructor/aws-setup/#instance-tiers).
 
-No local files are uploaded: rodeo boots the host, then the host bootstraps rodeo-cli and deploys itself, so nothing needs a live SSH session babysat for the ~30-90 minute deploy. No extra IAM beyond EC2 permissions — rodeo creates and scopes its own security group to your current public IP. `aws/rodeo-plan.yaml`'s `resources:`/`versions:` sections describe what gets deployed (kept in sync with rodeo-cli's own bundled profile) — only its `provider:` block (region/subnet/instance size/tier) has a direct effect from here; see the comment at the top of that file for why.
+No local files are uploaded: rodeo boots the host, then the host bootstraps rodeo-cli and deploys itself. Nothing needs a live SSH session babysat for the 30-90 minute deploy. No extra IAM beyond EC2 permissions either. Rodeo creates and scopes its own security group to your current public IP.
+
+`aws/rodeo-plan.yaml`'s `resources:`/`versions:` sections describe what gets deployed, kept in sync with rodeo-cli's own bundled profile. Only its `provider:` block (region/subnet/instance size/tier) has a direct effect from here. See the comment at the top of that file for why.
 
 Live-verified end to end (3 nodes Ready, both pre-lab VMs Running, both UIs externally reachable) 2026-09-14. Full instructor steps: [Host setup: AWS](https://avaleror.github.io/suse-virt-workshop/instructor/aws-setup/).
 
@@ -128,8 +132,8 @@ docs/
   lab-guide.md              # Single-file printable guide
 custom/scripts/             # Pre-lab automation: image cache, NFS backup
                              # target, Exercise 4's webserver-prod +
-                             # daily-batch-processor (see lab-overview.md) —
-                             # the single copy every platform below symlinks to
+                             # daily-batch-processor (see lab-overview.md).
+                             # The single copy every platform below symlinks to.
 baremetal/                  # Deploy on your own KVM host: rodeo-plan.yaml +
                              # custom -> ../custom
 aws/                        # Deploy on AWS: rodeo-plan.yaml (region/subnet/
