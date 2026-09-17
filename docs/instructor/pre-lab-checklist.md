@@ -73,6 +73,23 @@ That pre-created state (`prod` namespace, node labels, `prod/service` network, t
 - **SSH drops mid-deploy:** re-attach with `tmux attach -t rodeo-harvester`. Do not start a second deploy while one is running.
 - **Import already done:** if Virtualization Management already lists `harvester`, skip Exercise 1 import steps or `rodeo clean --yes && rodeo up` for a clean start.
 - **Cluster stuck on `Pending`/`Waiting`, Harvester shows `{"data":""}`:** the student forgot to check **Insecure Skip TLS Verify** next to the cluster-registration-url field. Rancher's cert is self-signed, so Harvester's backend fails the fetch silently without it.
+- **Checkbox was checked, Save clicked, still stuck on `Waiting for API to be available`:** confirm the setting actually saved before troubleshooting further:
+
+  ```bash
+  rodeo ssh harvester1 -c 'export KUBECONFIG=/etc/rancher/rke2/rke2.yaml; sudo -E /var/lib/rancher/rke2/bin/kubectl get settings.harvesterhci.io cluster-registration-url -o jsonpath="{.value}"'
+  ```
+
+  This should print `{"url":"https://...","insecureSkipTLSVerify":true}`. If it prints nothing, or `insecureSkipTLSVerify` is missing or `false`, the UI save did not take. Re-open **cluster-registration-url**, re-check the box, and **Save** again. If it still will not stick, set it directly from the KVM host (the registration URL is on Rancher's cluster page, **Copy Registration Command**):
+
+  ```bash
+  rodeo ssh harvester1 -c 'export KUBECONFIG=/etc/rancher/rke2/rke2.yaml; python3 -c "
+  import json, subprocess
+  value = json.dumps({\"url\": \"PASTE_MANIFEST_URL_HERE\", \"insecureSkipTLSVerify\": True})
+  patch = json.dumps({\"value\": value})
+  subprocess.run([\"sudo\", \"-E\", \"/var/lib/rancher/rke2/bin/kubectl\", \"patch\",
+      \"settings.harvesterhci.io\", \"cluster-registration-url\", \"--type=merge\", \"-p\", patch])
+  "'
+  ```
 - **`webserver-prod`/`daily-batch-processor` missing or `ErrorUnschedulable`:** check `custom_scripts` ran (`rodeo deploy --from custom_scripts` to re-run just that phase). It needs outbound internet access on first run to download the cached image (~308 MiB from `download.opensuse.org`), so an air-gapped host will fail here.
 - **`showmount -e <host-ip>` shows nothing:** `custom_scripts`' NFS step needs a package manager it recognizes (zypper/apt/dnf); an unsupported distro will fail this step non-fatally (rest of the lab still works, Exercise 6.5 falls back to manual setup).
 
