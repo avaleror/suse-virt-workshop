@@ -17,9 +17,9 @@ If you do not already have a suitable VM, create `transaction-ledger` in `prod` 
 SSH in and create the record:
 
 ```bash
-ssh opensuse@TRANSACTION_LEDGER_IP
-echo "CLIENT: BRUCE WAYNE | AMOUNT: 100,000,000 | STATUS: CLEARED" > /home/opensuse/ledger.txt
-cat /home/opensuse/ledger.txt
+ssh sles@TRANSACTION_LEDGER_IP
+echo "CLIENT: BRUCE WAYNE | AMOUNT: 100,000,000 | STATUS: CLEARED" > /home/sles/ledger.txt
+cat /home/sles/ledger.txt
 ```
 
 Leave the SSH session open or reconnect as needed.
@@ -31,8 +31,8 @@ In the UI → `transaction-ledger` → **Snapshots** → **Take Snapshot** → n
 On the VM:
 
 ```bash
-rm /home/opensuse/ledger.txt
-cat /home/opensuse/ledger.txt   # should fail
+rm /home/sles/ledger.txt
+cat /home/sles/ledger.txt   # should fail
 exit
 ```
 
@@ -51,8 +51,8 @@ On the snapshot row → ⋮ → **Restore to New Virtual Machine**:
 Wait for the clone to boot and get an IP. SSH in and confirm:
 
 ```bash
-ssh opensuse@STAGING_IP
-cat /home/opensuse/ledger.txt
+ssh sles@STAGING_IP
+cat /home/sles/ledger.txt
 exit
 ```
 
@@ -63,7 +63,7 @@ exit
 1. **Power off** `transaction-ledger`.
 2. Snapshot `pre-disaster-backup` → ⋮ → **Restore** → confirm.
 3. Power the VM back on.
-4. SSH and `cat /home/opensuse/ledger.txt`. The record is back.
+4. SSH and `cat /home/sles/ledger.txt`. The record is back.
 
 ![Restoring production from the snapshot](../assets/ch6-task6-restore-production.gif)
 

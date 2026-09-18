@@ -48,7 +48,7 @@ Wait until it is **Running**. Open **Console**. The migrated ledger is alive on 
 SSH into the VM and start the QEMU guest agent:
 
 ```bash
-ssh opensuse@MIGRATED_VM_IP
+ssh sles@MIGRATED_VM_IP
 sudo systemctl enable --now qemu-guest-agent
 exit
 ```

@@ -10,9 +10,16 @@
 # WHY THIS IMAGE: suse-virt-rodeo's own equivalent (SLES15-SP7-Minimal-VM) is
 # gated behind SUSE Customer Center — dl.suse.com URLs are signed and expire,
 # so there is no way to auto-download it on a self-hosted deploy with no SCC
-# registration. openSUSE Leap 16.0's KVM appliance is the closest freely
-# downloadable equivalent: same small-cloud-image shape (~308 MiB download),
+# registration. openSUSE Leap Micro's KVM appliance is freely downloadable,
 # no registration, stable distribution URL.
+#
+# NOT Leap 16.0's "Minimal-VM" appliance (used here until 2026-09-18): its
+# SBOM ships combustion, not cloud-init, so the NoCloud ISO Harvester/KubeVirt
+# attaches for Exercise 2.8's user-data and 70-webserver-prod.sh's own
+# cloud-init both get silently ignored — the VM boots and qemu-guest-agent
+# connects fine, but no SSH key ever lands anywhere, in any user account.
+# Leap Micro ships both cloud-init and combustion, confirmed via its SBOM at
+# https://download.opensuse.org/distribution/leap-micro/6.2/appliances/openSUSE-Leap-Micro.x86_64-Default-qcow.json
 #
 # Idempotent: skips the download if the file is already present and its
 # checksum matches — safe to re-run on every `rodeo up` (this is a
@@ -25,8 +32,8 @@ set -uo pipefail
 log(){ echo ">>> [image-cache] $*"; }
 
 IMAGE_DIR="/var/lib/libvirt/images/workshop-cache"
-IMAGE_FILE="Leap-16.0-Minimal-VM.x86_64-kvm-and-xen.qcow2"
-IMAGE_URL="https://download.opensuse.org/distribution/leap/16.0/appliances/${IMAGE_FILE}"
+IMAGE_FILE="openSUSE-Leap-Micro.x86_64-Default-qcow.qcow2"
+IMAGE_URL="https://download.opensuse.org/distribution/leap-micro/6.2/appliances/${IMAGE_FILE}"
 IMAGE_HTTP_PORT=8889
 IMAGE_HTTP_BIND="192.168.122.1"
 
@@ -46,7 +53,7 @@ if [ -s "${IMAGE_DIR}/${IMAGE_FILE}" ]; then
 fi
 
 if [ "${need_download}" = "1" ]; then
-  log "downloading ${IMAGE_FILE} (~308 MiB) ..."
+  log "downloading ${IMAGE_FILE} (~1.5 GiB) ..."
   if ! curl -fsSL --max-time 300 -o "${IMAGE_DIR}/${IMAGE_FILE}.part" "${IMAGE_URL}"; then
     echo ">>> [image-cache] FAILED to download ${IMAGE_URL}" >&2
     exit 1

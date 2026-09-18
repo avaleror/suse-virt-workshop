@@ -84,7 +84,7 @@ Click **Create**. Wait until the VM is **Running** and shows an IP.
 2. From the KVM host:
 
 ```bash
-ssh -o StrictHostKeyChecking=no opensuse@192.168.122.50
+ssh -o StrictHostKeyChecking=no sles@192.168.122.50
 # or the default user for your image
 hostname
 exit

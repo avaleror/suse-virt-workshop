@@ -42,8 +42,8 @@ NS="prod"
 NET_NAME="service"
 NET="${NS}/${NET_NAME}"
 IMAGE_NS="official-images"
-IMAGE_HTTP_URL="http://192.168.122.1:8889/Leap-16.0-Minimal-VM.x86_64-kvm-and-xen.qcow2"
-IMAGE_DISPLAY_NAME="Leap-16.0-Minimal-VM.x86_64-kvm-and-xen.qcow2"
+IMAGE_HTTP_URL="http://192.168.122.1:8889/openSUSE-Leap-Micro.x86_64-Default-qcow.qcow2"
+IMAGE_DISPLAY_NAME="openSUSE-Leap-Micro.x86_64-Default-qcow.qcow2"
 VM_NAME="webserver-prod"
 
 for pubkey_file in /root/.rodeo/ssh/id_ed25519.pub /root/.ssh/id_ed25519.pub /root/.ssh/id_rsa.pub; do

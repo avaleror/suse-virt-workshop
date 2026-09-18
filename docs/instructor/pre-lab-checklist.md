@@ -63,7 +63,7 @@ That pre-created state (`prod` namespace, node labels, `prod/service` network, t
 | Rancher admin password | `rancher_admin_password` in `~/.rodeo/secrets.yaml` |
 | KVM host IP | `rodeo up` success screen, or `hostname -I` |
 | SSH into nested nodes | `rodeo ssh harvester1` |
-| Guest VM SSH (later exercises) | `ssh opensuse@192.168.122.50` (after Exercise 3); key from the host's `~/.ssh/id_rsa` or `id_ed25519` registered in Exercise 2 |
+| Guest VM SSH (later exercises) | `ssh sles@192.168.122.50` (after Exercise 3); key from the host's `~/.ssh/id_rsa` or `id_ed25519` registered in Exercise 2 |
 
 ## Common failure points
 

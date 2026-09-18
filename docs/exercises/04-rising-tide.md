@@ -69,7 +69,7 @@ Leave ping running. Do not stop it.
 When migration finishes, stop ping (`Ctrl+C`). At most you might see one slower reply. The guest OS did not reboot.
 
 ```bash
-ssh opensuse@WEBSERVER_IP "hostname && uptime"
+ssh sles@WEBSERVER_IP "hostname && uptime"
 ```
 
 Uptime should **not** have reset. The **Node** column should show the new host.

@@ -49,7 +49,7 @@ Full detail: [Host setup](instructor/host-setup.md).
 
 ## Exercise 3: The Flash Crash (30 min)
 
-Create VM `prod/algo-trader-01`: 2 CPU / 2 GiB, SSH `prod/default`, label `stage=prod`, root disk from cloud image (5 GiB) + volume `market-data-vol` (1 GiB), network `prod/service`, network-data static IP `192.168.122.50/24`. Console + `ssh opensuse@192.168.122.50`.
+Create VM `prod/algo-trader-01`: 2 CPU / 2 GiB, SSH `prod/default`, label `stage=prod`, root disk from cloud image (5 GiB) + volume `market-data-vol` (1 GiB), network `prod/service`, network-data static IP `192.168.122.50/24`. Console + `ssh sles@192.168.122.50`.
 
 ## Exercise 4: The Rising Tide (25 min)
 
@@ -99,5 +99,5 @@ Review the skill table; bookmark SUSE Virtualization docs; tear down with `rodeo
 | Rancher | `https://<host-ip>:30002` |
 | VIP / nodes | `.10` / `.11–.13` · rancher `.9` |
 | Passwords | `~/.rodeo/secrets.yaml` |
-| Guest example | `ssh opensuse@192.168.122.50` |
+| Guest example | `ssh sles@192.168.122.50` |
 | Ops | `rodeo status` · `rodeo ssh harvester1` · `rodeo watch` |

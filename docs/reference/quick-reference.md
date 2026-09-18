@@ -10,7 +10,7 @@
 | Admin user | `admin` |
 | Passwords | `cat ~/.rodeo/secrets.yaml` (`harvester_admin_password`, `rancher_admin_password`) |
 | kubectl (Harvester) | download kubeconfig from Harvester **Support → Download KubeConfig**, or via Rancher after Exercise 1 |
-| Guest SSH (after Ex 3) | `ssh opensuse@192.168.122.50` |
+| Guest SSH (after Ex 3) | `ssh sles@192.168.122.50` |
 
 ## Node reference
 
