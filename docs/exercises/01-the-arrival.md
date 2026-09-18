@@ -92,6 +92,8 @@ All three nodes should be `Ready`. Core Harvester pods should be running.
 
 Optional: point your laptop kubectl at the kubeconfig you downloaded from **Support**, or build a Rancher-proxied kubeconfig (API key under the user avatar → Account & API Keys). Either path works for the rest of the lab.
 
+**Check your work:** `./checks/check-exercise-1.sh` from the KVM/EC2 host.
+
 ---
 
 **Next:** [Exercise 2: The Subterranean Divide](02-subterranean-divide.md)

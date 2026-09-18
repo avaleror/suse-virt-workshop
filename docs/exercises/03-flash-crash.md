@@ -90,6 +90,8 @@ hostname
 exit
 ```
 
+**Check your work:** `./checks/check-exercise-3.sh` from the KVM/EC2 host.
+
 ---
 
 **Next:** [Exercise 4: The Rising Tide](04-rising-tide.md)

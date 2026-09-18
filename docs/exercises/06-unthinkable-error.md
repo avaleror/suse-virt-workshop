@@ -101,6 +101,8 @@ In Harvester: **Advanced → Settings → backup-target** → Edit:
 
 Exact UI labels vary slightly by Harvester minor version. The goal is a **policy**, not a one-off click.
 
+**Check your work:** `./checks/check-exercise-6.sh` from the KVM/EC2 host. This exercise has no automated grading by design (nothing later reads back state created here). The script just points you at what to verify in the UI.
+
 ---
 
 **Next:** [Exercise 7: The Stampede](07-stampede.md)

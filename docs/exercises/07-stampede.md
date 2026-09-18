@@ -61,6 +61,8 @@ When the spike passes, delete `calc-engine-04` and `calc-engine-05` (and optiona
 
 ![Standing the fleet down](../assets/ch7-task3-stand-down-fleet.gif)
 
+**Check your work:** `./checks/check-exercise-7.sh` from the KVM/EC2 host. This exercise has no automated grading by design (nothing later reads back state created here). The script just points you at what to verify in the UI.
+
 ---
 
 **Next:** [Exercise 8: A New Horizon](08-new-horizon.md) &nbsp;·&nbsp; optional bonus: [The Final Showdown](bonus-final-showdown.md)

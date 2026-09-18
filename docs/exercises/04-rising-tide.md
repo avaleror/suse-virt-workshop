@@ -94,6 +94,8 @@ Disable maintenance when you are done exploring so the cluster returns to full c
 >
 > ![Bonus: the migration paper trail](../assets/ch4-bonus-drills.gif)
 
+**Check your work:** `./checks/check-exercise-4.sh` from the KVM/EC2 host. This exercise has no automated grading by design (nothing later reads back state created here). The script just points you at what to verify in the UI.
+
 ---
 
 **Next:** [Exercise 5: The Invisible Intruder](05-invisible-intruder.md)

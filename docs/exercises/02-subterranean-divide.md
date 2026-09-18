@@ -154,6 +154,8 @@ runcmd:
 
 Exercise 3 can select **User Data Template: `prod/prod`**.
 
+**Check your work:** `./checks/check-exercise-2.sh` from the KVM/EC2 host.
+
 ---
 
 **Next:** [Exercise 3: The Flash Crash](03-flash-crash.md)
