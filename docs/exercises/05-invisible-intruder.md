@@ -91,7 +91,7 @@ kubectl get subnets.kubeovn.io
 kubectl get vpcs.kubeovn.io
 ```
 
-**Check your work:** `./checks/check-exercise-5.sh` from the KVM/EC2 host. This exercise has no automated grading by design (nothing later reads back state created here). The script just points you at what to verify in the UI.
+**Check your work:** `sudo bash -c 'cd /root/rodeo-lab && ./checks/check-exercise-5.sh'`. This exercise has no automated grading by design (nothing later reads back state created here). The script just points you at what to verify in the UI.
 
 ---
 

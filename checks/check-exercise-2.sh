@@ -13,7 +13,19 @@
 #   ./checks/check-exercise-2.sh
 
 set -uo pipefail
-export KUBECONFIG="${KUBECONFIG:-$HOME/.rodeo/harvester-kubeconfig}"
+
+if [[ -z "${KUBECONFIG:-}" ]]; then
+  # rodeo-cli resolves ~/.rodeo to the *invoking* user's home even under sudo
+  # (rodeo/paths.py invoking_home()) — mirror that here. /root/rodeo-lab (and
+  # this script alongside it) is only readable via sudo, but the kubeconfig
+  # itself lands in the invoking user's home, not root's.
+  if [[ -n "${SUDO_USER:-}" ]]; then
+    INVOKING_HOME="$(getent passwd "${SUDO_USER}" | cut -d: -f6)"
+  else
+    INVOKING_HOME="${HOME}"
+  fi
+  export KUBECONFIG="${INVOKING_HOME}/.rodeo/harvester-kubeconfig"
+fi
 
 FAIL=0
 fail(){ echo "FAIL: $*"; FAIL=1; }

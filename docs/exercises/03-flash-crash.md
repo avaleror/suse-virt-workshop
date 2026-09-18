@@ -90,7 +90,7 @@ hostname
 exit
 ```
 
-**Check your work:** `./checks/check-exercise-3.sh` from the KVM/EC2 host.
+**Check your work:** `sudo bash -c 'cd /root/rodeo-lab && ./checks/check-exercise-3.sh'`.
 
 ---
 

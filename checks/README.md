@@ -7,12 +7,17 @@ own Instruqt checks, where those chapters are deliberately left unscored
 (everything they need is self-provisioned, and nothing later in the track
 reads back state you create in them).
 
-Run from the KVM/EC2 host, as whichever user ran `rodeo up`:
+The scripts live under `/root/rodeo-lab/checks/` on the deployed host,
+which only `sudo` can read. `cd` there in the *same* sudo shell, not before
+it. A plain `cd /root/rodeo-lab && sudo ...` hits the same permission
+denied a plain `ls` would:
 
 ```bash
-./checks/check-exercise-1.sh
+sudo bash -c 'cd /root/rodeo-lab && ./checks/check-exercise-1.sh'
 ```
 
-Each script uses `~/.rodeo/harvester-kubeconfig` by default. Override with
-`KUBECONFIG=/path/to/kubeconfig ./checks/check-exercise-N.sh` if yours lives
-elsewhere.
+Each script defaults `KUBECONFIG` to `~/.rodeo/harvester-kubeconfig` under
+whichever user ran `rodeo up` (the same invoking-user resolution rodeo-cli
+itself uses, so `sudo` here doesn't point it at root's own, nonexistent
+copy). Override with `sudo bash -c 'KUBECONFIG=/path/to/kubeconfig ./checks/check-exercise-N.sh'`
+if yours lives elsewhere.
