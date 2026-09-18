@@ -59,7 +59,7 @@ Open the Harvester UI (directly or via Rancher → Virtualization Management →
 On the **Dashboard**, confirm:
 
 - **Hosts** - three nodes
-- **Virtual Machines** - empty for now
+- **Virtual Machines** - `webserver-prod` and `daily-batch-processor` already running. Deploy automation pre-creates them as its last step; you'll use both in Exercise 4
 - **Images**, **Volumes**, capacity and metrics panels
 - Bottom-left **Support** → **Download KubeConfig** (save it, you will need it)
 - **Generate Support Bundle** - know where it is for real incidents
