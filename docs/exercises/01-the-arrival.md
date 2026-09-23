@@ -25,12 +25,23 @@ After `rodeo up`, Harvester and Rancher are up; import is intentionally left for
 From a shell on the KVM host:
 
 ```bash
-curl -sk https://192.168.122.10/v1 | jq -r '.apiVersion'
-curl -sk https://192.168.122.9:30002/v3 | jq -r '.type'
+curl -sk https://192.168.122.10/v1 | jq -r '.id'
+
+# Rancher's /v3 requires a bearer token even for the root document — an
+# anonymous GET (or HTTP Basic Auth) returns 401. Note the grep is anchored
+# with ^ and : — secrets.yaml's own comment header repeats each key name
+# right above its value, so an unanchored grep matches both lines and
+# garbles the password.
+RANCHER_PW=$(grep '^rancher_admin_password:' ~/.rodeo/secrets.yaml | cut -d'"' -f2)
+RANCHER_TOKEN=$(curl -sk -X POST "https://192.168.122.9:30002/v3-public/localProviders/local?action=login" \
+  -H 'Content-Type: application/json' \
+  -d "{\"username\":\"admin\",\"password\":\"$RANCHER_PW\"}" | jq -r '.token')
+curl -sk -H "Authorization: Bearer $RANCHER_TOKEN" https://192.168.122.9:30002/v3 | jq -r '.type'
+
 rodeo status
 ```
 
-Expect a Harvester API version and `collection` from Rancher. `rodeo status` should show three Harvester nodes and the rancher VM running.
+Expect `v1` from Harvester and `apiRoot` from the authenticated Rancher call (that's the discovery root's own type — a specific listing like `/v3/clusters` would say `collection`). `rodeo status` should show three Harvester nodes and the rancher VM running.
 
 ## 1.2 Import Harvester into Rancher
 
@@ -81,10 +92,13 @@ From the KVM host:
 
 ```bash
 rodeo ssh harvester1
-kubectl get nodes
-kubectl get pods -n harvester-system | grep -v Completed
+export KUBECONFIG=/etc/rancher/rke2/rke2.yaml
+sudo -E /var/lib/rancher/rke2/bin/kubectl get nodes
+sudo -E /var/lib/rancher/rke2/bin/kubectl get pods -n harvester-system | grep -v Completed
 exit
 ```
+
+`/etc/rancher/rke2/rke2.yaml` is root-only (RKE2's own default), so the `rancher` login user needs `sudo -E` to read it — and `sudo` alone won't find `kubectl` on `PATH` (its `secure_path` doesn't include RKE2's bin directory), hence the full path.
 
 ![Terminal access to the cluster](../assets/ch1-longhorn-ui.gif)
 

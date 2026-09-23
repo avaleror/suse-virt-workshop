@@ -44,6 +44,8 @@ Confirm `prod/secure-loop-prod` is **Active**.
 
 ## 5.2 Overlay vault for development (Kube-OVN)
 
+**Kube-OVN ships disabled by default.** Before `OverlayNetwork` or **Virtual Private Cloud** appear as usable options, enable the addon: **Advanced → Addons → `kubeovn-operator`** → enable it, and wait for its pods (`kube-ovn-controller`, `ovs-ovn`, `kube-ovn-cni`, etc., all in `kube-system`) to reach Running — under a minute on this lab's sizing. Skipping this step leaves the CRDs `subnets.kubeovn.io`/`vpcs.kubeovn.io` (used in 5.4) entirely absent from the cluster, not just empty.
+
 **Virtual Machine Networks → Create**:
 
 | Field | Value |

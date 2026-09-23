@@ -12,7 +12,7 @@ A junior admin deleted the wrong file on the transaction ledger. You will snapsh
 
 ## 6.1 Prepare a ledger VM
 
-If you do not already have a suitable VM, create `transaction-ledger` in `prod` on `prod/service` (1 CPU / 1 GiB / 5 GiB, same image and SSH key as before). Note its IP from the UI.
+If you do not already have a suitable VM, create `transaction-ledger` in `prod` on `prod/service` (1 CPU / 1 GiB, root volume left at the image's own virtual size — see Exercise 3.3's note on why a smaller size leaves the PVC `Pending` forever — same image and SSH key as before). Note its IP from the UI.
 
 SSH in and create the record:
 

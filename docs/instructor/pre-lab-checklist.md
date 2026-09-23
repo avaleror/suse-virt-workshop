@@ -5,39 +5,61 @@ Run this after `rodeo up` finishes and before students open Exercise 1. Deploy t
 ## After deploy completes
 
 ```bash
+# rodeo ssh takes a command via -c, not a trailing positional argument —
+# `rodeo ssh harvester1 "kubectl get nodes"` fails with "Got unexpected
+# extra argument". And /etc/rancher/rke2/rke2.yaml is root-only, so the
+# harvester nodes' `rancher` login needs sudo -E (kubectl's full path,
+# since sudo's secure_path doesn't include RKE2's bin directory).
+KCTL='export KUBECONFIG=/etc/rancher/rke2/rke2.yaml; sudo -E /var/lib/rancher/rke2/bin/kubectl'
+
 # 1. All 3 Harvester nodes Ready
-rodeo ssh harvester1 "kubectl get nodes"
+rodeo ssh harvester1 -c "$KCTL get nodes"
 
 # 2. Core Harvester systems healthy
-rodeo ssh harvester1 "kubectl get pods -n harvester-system | grep -v Completed"
+rodeo ssh harvester1 -c "$KCTL get pods -n harvester-system | grep -v Completed"
 
-# 3. Rancher API reachable
-curl -sk https://192.168.122.9:30002/v3 | jq -r '.type'
-# expect: collection
+# 3. Rancher API reachable — /v3 requires a bearer token even for the root
+# document; an anonymous GET (or HTTP Basic Auth, see #5) returns 401.
+RANCHER_PW=$(grep '^rancher_admin_password:' ~/.rodeo/secrets.yaml | cut -d'"' -f2)
+RANCHER_TOKEN=$(curl -sk -X POST "https://192.168.122.9:30002/v3-public/localProviders/local?action=login" \
+  -H 'Content-Type: application/json' \
+  -d "{\"username\":\"admin\",\"password\":\"$RANCHER_PW\"}" | jq -r '.token')
+curl -sk -H "Authorization: Bearer $RANCHER_TOKEN" https://192.168.122.9:30002/v3 | jq -r '.type'
+# expect: apiRoot (a specific listing like /v3/clusters would say collection)
 
 # 4. Harvester API reachable (VIP)
-curl -sk https://192.168.122.10/v1 | jq -r '.apiVersion'
-# expect: harvesterhci.io/v1beta1 (or similar)
+curl -sk https://192.168.122.10/v1 | jq -r '.id'
+# expect: v1
 
 # 5. Rancher shows only "local" - Harvester NOT imported yet
-curl -sk -u admin:$(grep rancher_admin_password ~/.rodeo/secrets.yaml | cut -d'"' -f2) \
+# (Rancher has no HTTP Basic Auth — reuse the bearer token from #3. Also
+# note the grep above is anchored with ^ and : — secrets.yaml's own comment
+# header repeats each key name right above its value, so an unanchored
+# grep matches both lines and garbles the password.)
+curl -sk -H "Authorization: Bearer $RANCHER_TOKEN" \
   https://192.168.122.9:30002/v3/clusters | jq -r '.data[].name'
 # expect: local only
 
 # 6. DNAT ports respond externally
-curl -sk https://<host-ip>:8443/v1 | jq -r '.apiVersion'
-curl -sk https://<host-ip>:30002/v3 | jq -r '.type'
+curl -sk https://<host-ip>:8443/v1 | jq -r '.id'
+curl -sk -H "Authorization: Bearer $RANCHER_TOKEN" https://<host-ip>:30002/v3 | jq -r '.type'
 
 # 7. VMs autostart (survive host reboot)
-virsh list --all --autostart | grep -E 'harvester|rancher'
+sudo virsh list --all --autostart | grep -E 'harvester|rancher'
 
-# 8. Day-2 CLI works
-rodeo status
+# 8. Day-2 CLI works — needs both sudo (libvirt/lab-dir access) and cd'ing
+# into the lab dir first (rodeo status doesn't self-escalate the way
+# rodeo up/deploy do, see the "sudo rodeo" failure point below)
+sudo bash -c 'cd /root/rodeo-lab && rodeo status'
 
 # 9. custom_scripts pre-lab state (Exercise 4 / 6 foundations)
-rodeo ssh harvester1 "kubectl get vm -n prod webserver-prod daily-batch-processor"
-rodeo ssh harvester1 "kubectl get network-attachment-definitions.k8s.cni.cncf.io -n prod service"
-showmount -e <host-ip>   # expect /srv/backups
+rodeo ssh harvester1 -c "$KCTL get vm -n prod webserver-prod daily-batch-processor"
+rodeo ssh harvester1 -c "$KCTL get network-attachment-definitions.k8s.cni.cncf.io -n prod service"
+# NFS is only exported to 192.168.122.0/24 (the libvirt network), not the
+# internet — on AWS the security group doesn't open the NFS ports (2049/111)
+# externally either, by design. Check from the KVM host itself, against the
+# gateway IP Exercise 6's backup-target setting actually uses:
+sudo exportfs -v   # expect: /srv/backups 192.168.122.0/24(...)
 ```
 
 Exercise 1 is the import. Exercises 2-7 (and the optional bonus) build namespaces, networks, images, and VMs on top of what deploy automation pre-creates.

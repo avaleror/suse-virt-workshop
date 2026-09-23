@@ -33,9 +33,18 @@ The datacenter is quiet. Vertex Trust Bank runs on SUSE Virtualization end to en
 
 ## 8.3 Tear down (when finished)
 
+On a bare-metal host:
+
 ```bash
 rodeo clean --yes                     # remove lab VMs
 rodeo clean --all --yes --secrets     # full host reset
+```
+
+**If you deployed on AWS** (see [Host Setup: AWS](../instructor/aws-setup.md)), the commands above only clean the nested lab VMs *inside* the EC2 instance — they do not terminate the instance itself, which keeps billing. Instead, from your own machine:
+
+```bash
+cd suse-virt-workshop/aws
+rodeo destroy --cloud --yes
 ```
 
 Sarah was right to bet on the new stack. You proved it under fire.
