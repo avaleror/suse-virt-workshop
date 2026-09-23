@@ -40,7 +40,12 @@ Do **not** click Create yet.
 
 **Volumes** tab:
 
-- Root volume: select your cloud image, size **5 GiB**
+- Root volume: select your cloud image, size **5 GiB** (the cached image's
+  own virtual size is under 2 GiB, so 5 GiB leaves comfortable room). If you
+  swapped in a different image, check **Images** for its real virtual size
+  first — Longhorn/Harvester can't shrink a cloned volume below that figure,
+  so sizing the root volume smaller than it leaves the PVC permanently
+  `Pending` and the VM `ErrorUnschedulable` forever.
 - **Add Volume** → name `market-data-vol`, size **1 GiB**
 
 **Networks** tab:
@@ -59,7 +64,7 @@ Do **not** click Create yet.
 ```yaml
 version: 2
 ethernets:
-  enp1s0:
+  eth0:
     addresses:
       - 192.168.122.50/24
     gateway4: 192.168.122.1
@@ -68,7 +73,7 @@ ethernets:
         - 192.168.122.1
 ```
 
-> **Note:** Interface name may be `eth0` on some images. If the VM boots without the static address, check `ip link` in the web console and adjust.
+> **Note:** `eth0` is the confirmed interface name on the cached image this workshop uses (the kernel also exposes `enp1s0` as an altname for the same NIC, but `eth0` is the primary name netplan/cloud-init sees). Other images may name it differently — if the VM boots without the static address, check `ip link` in the web console and adjust.
 
 **Node Scheduling (optional):** run on nodes matching label `stage=prod` only if you labeled hosts; otherwise leave default (any node).
 

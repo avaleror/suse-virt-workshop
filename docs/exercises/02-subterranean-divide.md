@@ -116,7 +116,7 @@ Later exercises select **SSH Key: `prod/default`**.
 
 ## 2.7 Upload a cloud image
 
-Deploy automation already downloaded and cached an openSUSE Leap Micro cloud image on the KVM host, serving it at `http://192.168.122.1:8889/` so this step needs no internet access from inside the cluster. Leap Micro is the right pick here specifically because it ships cloud-init, which the next step depends on.
+Deploy automation already downloaded and cached an openSUSE Leap 16.0 Cloud image on the KVM host, serving it at `http://192.168.122.1:8889/` so this step needs no internet access from inside the cluster. This is the `-Cloud` build variant specifically because it ships cloud-init, which the next step depends on — the plain `-kvm-and-xen` build of the same release is combustion-only and silently ignores cloud-init user-data.
 
 **Images → Create**:
 
@@ -124,7 +124,7 @@ Deploy automation already downloaded and cached an openSUSE Leap Micro cloud ima
 |---|---|
 | Namespace | `official-images` (create the namespace if prompted) |
 | Name | `sles16` |
-| URL | `http://192.168.122.1:8889/openSUSE-Leap-Micro.x86_64-Default-qcow.qcow2` |
+| URL | `http://192.168.122.1:8889/Leap-16.0-Minimal-VM.x86_64-Cloud.qcow2` |
 
 Wait until the image is **Active** (download is server-side via Longhorn, and fast since the image is already local).
 
@@ -141,7 +141,7 @@ If your environment already mirrors a SLES 16 Minimal VM cloud image with cloud-
 | Namespace | `prod` |
 | Name | `prod` |
 
-Minimal user-data (installs and starts `qemu-guest-agent`; SSH access itself uses the image's own default account, `sles` for the cached Leap Micro image from 2.7):
+Minimal user-data (installs and starts `qemu-guest-agent`; SSH access itself uses the image's own default account, `sles` for the cached Leap 16.0 Cloud image from 2.7):
 
 ```yaml
 #cloud-config
