@@ -19,7 +19,7 @@ Deploy on your own **bare-metal** KVM host or on **AWS**. **GCP support is comin
 | Component | IP | Access |
 |-----------|----|--------|
 | Harvester VIP | 192.168.122.10 | `https://<host>:8443` (DNAT → VIP:443) |
-| harvester1–3 | .11–.13 | `rodeo ssh harvester1` |
+| harvester1–3 | .11–.13 | `sudo rodeo ssh harvester1` |
 | Rancher Prime | 192.168.122.9 | `https://<host>:30002` |
 
 Harvester is **not** imported into Rancher at deploy time. That's Chapter 1, same as the customer Rodeo.

@@ -91,7 +91,7 @@ Rancher is the fleet commander: identity, multi-cluster, and later the place you
 From the KVM host:
 
 ```bash
-rodeo ssh harvester1
+sudo rodeo ssh harvester1
 export KUBECONFIG=/etc/rancher/rke2/rke2.yaml
 sudo -E /var/lib/rancher/rke2/bin/kubectl get nodes
 sudo -E /var/lib/rancher/rke2/bin/kubectl get pods -n harvester-system | grep -v Completed
