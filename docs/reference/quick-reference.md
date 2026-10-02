@@ -55,7 +55,7 @@ rodeo up
 # Operations
 rodeo status
 rodeo watch
-rodeo ssh harvester1
+sudo rodeo ssh harvester1
 rodeo stop --all --yes
 rodeo start --all --yes
 rodeo clean --yes

@@ -34,11 +34,11 @@ Full detail: [Host setup](instructor/host-setup.md).
 2. Rancher → Virtualization Management → **Import Existing** → name `harvester` → copy URL.
 3. Harvester → Settings → **cluster-registration-url** → paste → Save → wait until **Active**.
 4. Tour Dashboard / Hosts / Support (download kubeconfig).
-5. `rodeo ssh harvester1` → `kubectl get nodes` - three Ready.
+5. `sudo rodeo ssh harvester1` → `kubectl get nodes` - three Ready.
 
 ## Exercise 2: The Subterranean Divide (30 min)
 
-1. Inspect **Hosts**; `rodeo ssh harvester1` → `ls /var/lib/harvester/defaultdisk/replicas`.
+1. Inspect **Hosts**; `sudo rodeo ssh harvester1` → `ls /var/lib/harvester/defaultdisk/replicas`.
 2. Create namespaces `prod` and `dev`.
 3. Review StorageClass `harvester-longhorn` (3 replicas).
 4. Create StorageClass `harvester-longhorn-1rep` (1 replica).
@@ -100,4 +100,4 @@ Review the skill table; bookmark SUSE Virtualization docs; tear down with `rodeo
 | VIP / nodes | `.10` / `.11–.13` · rancher `.9` |
 | Passwords | `~/.rodeo/secrets.yaml` |
 | Guest example | `ssh sles@192.168.122.50` |
-| Ops | `rodeo status` · `rodeo ssh harvester1` · `rodeo watch` |
+| Ops | `rodeo status` · `sudo rodeo ssh harvester1` · `rodeo watch` |

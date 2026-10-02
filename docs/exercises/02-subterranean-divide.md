@@ -24,7 +24,7 @@ In the Harvester UI → **Hosts**:
 From the KVM host terminal:
 
 ```bash
-rodeo ssh harvester1
+sudo rodeo ssh harvester1
 ls /var/lib/harvester/defaultdisk
 ls /var/lib/harvester/defaultdisk/replicas/
 exit

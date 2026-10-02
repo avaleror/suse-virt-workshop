@@ -86,7 +86,7 @@ rodeo status                # VM state + VIP reachability
 
 ```bash
 # All 3 Harvester nodes Ready
-rodeo ssh harvester1 "kubectl get nodes"
+sudo rodeo ssh harvester1 -c 'export KUBECONFIG=/etc/rancher/rke2/rke2.yaml; sudo -E /var/lib/rancher/rke2/bin/kubectl get nodes'
 
 # Rancher + Harvester APIs reachable
 curl -sk https://192.168.122.9:30002/v3 | jq -r '.type'
