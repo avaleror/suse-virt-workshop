@@ -44,7 +44,7 @@ Confirm `prod/secure-loop-prod` is **Active**.
 
 ## 5.2 Overlay vault for development (Kube-OVN)
 
-**Kube-OVN ships disabled by default.** Before `OverlayNetwork` or **Virtual Private Cloud** appear as usable options, enable the addon: **Advanced → Addons → `kubeovn-operator`** → enable it, and wait for its pods (`kube-ovn-controller`, `ovs-ovn`, `kube-ovn-cni`, etc., all in `kube-system`) to reach Running — under a minute on this lab's sizing. Skipping this step leaves the CRDs `subnets.kubeovn.io`/`vpcs.kubeovn.io` (used in 5.4) entirely absent from the cluster, not just empty.
+**Kube-OVN ships disabled by default.** Before `OverlayNetwork` or **Virtual Private Cloud** appear as usable options, enable the addon: **Advanced → Addons → `kubeovn-operator`** → enable it, and wait for its pods (`kube-ovn-controller`, `ovs-ovn`, `kube-ovn-cni`, etc., all in `kube-system`) to reach Running (under a minute on this lab's sizing). Skipping this step leaves the CRDs `subnets.kubeovn.io`/`vpcs.kubeovn.io` (used in 5.4) entirely absent from the cluster, not just empty. Kube-OVN finishes its own setup a minute or two after the pods are Running; if Harvester refuses the overlay network below with "kubeovn is not yet enabled", wait a minute and create it again.
 
 **Virtual Machine Networks → Create**:
 
@@ -93,7 +93,7 @@ kubectl get subnets.kubeovn.io
 kubectl get vpcs.kubeovn.io
 ```
 
-**Check your work:** `sudo bash -c 'cd /root/rodeo-lab && ./checks/check-exercise-5.sh'`. This exercise has no automated grading by design (nothing later reads back state created here). The script just points you at what to verify in the UI.
+**Check your work:** `/opt/suse-virt-workshop/checks/check-exercise-5.sh`. This exercise has no automated grading by design (nothing later reads back state created here). The script just points you at what to verify in the UI.
 
 ---
 

@@ -33,6 +33,8 @@ The datacenter is quiet. Vertex Trust Bank runs on SUSE Virtualization end to en
 
 ## 8.3 Tear down (when finished)
 
+If your instructor gave you a lab through the claim portal, there's nothing to tear down: your instructor removes every lab after the workshop.
+
 On a bare-metal host:
 
 ```bash

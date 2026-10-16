@@ -23,10 +23,10 @@ On the Instruqt Rodeo, `webserver-prod` and `daily-batch-processor` are pre-bake
 
 Note the **Node** column for both. `daily-batch-processor` started on the same node as `webserver-prod` (deploy automation pins it there on first boot, then releases the pin), so the two are already sharing hardware, exactly like a real "everything running production on one rack" scenario. Note the IP of `webserver-prod` from the UI.
 
-If either VM is missing (a previous deploy attempt failed before this step), re-run just that phase:
+If either VM is missing (a previous deploy attempt failed before this step), re-run just that phase (on a claim-portal lab, ask your instructor):
 
 ```bash
-# from a host with harvester kubeconfig
+# on the KVM host, as the user who deployed the lab
 rodeo deploy --from custom_scripts
 ```
 
@@ -94,7 +94,7 @@ Disable maintenance when you are done exploring so the cluster returns to full c
 >
 > ![Bonus: the migration paper trail](../assets/ch4-bonus-drills.gif)
 
-**Check your work:** `sudo bash -c 'cd /root/rodeo-lab && ./checks/check-exercise-4.sh'`. This exercise has no automated grading by design (nothing later reads back state created here). The script just points you at what to verify in the UI.
+**Check your work:** `/opt/suse-virt-workshop/checks/check-exercise-4.sh`. This exercise has no automated grading by design (nothing later reads back state created here). The script just points you at what to verify in the UI.
 
 ---
 
