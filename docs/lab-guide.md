@@ -34,7 +34,7 @@ Full detail: [Host setup](instructor/host-setup.md).
 2. Rancher → Virtualization Management → **Import Existing** → name `harvester` → copy URL.
 3. Harvester → Settings → **cluster-registration-url** → paste → Save → wait until **Active**.
 4. Tour Dashboard / Hosts / Support (download kubeconfig).
-5. Save the kubeconfig as `~/.kube/config` on the KVM host → `kubectl get nodes` - three Ready.
+5. Save the kubeconfig as `~/.kube/config` on the KVM host, point its server at `https://192.168.122.10` → `kubectl get nodes` - three Ready.
 
 ## Exercise 2: The Subterranean Divide (30 min)
 

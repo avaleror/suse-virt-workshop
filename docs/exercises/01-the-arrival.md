@@ -95,6 +95,12 @@ chmod 600 ~/.kube/config
 
 (Or copy the file from your laptop. On a claim-portal lab: `ssh -p 2222 -i student-01.key student@<host-ip> mkdir -p .kube`, then `scp -P 2222 -i student-01.key local.yaml student@<host-ip>:.kube/config`.)
 
+The downloaded file points at the address you opened the UI with, for example `https://<host-ip>:8443`. From the KVM host, kubectl has to talk to the cluster VIP instead, because the Harvester certificate only covers that address. Rewrite the server line:
+
+```bash
+sed -i 's#https://[^/]*/k8s#https://192.168.122.10/k8s#' ~/.kube/config
+```
+
 Then drive the cluster from the terminal:
 
 ```bash

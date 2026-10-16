@@ -9,7 +9,7 @@
 | Rancher UI | `https://<host-ip>:30002` · from host: `https://192.168.122.9:30002` |
 | Admin user | `admin` |
 | Passwords | claim-portal lab page; if you deployed the lab, `~/.rodeo/secrets.yaml` (`harvester_admin_password`, `rancher_admin_password`) |
-| kubectl (Harvester) | download kubeconfig from Harvester **Support → Download KubeConfig**, save it on the KVM host as `~/.kube/config` (Exercise 1.5) |
+| kubectl (Harvester) | download kubeconfig from Harvester **Support → Download KubeConfig**, save it on the KVM host as `~/.kube/config`, server rewritten to `https://192.168.122.10` (Exercise 1.5) |
 | Lab VM SSH key | `/opt/suse-virt-workshop/lab-vm-key` (Exercise 2.6) |
 | Self-checks | `/opt/suse-virt-workshop/checks/check-exercise-N.sh` (no sudo needed) |
 | Guest SSH (after Ex 3) | `ssh sles@192.168.122.50` |
