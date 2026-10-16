@@ -10,7 +10,7 @@
 
 Sarah takes you into the subterranean datacenter. One side of the room is containerized APIs; the other still runs heavy ledgers. Both will share the same SUSE Virtualization fabric. First you map the nodes, carve workspaces, set storage policy, and build the production service network the later exercises need.
 
-> **Tip:** The customer Rodeo image pre-creates `prod`, `prod/service`, and an SSH key. This lab's deploy automation now pre-creates `prod` and `prod/service` too, plus node labels. So 2.2 and 2.5 below are a confirm, not a create. You still register your own SSH key in 2.6, since the automation only embeds it directly into pre-created VMs' cloud-init, not into a reusable Harvester `SSHKey` object.
+> **Tip:** The customer Rodeo image pre-creates `prod`, `prod/service`, and an SSH key. This lab's deploy automation now pre-creates `prod` and `prod/service` too, plus node labels. So 2.2 and 2.5 below are a confirm, not a create. You still register the SSH key in 2.6, since the automation only embeds the lab VM key directly into the pre-created VMs' cloud-init, not into a reusable Harvester `SSHKey` object.
 
 ## 2.1 Inspect node topology and Longhorn on disk
 
@@ -21,16 +21,17 @@ In the Harvester UI → **Hosts**:
 
 ![Inspecting host topology](../assets/ch2-task1-hosts.gif)
 
-From the KVM host terminal:
+From the KVM host terminal (with the kubeconfig from Exercise 1.5):
 
 ```bash
-sudo rodeo ssh harvester1
-ls /var/lib/harvester/defaultdisk
-ls /var/lib/harvester/defaultdisk/replicas/
-exit
+kubectl get nodes.longhorn.io -n longhorn-system
+kubectl get replicas.longhorn.io -n longhorn-system \
+  -o custom-columns=REPLICA:.metadata.name,VOLUME:.spec.volumeName,NODE:.spec.nodeID
 ```
 
-Replicas on disk are how Longhorn keeps VM data alive across node loss.
+Each volume has replicas on several nodes. Replicas on disk are how Longhorn keeps VM data alive across node loss.
+
+> **Deployed the lab yourself?** You can see the replica files on a node's disk too: `sudo rodeo ssh harvester1`, then `ls /var/lib/harvester/defaultdisk/replicas/`.
 
 ## 2.2 Confirm `prod`, create `dev`
 
@@ -97,12 +98,18 @@ If it's ever missing (a previous run failed before this step), create it yoursel
 
 ## 2.6 Register an SSH key
 
-Generate a key on the KVM host if you do not already have one:
+Deploy automation left a shared lab VM key on the KVM host, at `/opt/suse-virt-workshop/lab-vm-key`. The two pre-created VMs already trust it, so using it here means one key opens every VM in your lab. Install it as your SSH key (skipped if you already have one) and print the public half:
 
 ```bash
-test -f ~/.ssh/id_ed25519.pub || ssh-keygen -t ed25519 -N '' -f ~/.ssh/id_ed25519
+test -f ~/.ssh/id_ed25519 || {
+  install -d -m 700 ~/.ssh
+  install -m 600 /opt/suse-virt-workshop/lab-vm-key ~/.ssh/id_ed25519
+  install -m 644 /opt/suse-virt-workshop/lab-vm-key.pub ~/.ssh/id_ed25519.pub
+}
 cat ~/.ssh/id_ed25519.pub
 ```
+
+> **Already had a key?** Then the pre-created VMs won't trust it. For Exercise 4.4, use `ssh -i /opt/suse-virt-workshop/lab-vm-key ...`, or paste the lab key's `.pub` here instead of yours.
 
 In Harvester: **Advanced → SSH Keys → Create**:
 
@@ -154,7 +161,7 @@ runcmd:
 
 Exercise 3 can select **User Data Template: `prod/prod`**.
 
-**Check your work:** `sudo bash -c 'cd /root/rodeo-lab && ./checks/check-exercise-2.sh'`.
+**Check your work:** `/opt/suse-virt-workshop/checks/check-exercise-2.sh`.
 
 ---
 

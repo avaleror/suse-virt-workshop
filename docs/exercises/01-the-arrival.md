@@ -9,46 +9,44 @@
 
 Vertex Trust Bank is drowning in legacy hypervisor costs. Sarah, the CTO, hands you a fresh **SUSE Virtualization** (Harvester) cluster and a Rancher Prime instance that do not know about each other yet. Your first job: connect them, tour the UIs, and confirm you can drive the platform from a terminal.
 
-After `rodeo up`, Harvester and Rancher are up; import is intentionally left for you. Passwords are in `~/.rodeo/secrets.yaml` on the KVM host (`harvester_admin_password`, `rancher_admin_password`).
+After `rodeo up`, Harvester and Rancher are up; import is intentionally left for you. If your instructor gave you a lab through the claim portal, your lab page has the URLs, the passwords and the SSH command for your lab host. If you deployed the lab yourself, the passwords are in `~/.rodeo/secrets.yaml` on the KVM host (`harvester_admin_password`, `rancher_admin_password`).
 
 | Field | Value |
 |---|---|
 | Username | `admin` |
 | Harvester UI | `https://<host-ip>:8443` |
 | Rancher UI | `https://<host-ip>:30002` |
-| Passwords | from `~/.rodeo/secrets.yaml` |
+| Passwords | your lab page, or `~/.rodeo/secrets.yaml` |
 
 > **Note:** Both UIs use self-signed certificates. Accept the browser security warning when it appears.
 
 ## 1.1 Verify both backends
 
-From a shell on the KVM host:
+From a shell on the KVM host (on a claim-portal lab, that's your `ssh -p 2222 student@...` session):
 
 ```bash
 curl -sk https://192.168.122.10/v1 | jq -r '.id'
 
-# Rancher's /v3 requires a bearer token even for the root document — an
-# anonymous GET (or HTTP Basic Auth) returns 401. Note the grep is anchored
-# with ^ and : — secrets.yaml's own comment header repeats each key name
-# right above its value, so an unanchored grep matches both lines and
-# garbles the password.
-RANCHER_PW=$(grep '^rancher_admin_password:' ~/.rodeo/secrets.yaml | cut -d'"' -f2)
+# Rancher's /v3 requires a bearer token even for the root document; an
+# anonymous GET (or HTTP Basic Auth) returns 401. Paste the Rancher password
+# from your lab page when asked (it isn't echoed).
+read -rsp 'Rancher password: ' RANCHER_PW; echo
 RANCHER_TOKEN=$(curl -sk -X POST "https://192.168.122.9:30002/v3-public/localProviders/local?action=login" \
   -H 'Content-Type: application/json' \
   -d "{\"username\":\"admin\",\"password\":\"$RANCHER_PW\"}" | jq -r '.token')
 curl -sk -H "Authorization: Bearer $RANCHER_TOKEN" https://192.168.122.9:30002/v3 | jq -r '.type'
-
-rodeo status
 ```
 
-Expect `v1` from Harvester and `apiRoot` from the authenticated Rancher call (that's the discovery root's own type — a specific listing like `/v3/clusters` would say `collection`). `rodeo status` should show three Harvester nodes and the rancher VM running.
+Expect `v1` from Harvester and `apiRoot` from the authenticated Rancher call (that's the discovery root's own type; a specific listing like `/v3/clusters` would say `collection`).
+
+> **Deployed the lab yourself?** Take the password from `grep '^rancher_admin_password:' ~/.rodeo/secrets.yaml` instead (anchor the grep: the file's comment header repeats each key name). `rodeo status` then shows the three Harvester nodes and the rancher VM; it needs libvirt access, so it doesn't work from a claim-portal student account.
 
 ## 1.2 Import Harvester into Rancher
 
 1. Open Rancher at `https://<host-ip>:30002` and log in as `admin`.
 2. Left sidebar → **Virtualization Management** → **Import Existing**.
 3. Set **Cluster Name** to `harvester` (exact name, later exercises assume it).
-4. Click **Create**, then copy the registration URL shown (`https://192.168.122.9:30002/v3/import/...yaml`).
+4. Click **Create**, then copy the registration URL shown (`https://rancher.192-168-122-9.sslip.io:30002/v3/import/...yaml` or similar, ending in `.yaml`).
 
 In the Harvester UI (`https://<host-ip>:8443`):
 
@@ -72,7 +70,7 @@ On the **Dashboard**, confirm:
 - **Hosts** - three nodes
 - **Virtual Machines** - `webserver-prod` and `daily-batch-processor` already running. Deploy automation pre-creates them as its last step; you'll use both in Exercise 4
 - **Images**, **Volumes**, capacity and metrics panels
-- Bottom-left **Support** → **Download KubeConfig** (save it, you will need it)
+- Bottom-left **Support** → **Download KubeConfig** (save it, you need it in 1.5)
 - **Generate Support Bundle** - know where it is for real incidents
 
 Do not change anything yet. This exercise is orientation plus the import.
@@ -88,25 +86,29 @@ Rancher is the fleet commander: identity, multi-cluster, and later the place you
 
 ## 1.5 Terminal access
 
-From the KVM host:
+Put the kubeconfig you downloaded in 1.3 on the KVM host as `~/.kube/config`, kubectl's default location. The simplest way: open the downloaded file in a text editor, copy all of it, then on the KVM host run:
 
 ```bash
-sudo rodeo ssh harvester1
-export KUBECONFIG=/etc/rancher/rke2/rke2.yaml
-sudo -E /var/lib/rancher/rke2/bin/kubectl get nodes
-sudo -E /var/lib/rancher/rke2/bin/kubectl get pods -n harvester-system | grep -v Completed
-exit
+mkdir -p ~/.kube && cat > ~/.kube/config   # paste, then press Ctrl+D
+chmod 600 ~/.kube/config
 ```
 
-`/etc/rancher/rke2/rke2.yaml` is root-only (RKE2's own default), so the `rancher` login user needs `sudo -E` to read it — and `sudo` alone won't find `kubectl` on `PATH` (its `secure_path` doesn't include RKE2's bin directory), hence the full path.
+(Or copy the file from your laptop. On a claim-portal lab: `ssh -p 2222 -i student-01.key student@<host-ip> mkdir -p .kube`, then `scp -P 2222 -i student-01.key local.yaml student@<host-ip>:.kube/config`.)
+
+Then drive the cluster from the terminal:
+
+```bash
+kubectl get nodes
+kubectl get pods -n harvester-system | grep -v Completed
+```
 
 ![Terminal access to the cluster](../assets/ch1-longhorn-ui.gif)
 
-All three nodes should be `Ready`. Core Harvester pods should be running.
+All three nodes should be `Ready`. Core Harvester pods should be running. Every later terminal step in this workshop uses this kubeconfig.
 
-Optional: point your laptop kubectl at the kubeconfig you downloaded from **Support**, or build a Rancher-proxied kubeconfig (API key under the user avatar → Account & API Keys). Either path works for the rest of the lab.
+> **Deployed the lab yourself?** You can also open a shell on a Harvester node: `sudo rodeo ssh harvester1`, then `sudo -E /var/lib/rancher/rke2/bin/kubectl --kubeconfig /etc/rancher/rke2/rke2.yaml get nodes`. That needs sudo on the KVM host, so it doesn't work from a claim-portal student account.
 
-**Check your work:** `sudo bash -c 'cd /root/rodeo-lab && ./checks/check-exercise-1.sh'`.
+**Check your work:** `/opt/suse-virt-workshop/checks/check-exercise-1.sh`.
 
 ---
 

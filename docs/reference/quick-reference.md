@@ -8,8 +8,10 @@
 | Harvester UI | `https://<host-ip>:8443` · from host: `https://192.168.122.10` |
 | Rancher UI | `https://<host-ip>:30002` · from host: `https://192.168.122.9:30002` |
 | Admin user | `admin` |
-| Passwords | `cat ~/.rodeo/secrets.yaml` (`harvester_admin_password`, `rancher_admin_password`) |
-| kubectl (Harvester) | download kubeconfig from Harvester **Support → Download KubeConfig**, or via Rancher after Exercise 1 |
+| Passwords | claim-portal lab page; if you deployed the lab, `~/.rodeo/secrets.yaml` (`harvester_admin_password`, `rancher_admin_password`) |
+| kubectl (Harvester) | download kubeconfig from Harvester **Support → Download KubeConfig**, save it on the KVM host as `~/.kube/config` (Exercise 1.5) |
+| Lab VM SSH key | `/opt/suse-virt-workshop/lab-vm-key` (Exercise 2.6) |
+| Self-checks | `/opt/suse-virt-workshop/checks/check-exercise-N.sh` (no sudo needed) |
 | Guest SSH (after Ex 3) | `ssh sles@192.168.122.50` |
 
 ## Node reference
@@ -30,6 +32,7 @@
 | Namespace `prod`, node labels, network `prod/service` | deploy automation (`custom_scripts`) |
 | Cached image `official-images/Leap-16.0-...` | deploy automation (`custom_scripts`) |
 | NFS export `192.168.122.1:/srv/backups/` | deploy automation (`custom_scripts`) |
+| Student kit `/opt/suse-virt-workshop/` (checks, lab VM key) | deploy automation (`custom_scripts`) |
 | VMs `prod/webserver-prod`, `prod/daily-batch-processor` | deploy automation (`custom_scripts`) |
 | Import cluster name `harvester` | Exercise 1 |
 | Namespace `dev` | Exercise 2 |

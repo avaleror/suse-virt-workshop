@@ -95,7 +95,7 @@ hostname
 exit
 ```
 
-**Check your work:** `sudo bash -c 'cd /root/rodeo-lab && ./checks/check-exercise-3.sh'`.
+**Check your work:** `/opt/suse-virt-workshop/checks/check-exercise-3.sh`.
 
 ---
 

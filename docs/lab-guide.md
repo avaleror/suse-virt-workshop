@@ -21,7 +21,7 @@ rodeo up
 
 - Time: **90-150 min**. Survive disconnects: `tmux attach -t rodeo-harvester`
 - UIs: Harvester `https://<host-ip>:8443` · Rancher `https://<host-ip>:30002`
-- User `admin` · passwords in `~/.rodeo/secrets.yaml`
+- User `admin` · passwords on your claim-portal lab page, or in `~/.rodeo/secrets.yaml` if you deployed the lab
 - Tear down: `rodeo clean --yes`
 
 Full detail: [Host setup](instructor/host-setup.md).
@@ -30,20 +30,20 @@ Full detail: [Host setup](instructor/host-setup.md).
 
 ## Exercise 1: The Arrival (30 min)
 
-1. `curl -sk https://192.168.122.10/v1` and `:30002/v3` - both healthy; `rodeo status` OK.
+1. `curl -sk https://192.168.122.10/v1` and `:30002/v3` - both healthy.
 2. Rancher → Virtualization Management → **Import Existing** → name `harvester` → copy URL.
 3. Harvester → Settings → **cluster-registration-url** → paste → Save → wait until **Active**.
 4. Tour Dashboard / Hosts / Support (download kubeconfig).
-5. `sudo rodeo ssh harvester1` → `kubectl get nodes` - three Ready.
+5. Save the kubeconfig as `~/.kube/config` on the KVM host → `kubectl get nodes` - three Ready.
 
 ## Exercise 2: The Subterranean Divide (30 min)
 
-1. Inspect **Hosts**; `sudo rodeo ssh harvester1` → `ls /var/lib/harvester/defaultdisk/replicas`.
+1. Inspect **Hosts**; `kubectl get replicas.longhorn.io -n longhorn-system` shows each volume's replicas per node.
 2. Create namespaces `prod` and `dev`.
 3. Review StorageClass `harvester-longhorn` (3 replicas).
 4. Create StorageClass `harvester-longhorn-1rep` (1 replica).
 5. Create VM network `prod/service` (UntaggedNetwork on `mgmt`).
-6. Register SSH key `prod/default` from the host's `~/.ssh/*.pub`.
+6. Install the lab VM key from `/opt/suse-virt-workshop/lab-vm-key` as `~/.ssh/id_ed25519`, register its `.pub` as SSH key `prod/default`.
 7. Upload cloud image into `official-images` (wait Active).
 8. Optional: cloud-init user-data template `prod/prod` with qemu-guest-agent.
 
@@ -98,6 +98,7 @@ Review the skill table; bookmark SUSE Virtualization docs; tear down with `rodeo
 | Harvester | `https://<host-ip>:8443` |
 | Rancher | `https://<host-ip>:30002` |
 | VIP / nodes | `.10` / `.11–.13` · rancher `.9` |
-| Passwords | `~/.rodeo/secrets.yaml` |
+| Passwords | claim-portal lab page, or `~/.rodeo/secrets.yaml` |
 | Guest example | `ssh sles@192.168.122.50` |
-| Ops | `rodeo status` · `sudo rodeo ssh harvester1` · `rodeo watch` |
+| Self-checks | `/opt/suse-virt-workshop/checks/check-exercise-N.sh` |
+| Ops (if you deployed the lab) | `rodeo status` · `sudo rodeo ssh harvester1` · `rodeo watch` |

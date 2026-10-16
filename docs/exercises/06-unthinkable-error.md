@@ -71,11 +71,7 @@ exit
 
 Snapshots live on the same cluster. Real DR needs an off-cluster target.
 
-Deploy automation already exported `/srv/backups` from the KVM host over NFS. Confirm it from the host if you want to see it (optional):
-
-```bash
-showmount -e 192.168.122.1   # expect /srv/backups 192.168.122.0/24
-```
+Deploy automation already exported `/srv/backups` from the KVM host over NFS to the lab network (`192.168.122.0/24`). If you deployed the lab yourself, `sudo exportfs -v` on the host shows the export (optional).
 
 In Harvester: **Advanced → Settings → backup-target** → Edit:
 
@@ -88,7 +84,7 @@ In Harvester: **Advanced → Settings → backup-target** → Edit:
 
 ![Connecting the off-cluster backup vault](../assets/ch6-task3-backup-vault.gif)
 
-> **Tip:** If `showmount` shows nothing, `custom_scripts`' NFS step failed non-fatally. Most likely an unsupported host OS package manager, see the [pre-lab checklist](../instructor/pre-lab-checklist.md#common-failure-points). Fall back to setting it up by hand: `sudo mkdir -p /srv/backups && sudo chmod 777 /srv/backups`, then install and configure an NFS server exporting that path to `192.168.122.0/24` (package name differs by distro: `nfs-kernel-server` on Ubuntu, `nfs-server`/`nfs-utils` on SLES/Fedora). Either way, the skill is knowing where backup-target lives. S3 endpoints work the same way in production.
+> **Tip:** If the setting doesn't turn configured, `custom_scripts`' NFS step may have failed non-fatally (ask your instructor on a claim-portal lab). Most likely an unsupported host OS package manager, see the [pre-lab checklist](../instructor/pre-lab-checklist.md#common-failure-points). Fall back to setting it up by hand: `sudo mkdir -p /srv/backups && sudo chmod 777 /srv/backups`, then install and configure an NFS server exporting that path to `192.168.122.0/24` (package name differs by distro: `nfs-kernel-server` on Ubuntu, `nfs-server`/`nfs-utils` on SLES/Fedora). Either way, the skill is knowing where backup-target lives. S3 endpoints work the same way in production.
 
 ## 6.6 Schedule backups
 
@@ -101,7 +97,7 @@ In Harvester: **Advanced → Settings → backup-target** → Edit:
 
 Exact UI labels vary slightly by Harvester minor version. The goal is a **policy**, not a one-off click.
 
-**Check your work:** `sudo bash -c 'cd /root/rodeo-lab && ./checks/check-exercise-6.sh'`. This exercise has no automated grading by design (nothing later reads back state created here). The script just points you at what to verify in the UI.
+**Check your work:** `/opt/suse-virt-workshop/checks/check-exercise-6.sh`. This exercise has no automated grading by design (nothing later reads back state created here). The script just points you at what to verify in the UI.
 
 ---
 
