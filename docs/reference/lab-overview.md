@@ -87,7 +87,7 @@ Enables VM autostart and `libvirt-guests.service`, prints URLs and credentials.
 
 ### Phase 7: custom_scripts (~10-15 min, mostly the image download) {#custom-scripts}
 
-Runs every executable file in `custom/scripts/` at the repo root, in sorted (numbered) order, with `KUBECONFIG` and a few identifying env vars set. Idempotent and re-run on every `rodeo up`, same as `apply`. This repo ships three:
+Runs every executable file in the lab's `custom/scripts/` (`baremetal/custom/scripts/` in this repo), in sorted (numbered) order, with `KUBECONFIG` and a few identifying env vars set. Idempotent and re-run on every `rodeo up`, same as `apply`. This repo ships three:
 
 | Script | What it does |
 |---|---|
@@ -95,9 +95,9 @@ Runs every executable file in `custom/scripts/` at the repo root, in sorted (num
 | `60-nfs-backup-target.sh` | Exports `/srv/backups` over NFS to `192.168.122.0/24`, the exact endpoint Exercise 6's backup-target setting expects |
 | `70-webserver-prod.sh` | Creates the `prod` namespace, node labels (`stage=prod` on harvester1/2, `stage=dev` on harvester3), the `prod/service` VM network, and both `webserver-prod` and `daily-batch-processor` VMs Exercise 4 needs |
 
-These same scripts are host-agnostic, with no platform-specific assumptions. They live once at `custom/scripts/` in the repo root and are symlinked from every platform directory (`baremetal/custom -> ../custom`, `aws/custom -> ../custom`, and `gcp/custom` once that lands). One set of scripts, every deploy target.
+These same scripts are host-agnostic, with no platform-specific assumptions. They live in `baremetal/custom/scripts/`, inside the bare-metal lab directory. They used to be symlinked from each platform directory, but rodeo-cli v0.31.0 refuses to trust a lab with symlinks that point outside it, so the copy now sits where `rodeo up` reads it.
 
-They also match [rodeo-cli's bundled `virt-workshop-aws` profile](https://github.com/avaleror/rodeo-cli/tree/main/rodeo/data/examples/virt-workshop-aws), which the AWS variant's remote deploy step actually re-seeds from (see the comment atop `aws/rodeo-plan.yaml` for why). See that profile's README for the live-verified details: PVC sizing from the image's real virtual size, the hand-derived `prod/service` network shape, and the node-pin-then-release sequence for a guaranteed first collision between the two VMs.
+They also match [rodeo-cli's bundled `virt-workshop` profile](https://github.com/avaleror/rodeo-cli/tree/main/rodeo/data/examples/virt-workshop), which is where the AWS host gets them (see the comment atop `aws/rodeo-plan.yaml`). See that profile's README for the live-verified details: PVC sizing from the image's real virtual size, the hand-derived `prod/service` network shape, and the node-pin-then-release sequence for a guaranteed first collision between the two VMs.
 
 ---
 

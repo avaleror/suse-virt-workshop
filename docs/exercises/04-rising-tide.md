@@ -18,8 +18,8 @@ On the Instruqt Rodeo, `webserver-prod` and `daily-batch-processor` are pre-bake
 
 | Name | CPU | Memory | Disk | Purpose |
 |---|---|---|---|---|
-| `webserver-prod` | 1 | 1 GiB | ~25 GiB (image size, not a typo) | Payment gateway (will migrate) |
-| `daily-batch-processor` | 1 | 1 GiB | ~25 GiB | Non-critical (will pause) |
+| `webserver-prod` | 1 | 1 GiB | 5 GiB | Payment gateway (will migrate) |
+| `daily-batch-processor` | 1 | 1 GiB | 5 GiB | Non-critical (will pause) |
 
 Note the **Node** column for both. `daily-batch-processor` started on the same node as `webserver-prod` (deploy automation pins it there on first boot, then releases the pin), so the two are already sharing hardware, exactly like a real "everything running production on one rack" scenario. Note the IP of `webserver-prod` from the UI.
 
@@ -39,7 +39,7 @@ kubectl delete vm -n prod algo-trader-01 --wait=false
 
 ## 4.2 Pause non-critical work
 
-**Virtual Machines** → `daily-batch-processor` → ⋮ → **Pause**. Wait until state is **Paused**.
+**Virtual Machines** → `daily-batch-processor` → ⋮ → **Pause** → **Apply** in the confirmation. Wait until state is **Paused**.
 
 ![Pausing the non-critical workload](../assets/ch4-task1-suspend-workloads.gif)
 
@@ -58,7 +58,7 @@ Leave ping running. Do not stop it.
 ## 4.4 Live-migrate the gateway
 
 1. Note which **Node** `webserver-prod` is on.
-2. ⋮ → **Migrate** → pick a **different** healthy node → **Apply**.
+2. ⋮ → **Migrate** → **Target Node**: pick a **different** healthy node → **Apply**.
 
 ![Executing the live migration](../assets/ch4-task3-live-migration.gif)
 

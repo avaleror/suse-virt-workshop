@@ -28,7 +28,7 @@
 # themselves) follows Harvester's standard "VM Network on the management
 # network" convention, but suse-virt-rodeo's own repo has this baked into
 # its image rather than scripted anywhere — there is no proven-working
-# manifest to copy. Live-verified working on rodeo-cli's virt-workshop-aws
+# manifest to copy. Live-verified working on rodeo-cli's virt-workshop
 # profile (same shape, AWS-hosted) 2026-09-12; re-verify VM connectivity
 # after a fresh deploy on your own KVM host too, since the bridge name
 # (`mgmt-br`) depends on how libvirt named it during `vms`/`cluster`.
@@ -165,7 +165,7 @@ IMAGE_SC="$(kubectl get virtualmachineimages.harvesterhci.io -n "${IMAGE_NS}" "$
 # download size — a qcow2's compressed download can be tiny while its
 # filesystem is much larger. Compute the real floor from .status.virtualSize
 # instead of hardcoding a value that only happens to work for today's cached
-# image. (Live-caught on rodeo-cli's virt-workshop-aws profile 2026-09-12
+# image. (Live-caught on rodeo-cli's virt-workshop profile 2026-09-12
 # with a hardcoded 5Gi — see that repo's git history for the failure mode
 # this avoids. Also why this script never hardcodes a *display* size in its
 # own comments beyond the DISK_GI floor below: the cached image has changed

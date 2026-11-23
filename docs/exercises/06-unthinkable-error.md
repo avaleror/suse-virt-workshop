@@ -26,7 +26,7 @@ Leave the SSH session open or reconnect as needed.
 
 ## 6.2 Take a snapshot, then break production
 
-In the UI → `transaction-ledger` → **Snapshots** → **Take Snapshot** → name `pre-disaster-backup`. Wait until **Active**.
+**Virtual Machines** → `transaction-ledger` → ⋮ → **Take Virtual Machine Snapshot** → name `pre-disaster-backup` → **Create**. Find it under **Backup and Snapshots → Virtual Machine Snapshots** and wait until it's **Ready**.
 
 On the VM:
 
@@ -40,7 +40,7 @@ exit
 
 ## 6.3 Clone to staging from the snapshot
 
-On the snapshot row → ⋮ → **Restore to New Virtual Machine**:
+**Backup and Snapshots → Virtual Machine Snapshots** → `pre-disaster-backup` → ⋮ → **Restore New**:
 
 | Field | Value |
 |---|---|
@@ -60,9 +60,9 @@ exit
 
 ## 6.4 Restore production
 
-1. **Power off** `transaction-ledger`.
-2. Snapshot `pre-disaster-backup` → ⋮ → **Restore** → confirm.
-3. Power the VM back on.
+1. **Stop** `transaction-ledger` (⋮ → **Stop**) and wait until it's **Off**.
+2. **Backup and Snapshots → Virtual Machine Snapshots** → `pre-disaster-backup` → ⋮ → **Replace Existing** → **Create**.
+3. The VM starts again on its own once the restore finishes. If it stays **Off**, start it.
 4. SSH and `cat /home/sles/ledger.txt`. The record is back.
 
 ![Restoring production from the snapshot](../assets/ch6-task6-restore-production.gif)
@@ -88,10 +88,16 @@ In Harvester: **Advanced → Settings → backup-target** → Edit:
 
 ## 6.6 Schedule backups
 
-**Virtual Machines** → select `transaction-ledger` (or use **Backup & Snapshots** schedules in your Harvester version):
+**Virtual Machines** → `transaction-ledger` → ⋮ → **Create Schedule**:
 
-- Create a recurring backup/snapshot schedule (hourly or daily is fine for the lab).
-- Confirm the schedule object appears and the next run is listed.
+| Field | Value |
+|---|---|
+| Type | Backup (needs the backup target from 6.5) or Snapshot |
+| Cron Schedule | `0 * * * *` (hourly) |
+| Retain | `3` |
+| Max Failure | `2` (must be lower than Retain) |
+
+Confirm the schedule appears under **Backup and Snapshots → Virtual Machine Schedules**.
 
 ![Putting backups on a schedule](../assets/ch6-task4-backup-schedule.gif)
 

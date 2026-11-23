@@ -53,6 +53,7 @@
 curl -fsSL https://raw.githubusercontent.com/avaleror/rodeo-cli/main/install.sh | bash
 cd suse-virt-workshop/baremetal
 rodeo doctor
+rodeo trust   # once, and again after any change to the lab files
 rodeo up
 
 # Operations

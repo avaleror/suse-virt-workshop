@@ -50,6 +50,7 @@ curl -fsSL https://raw.githubusercontent.com/avaleror/rodeo-cli/main/install.sh 
 git clone https://github.com/avaleror/suse-virt-workshop.git
 cd suse-virt-workshop/baremetal
 rodeo doctor                  # confirm the host can run the harvester profile
+rodeo trust                   # approve this lab once; again after a git pull
 rodeo up                      # uses this directory's rodeo-plan.yaml
 ```
 
@@ -93,7 +94,8 @@ git clone https://github.com/avaleror/suse-virt-workshop.git
 cd suse-virt-workshop/aws
 # edit rodeo-plan.yaml: set provider.region and provider.subnet_id
 # to your own AWS account (any VPC with an internet gateway works)
-rodeo up --profile virt-workshop-aws --target aws
+rodeo trust                                      # approve the lab once
+rodeo up --profile virt-workshop --target aws
 ```
 
 Two instance tiers (`provider.instance_tier` in `rodeo-plan.yaml`, or `--instance-tier` on the CLI). Real AWS specs, prices on-demand Linux in `eu-north-1` as of 2026-09-14. Always check current pricing.
@@ -130,14 +132,18 @@ docs/
   reference/                # Lab overview and quick reference
   instructor/               # Host setup and pre-lab checklist
   lab-guide.md              # Single-file printable guide
-custom/scripts/             # Pre-lab automation: image cache, NFS backup
-                             # target, Exercise 4's webserver-prod +
-                             # daily-batch-processor (see lab-overview.md).
-                             # The single copy every platform below symlinks to.
-baremetal/                  # Deploy on your own KVM host: rodeo-plan.yaml +
-                             # custom -> ../custom
-aws/                        # Deploy on AWS: rodeo-plan.yaml (region/subnet/
-                             # instance size) + custom -> ../custom
+baremetal/                  # Deploy on your own KVM host: the lab directory
+  rodeo-plan.yaml
+  custom/scripts/           # Pre-lab automation: image cache, NFS backup
+                             # target, student kit, Exercise 4's
+                             # webserver-prod + daily-batch-processor
+                             # (see lab-overview.md)
+  checks/                   # Self-check scripts, copied to
+                             # /opt/suse-virt-workshop/checks on deploy
+aws/                        # Deploy on AWS: rodeo-plan.yaml only (region/
+                             # subnet/instance size). The host runs rodeo-cli's
+                             # bundled virt-workshop profile, which carries the
+                             # same scripts and checks
                              # (gcp/ coming soon, same shape)
 mkdocs.yml
 ```

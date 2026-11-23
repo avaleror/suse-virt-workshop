@@ -6,7 +6,7 @@
 
 ---
 
-> **This is a self-hosted-only bonus, not one of the eight chapters.** [suse-virt-rodeo](https://github.com/avaleror/suse-virt-rodeo) (the Instruqt track this workshop mirrors) has exactly 8 chapters, ending at "A New Horizon." There's no "Final Showdown" chapter there. This exercise exists here because Harvester's real **Migration** feature (importing VMs from a legacy hypervisor) is worth trying hands-on if you have a vSphere/ISAware-compatible source to point it at, but it was never built into the graded rodeo track. Skip straight to [Exercise 8: A New Horizon](08-new-horizon.md) if you don't.
+> **This is a self-hosted-only bonus, not one of the eight chapters.** [suse-virt-rodeo](https://github.com/avaleror/suse-virt-rodeo) (the Instruqt track this workshop mirrors) has exactly 8 chapters, ending at "A New Horizon." There's no "Final Showdown" chapter there. This exercise exists here because Harvester's real **Migration** feature (importing VMs from a legacy hypervisor) is worth trying hands-on if you have a VMware, OpenStack or OVA source to point it at, but it was never built into the graded rodeo track. Skip straight to [Exercise 8: A New Horizon](08-new-horizon.md) if you don't.
 
 The legacy vendor wants forty percent more for the renewal. Sarah declines. The last critical workload, `legacy-ledger-vm`, must land on SUSE Virtualization while the old world is still running.
 
@@ -14,21 +14,23 @@ The legacy vendor wants forty percent more for the renewal. Sarah declines. The 
 
 ## B.1 Look at the migration bridge
 
-In Harvester: **Advanced → Migration → Sources**.
+The import feature ships as an add-on, disabled by default. Enable it first: **Advanced → Add-ons → `vm-import-controller`** → ⋮ → **Enable**, and wait for **Deploy Successful**.
 
-The list is empty unless you point a source at a real vSphere/ISAware-compatible endpoint. Neither this repo nor suse-virt-rodeo's own automation ships one. Open **Create** and read the fields (source type, endpoint, credentials) so you know what production needs. Cancel without saving if you have no legacy cluster.
+A new top-level menu appears: **Virtual Machine Imports**, with **Source VMware**, **Source OpenStack** and **Source OVA**.
+
+The lists are empty unless you point a source at a real vCenter, OpenStack or OVA URL. Neither this repo nor suse-virt-rodeo's own automation ships one. Open **Create** and read the fields (source type, endpoint, credentials) so you know what production needs. Cancel without saving if you have no legacy cluster.
 
 ## B.2 How extraction works (when a source exists)
 
-**Migrations → Create** (reference, use when a source is Ready):
+**Virtual Machine Imports → Virtual Machine Import → Create** (reference, use when a source is Ready):
 
 | Setting | Value |
 |---|---|
-| Source Type | ISAware (or the type your source uses) |
+| Source Type | VMware, OpenStack or OVA (the type of your source) |
 | Source VM | `legacy-ledger-vm` |
 | Target Network | `prod/service` (or mgmt / default lab network) |
 
-The importer copies disks, converts them to Longhorn volumes, and registers a native Harvester VM. Progress is visible on the Migrations page.
+The importer copies disks, converts them to Longhorn volumes, and registers a native Harvester VM. Progress is visible under **Virtual Machine Imports → Virtual Machine Import**.
 
 ## B.3 Workshop path: stand in the migrated ledger
 

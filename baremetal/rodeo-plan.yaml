@@ -3,14 +3,16 @@
 # gcp/ once it lands) — same 8 exercises regardless of which one you use,
 # only infra bring-up differs. See ../aws/rodeo-plan.yaml for that variant.
 #
-# Deploy from this directory:  rodeo up
+# Deploy from this directory:  rodeo trust && rodeo up
 # Secrets live in ~/.rodeo/secrets.yaml (chmod 600, never committed).
 #
 # Same topology as the customer-facing suse-virt-rodeo Instruqt lab,
 # brought up from scratch on a host you own.
 #
-# custom/scripts/ (symlinked from ../custom — the single copy shared by
-# every platform directory; see docs/reference/lab-overview.md#custom-scripts)
+# Approve the lab once before the first deploy, and again after any change
+# to its files:  rodeo trust
+#
+# custom/scripts/ (see docs/reference/lab-overview.md#custom-scripts)
 # pre-creates the same pre-lab state the Instruqt image bakes in: a cached
 # VM image, an NFS backup target, and Exercise 4's
 # webserver-prod/daily-batch-processor pair. Runs on every `rodeo up` as the

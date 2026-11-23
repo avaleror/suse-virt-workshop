@@ -48,8 +48,11 @@ curl -fsSL https://raw.githubusercontent.com/avaleror/rodeo-cli/main/install.sh 
 ```bash
 git clone https://github.com/avaleror/suse-virt-workshop.git
 cd suse-virt-workshop/baremetal
+rodeo trust   # approve this lab once (see below)
 rodeo up
 ```
+
+`rodeo trust` approves this lab directory once. rodeo runs a lab's own scripts as root, so since rodeo-cli v0.31.0 it refuses to deploy a lab you haven't approved. Run it again after you change any file in the lab (a `git pull` counts).
 
 Because you are inside a directory that already contains `rodeo-plan.yaml`, `rodeo up` auto-detects the lab. It will:
 

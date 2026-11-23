@@ -27,7 +27,7 @@ The datacenter is quiet. Vertex Trust Bank runs on SUSE Virtualization end to en
 
 - [SUSE Virtualization docs](https://documentation.suse.com/cloudnative/virtualization/)
 - [Rancher Prime / Virtualization Management](https://documentation.suse.com/cloudnative/rancher-manager/)
-- Rebuild this lab anytime: `rodeo clean --yes && rodeo up` from this repo
+- Rebuild this lab anytime: `rodeo clean --yes && rodeo up` from this repo's `baremetal/` directory
 - Customer-facing interactive twin: [suse-virt-rodeo](https://github.com/avaleror/suse-virt-rodeo)
 - Automation that built your host lab: [rodeo-cli](https://github.com/avaleror/rodeo-cli)
 

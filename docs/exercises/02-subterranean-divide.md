@@ -62,10 +62,10 @@ Note **Number Of Replicas = 3**. Production ledgers want that. Disposable quant 
 | Field | Value |
 |---|---|
 | Name | `harvester-longhorn-1rep` |
-| Provisioner | `driver.longhorn.io` |
+| Provisioner | `Longhorn V1 (CSI)` (that's `driver.longhorn.io`, the default) |
 | Number of replicas | `1` |
-| Allow volume expansion | yes |
-| Reclaim policy | Delete |
+| Allow volume expansion | yes (**Customize** tab, already the default) |
+| Reclaim policy | Delete (**Customize** tab, already the default) |
 
 Parameters (if the form exposes them as YAML/custom):
 
@@ -133,7 +133,7 @@ Deploy automation already downloaded and cached an openSUSE Leap 16.0 Cloud imag
 | Name | `sles16` |
 | URL | `http://192.168.122.1:8889/Leap-16.0-Minimal-VM.x86_64-Cloud.qcow2` |
 
-Wait until the image is **Active** (download is server-side via Longhorn, and fast since the image is already local).
+The **Name** you type is the image's display name: Harvester gives the object itself a generated name such as `image-x7k2p`, which is normal. Wait until the image is **Active** (download is server-side via Longhorn, and fast since the image is already local).
 
 > **No local cache?** (a manual bare-metal deploy without this workshop's `custom_scripts`) Use any SLES 16 or openSUSE Leap cloud qcow2 URL your lab can reach instead. Whatever you pick, confirm it ships **cloud-init**, not only combustion. Exercise 2.8's user-data and Exercise 3's cloud-init steps silently do nothing on an image that lacks it, and the VM still boots fine, which makes this easy to miss.
 

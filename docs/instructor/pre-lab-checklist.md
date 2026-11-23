@@ -1,6 +1,6 @@
 # Pre-lab checklist
 
-Run this after `rodeo up` finishes and before students open Exercise 1. Deploy takes 90-150 minutes on nested KVM; budget extra time for this gate.
+Run this after `rodeo up` finishes and before students open Exercise 1. On an AWS host, run it after `sudo -i`: there the lab, its secrets and rodeo's state belong to root, not `ec2-user`. Deploy takes 90-150 minutes on nested KVM; budget extra time for this gate.
 
 ## After deploy completes
 
@@ -22,7 +22,7 @@ sudo rodeo ssh harvester1 -c "$KCTL get pods -n harvester-system | grep -v Compl
 
 # 3. Rancher API reachable — /v3 requires a bearer token even for the root
 # document; an anonymous GET (or HTTP Basic Auth, see #5) returns 401.
-RANCHER_PW=$(grep '^rancher_admin_password:' ~/.rodeo/secrets.yaml | cut -d'"' -f2)
+RANCHER_PW=$(sed -n 's/^rancher_admin_password: *//p' ~/.rodeo/secrets.yaml | tr -d "\"'")
 RANCHER_TOKEN=$(curl -sk -X POST "https://192.168.122.9:30002/v3-public/localProviders/local?action=login" \
   -H 'Content-Type: application/json' \
   -d "{\"username\":\"admin\",\"password\":\"$RANCHER_PW\"}" | jq -r '.token')
