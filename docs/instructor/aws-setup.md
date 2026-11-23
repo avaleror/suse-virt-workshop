@@ -27,7 +27,7 @@ Set via `provider.instance_tier` in `rodeo-plan.yaml` (default: `recommended`), 
 
 The deploy itself takes 30-90 minutes on `recommended`. Total cost is that plus however long you keep the instance running afterward.
 
-There's no `budget` tier for this 3-node profile. An EBS-only, more-vCPU/RAM instance (`m7i.16xlarge`) actually costs *more* than `recommended` here, since local NVMe matters more for nested Harvester's Longhorn I/O than raw compute. So it isn't a real budget option. `rodeo-cli` ships a genuinely cheaper path as a separate profile (`virt-workshop-aws-2n`, 2-node Harvester on a smaller instance) if you want one, but it isn't wired into this repo's docs or deploy flow.
+There's no `budget` tier for this 3-node profile. An EBS-only, more-vCPU/RAM instance (`m7i.16xlarge`) actually costs *more* than `recommended` here, since local NVMe matters more for nested Harvester's Longhorn I/O than raw compute. So it isn't a real budget option. `rodeo-cli` ships a genuinely cheaper path as a separate profile (`virt-workshop-2n`, 2-node Harvester on a smaller instance) if you want one, but it isn't wired into this repo's docs or deploy flow.
 
 Confirm your AWS credentials work before starting:
 
@@ -60,13 +60,16 @@ provider:
   instance_tier: recommended    # recommended | performance (no budget tier, see below)
 ```
 
-Then:
+Then approve the lab once and deploy:
 
 ```bash
-rodeo up --profile virt-workshop-aws --target aws
+rodeo trust      # once, and again after any edit to the files in aws/
+rodeo up --profile virt-workshop --target aws
 # or override the tier without editing the file:
-rodeo up --profile virt-workshop-aws --target aws --instance-tier performance
+rodeo up --profile virt-workshop --target aws --instance-tier performance
 ```
+
+`rodeo trust` approves this lab directory. Since rodeo-cli v0.31.0, rodeo refuses to deploy a lab you haven't approved, because a deploy runs the lab's scripts as root. (`virt-workshop-aws` is the profile's old name. It still works, with a warning.)
 
 This will:
 
@@ -76,17 +79,22 @@ This will:
 4. Drive the full pipeline remotely: `kvm_host → vms → pxe_server → cluster → rancher → finalise → custom_scripts`
 5. Print Harvester / Rancher URLs and where to find passwords
 
-**Typical time:** 30-90 minutes. Faster than bare-metal, thanks to AWS's NVMe and consistent CPU generation. No tmux needed: the local `rodeo up` process holds the connection until the remote deploy finishes.
+**Typical time:** 30-90 minutes (about 60 on `recommended` in a 2026-11-23 run). Faster than bare-metal, thanks to AWS's NVMe and consistent CPU generation. No tmux needed: the local `rodeo up` process holds the connection until the remote deploy finishes.
 
-> **Known limitation:** on a very long remote deploy, the SSH connection between your machine and the EC2 host can occasionally drop silently. That's a network-level timeout, not a rodeo-cli bug. If `rodeo up` seems to hang with no new output for well past its usual phase timing, check whether the process is still alive. If the connection died, SSH into the host directly and check `rodeo status`. Phases already completed are cached and won't re-run, so you can resume cleanly instead of starting over.
+The local `rodeo up` prints nothing between "Provisioning AWS KVM host" and the final summary. That's expected: the deploy runs on the host. Follow it from a second terminal (below), or start it with `--detach`, which returns as soon as the host has started and leaves the deploy running there.
+
+The deploy keeps running on the host if your laptop sleeps or the connection drops. Running `rodeo up` again while it's still going won't start a second deploy; it tells you one is already running.
 
 ### Watch progress (from a second terminal)
 
+From the `aws/` directory on your machine:
+
 ```bash
-ssh -i ~/.rodeo/ssh/id_ed25519 ec2-user@<host-ip>
-rodeo status                 # VM state + VIP reachability, no sudo needed
-sudo tail -f /root/.rodeo/logs/aws-up.log
+rodeo status --cloud         # running / finished + the tail of the host's log
+rodeo ssh primary            # a shell on the EC2 host, as ec2-user
 ```
+
+On the host, `sudo tail -f /root/.rodeo/logs/aws-up.log` follows the whole log. rodeo creates an SSH key for this lab only, in `~/.rodeo/ssh/labs/suse-virt-workshop-aws/id_ed25519` on your machine (the directory is the plan's `name:`), and `rodeo ssh primary` uses it.
 
 ### `rodeo ssh <vm>` needs `sudo` on AWS
 
@@ -103,7 +111,8 @@ Same as bare-metal: `rodeo-plan.yaml` sets `harvester_auto_import: false` on pur
 ## Verify before students start
 
 ```bash
-ssh -i ~/.rodeo/ssh/id_ed25519 ec2-user@<host-ip>
+rodeo ssh primary            # from aws/ on your machine
+sudo -i                      # the lab, its kubeconfig and secrets belong to root on the host
 
 # All 3 Harvester nodes Ready
 export KUBECONFIG=~/.rodeo/harvester-kubeconfig
@@ -118,8 +127,8 @@ sudo exportfs -v
 External UI access (from your own machine, outside AWS):
 
 ```bash
-curl -sk https://<host-ip>:8443/v1 | jq -r '.apiVersion'
-curl -sk https://<host-ip>:30002/v3 | jq -r '.type'
+curl -sk https://<host-ip>:8443/v1 | jq -r '.id'     # expect: v1
+curl -sk https://<host-ip>:30002/ping; echo          # expect: pong
 ```
 
 See the [pre-lab checklist](pre-lab-checklist.md) for the full gate. It's written with bare-metal in mind, but the verification steps apply here too.
@@ -131,12 +140,12 @@ See the [pre-lab checklist](pre-lab-checklist.md) for the full gate. It's writte
 | Harvester UI | `https://<host-ip>:8443` |
 | Rancher UI | `https://<host-ip>:30002` |
 | Username | `admin` |
-| Passwords | `harvester_admin_password` and `rancher_admin_password`, via `ssh ec2-user@<host-ip> "cat ~/.rodeo/secrets.yaml"` |
+| Passwords | `harvester_admin_password` and `rancher_admin_password` in `~/.rodeo/secrets.yaml` on **your** machine: rodeo sends them to the host, so both sides use the same values |
 | Lab guide | https://avaleror.github.io/suse-virt-workshop/ |
 
 Both UIs use self-signed certificates. Students need to accept the browser warning.
 
-If students need to SSH into the host themselves, share the private key file (`~/.rodeo/ssh/id_ed25519` on your machine) securely. Or set up per-student IAM/key access for a real multi-attendee workshop. This single-host setup assumes one instructor/student pair per instance.
+If students need to SSH into the host themselves, share the lab's private key (`~/.rodeo/ssh/labs/suse-virt-workshop-aws/id_ed25519` on your machine) securely: `ssh -i <that key> ec2-user@<host-ip>`. It's created for this lab and deleted with it. Or set up per-student IAM/key access for a real multi-attendee workshop. This single-host setup assumes one instructor/student pair per instance.
 
 ## Tear down
 
@@ -145,7 +154,7 @@ cd suse-virt-workshop/aws
 rodeo destroy --cloud --yes
 ```
 
-Terminates the EC2 instance and deletes the security group rodeo created. Nothing else in your AWS account gets touched. Verify no billable resources remain:
+Terminates the EC2 instance and deletes the security group and key pair rodeo created. Nothing else in your AWS account gets touched. Verify no billable resources remain:
 
 ```bash
 aws ec2 describe-instances --region <region> \
@@ -157,18 +166,10 @@ An empty result means clean.
 
 ## Cost safety
 
-For a workshop you might forget to tear down, arm a self-terminate timer as a backstop:
-
-```bash
-aws ec2 modify-instance-attribute --region <region> --instance-id <id> \
-  --instance-initiated-shutdown-behavior terminate
-ssh -i ~/.rodeo/ssh/id_ed25519 ec2-user@<host-ip> "sudo shutdown -h +180"   # 3 hours
-```
-
-Verify with `sudo shutdown -c` to cancel, or check `who -b`/`last` style timing if you're not sure it's armed.
+rodeo arms a dead-man switch on every instance it creates: the host terminates itself 6 hours after launch, and `rodeo up` prints the exact time ("Self-destructs: ..."). For a longer workshop, set `provider.ttl_hours` in `rodeo-plan.yaml` (up to 168) before `rodeo up`. Still run `rodeo destroy --cloud --yes` when you finish: the timer is a backstop, not the plan.
 
 ## Further reading
 
 - [Deploy on a bare-metal host instead](host-setup.md)
 - [Lab overview](../reference/lab-overview.md)
-- [rodeo-cli's `virt-workshop-aws` profile](https://github.com/avaleror/rodeo-cli/tree/main/rodeo/data/examples/virt-workshop-aws). This workshop's AWS deploy re-seeds from this bundled profile on the remote host. See its README for live-verification details.
+- [rodeo-cli's `virt-workshop` profile](https://github.com/avaleror/rodeo-cli/tree/main/rodeo/data/examples/virt-workshop). The AWS host takes this workshop's scripts and checks from this bundled profile. See its README for live-verification details.

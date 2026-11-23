@@ -50,8 +50,9 @@ Expect `v1` from Harvester and `apiRoot` from the authenticated Rancher call (th
 
 In the Harvester UI (`https://<host-ip>:8443`):
 
-1. Left sidebar → **Settings** (gear).
-2. Find **cluster-registration-url** → edit → paste the URL → check **Insecure Skip TLS Verify** (Rancher's cert is self-signed) → **Save**.
+1. Left sidebar → **Advanced** → **Settings**.
+2. Find **cluster-registration-url** (the **Filter** box helps) → ⋮ → **Edit Setting** → paste the URL into **URL** → check **Insecure Skip TLS Verify** (Rancher's cert is self-signed) → **Save**.
+3. A **Tip** dialog explains how to unset the import later. Click **OK**: the setting is only saved after that.
 
 ![Importing Harvester into Rancher](../assets/ch1-import-harvester.gif)
 

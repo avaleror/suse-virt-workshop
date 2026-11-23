@@ -1,32 +1,25 @@
-# aws/rodeo-plan.yaml — deploy this workshop on a fresh AWS EC2 host instead
-# of your own bare-metal KVM box. Same 8 exercises, same custom/scripts/
-# pre-lab automation (symlinked from ../custom) — only the host changes.
+# aws/rodeo-plan.yaml: deploy this workshop on a fresh AWS EC2 host instead
+# of your own bare-metal KVM box. Same 8 exercises, same pre-lab automation,
+# only the host changes.
 #
 # Fill in provider.region and provider.subnet_id for your own AWS account,
 # then from this directory:
 #
-#   rodeo up --profile virt-workshop-aws --target aws
+#   rodeo trust    # approve this lab once, and again after you edit it
+#   rodeo up --profile virt-workshop --target aws
 #
-# HOW THIS ACTUALLY WORKS (worth knowing before you edit resources/versions
-# below): `rodeo up --target aws` provisions the EC2 host from THIS file's
-# own `provider:` block (region, subnet, instance size) — that part is fully
-# local and real. But the Harvester/Rancher/custom_scripts deploy itself runs
-# entirely on the freshly-provisioned host, which re-seeds its OWN lab
-# directory from rodeo-cli's bundled `virt-workshop-aws` profile by NAME
-# (via `--profile virt-workshop-aws` above) — it does not receive this
-# file over the network. The `resources:`/`versions:`/`network:` sections
-# below are kept identical to that bundled profile on purpose, so what you
-# read here is exactly what gets deployed — but if you want to actually
-# *change* Harvester/Rancher sizing, edit rodeo-cli's own
-# rodeo/data/examples/virt-workshop-aws/rodeo-plan.yaml (and re-verify),
-# not this file. Only `provider:` below has a real effect from here.
+# How it works: rodeo provisions the EC2 host from the provider: block below,
+# copies this plan to the host and runs rodeo up there. The host adds the
+# rest of the lab (custom/scripts, checks/, manifests) from rodeo-cli's
+# bundled virt-workshop profile, which carries the same scripts as
+# ../baremetal/custom/scripts. That's why this directory holds only the plan.
+# resources:, versions: and network: below match that bundled profile; to
+# change them, edit them here and re-run rodeo trust.
 #
-# Needs no extra IAM beyond EC2 (RunInstances/DescribeX/ModifyInstance...):
-# rodeo creates and scopes its own security group to your current public IP
-# unless you set provider.security_group_ids yourself. Live-verified
-# 2026-09-14 end to end (m8id.8xlarge, eu-north-1) — see
-# https://github.com/avaleror/rodeo-cli/tree/main/rodeo/data/examples/virt-workshop-aws
-# for that verification's details.
+# rodeo creates a security group scoped to your current public IP (unless you
+# set provider.security_group_ids), a key pair for this lab only, and a 6 h
+# dead-man switch: the instance terminates itself 6 hours after launch
+# (provider.ttl_hours changes that).
 #
 # Tear down: rodeo destroy --cloud --yes (from this directory)
 
@@ -37,7 +30,7 @@ provider:
   type: aws
   region: eu-central-1          # <- set to your region
   subnet_id: subnet-CHANGE-ME   # <- must be in a VPC with an internet gateway
-  instance_tier: recommended    # recommended | performance — no real "budget"
+  instance_tier: recommended    # recommended | performance; no real "budget"
                                  # tier for this 3-node profile (an EBS-only
                                  # bigger instance costs more, not less, than
                                  # recommended's local-NVMe m8id.8xlarge)

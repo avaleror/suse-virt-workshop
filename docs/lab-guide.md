@@ -16,6 +16,7 @@ curl -fsSL https://raw.githubusercontent.com/avaleror/rodeo-cli/main/install.sh 
 git clone https://github.com/avaleror/suse-virt-workshop.git
 cd suse-virt-workshop/baremetal   # or aws/, see README for the AWS path
 rodeo doctor
+rodeo trust                       # approve the lab once
 rodeo up
 ```
 
@@ -32,7 +33,7 @@ Full detail: [Host setup](instructor/host-setup.md).
 
 1. `curl -sk https://192.168.122.10/v1` and `:30002/v3` - both healthy.
 2. Rancher → Virtualization Management → **Import Existing** → name `harvester` → copy URL.
-3. Harvester → Settings → **cluster-registration-url** → paste → Save → wait until **Active**.
+3. Harvester → Advanced → Settings → **cluster-registration-url** → ⋮ → Edit Setting → paste, tick Insecure Skip TLS Verify → Save → OK → wait until **Active**.
 4. Tour Dashboard / Hosts / Support (download kubeconfig).
 5. Save the kubeconfig as `~/.kube/config` on the KVM host, point its server at `https://192.168.122.10` → `kubectl get nodes` - three Ready.
 
@@ -68,8 +69,8 @@ Create VM `prod/algo-trader-01`: 2 CPU / 2 GiB, SSH `prod/default`, label `stage
 ## Exercise 6: The Unthinkable Error (30 min)
 
 1. On `transaction-ledger` (create if needed): write `ledger.txt`, snapshot `pre-disaster-backup`, delete the file.
-2. Restore snapshot to new VM `ledger-staging-verify`; verify file.
-3. Power off prod → Restore snapshot → power on → verify.
+2. Snapshot ⋮ → **Restore New** as `ledger-staging-verify`; verify file.
+3. Stop prod → snapshot ⋮ → **Replace Existing** (the VM starts again by itself) → verify.
 4. Attach the **backup-target** NFS setting to `192.168.122.1:/srv/backups/`. Already exported by deploy-time automation, no host setup needed.
 5. Create a recurring backup/snapshot schedule.
 
@@ -84,7 +85,7 @@ Review the skill table; bookmark SUSE Virtualization docs; tear down with `rodeo
 
 ## Bonus: The Final Showdown (25 min, self-hosted only, no rodeo counterpart)
 
-1. Open **Advanced → Migration → Sources** (empty unless you point it at a real legacy hypervisor. Learn the form.)
+1. Enable the `vm-import-controller` add-on, then open **Virtual Machine Imports** (empty unless you point a source at a real VMware, OpenStack or OVA endpoint. Learn the form.)
 2. Create stand-in `legacy-ledger-vm` on `prod/service`.
 3. `systemctl enable --now qemu-guest-agent` inside the guest.
 4. Snapshot `post-migration-baseline`; live-migrate once.

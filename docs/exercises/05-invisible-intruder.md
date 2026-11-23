@@ -44,7 +44,7 @@ Confirm `prod/secure-loop-prod` is **Active**.
 
 ## 5.2 Overlay vault for development (Kube-OVN)
 
-**Kube-OVN ships disabled by default.** Before `OverlayNetwork` or **Virtual Private Cloud** appear as usable options, enable the addon: **Advanced → Addons → `kubeovn-operator`** → enable it, and wait for its pods (`kube-ovn-controller`, `ovs-ovn`, `kube-ovn-cni`, etc., all in `kube-system`) to reach Running (under a minute on this lab's sizing). Skipping this step leaves the CRDs `subnets.kubeovn.io`/`vpcs.kubeovn.io` (used in 5.4) entirely absent from the cluster, not just empty. Kube-OVN finishes its own setup a minute or two after the pods are Running; if Harvester refuses the overlay network below with "kubeovn is not yet enabled", wait a minute and create it again.
+**Kube-OVN ships disabled by default.** Before `OverlayNetwork` or **Virtual Private Cloud** appear as usable options, enable the addon: **Advanced → Add-ons → `kubeovn-operator`** → ⋮ → **Enable**, and wait for its pods (`kube-ovn-controller`, `ovs-ovn`, `kube-ovn-cni`, etc., all in `kube-system`) to reach Running (under a minute on this lab's sizing). Skipping this step leaves the CRDs `subnets.kubeovn.io`/`vpcs.kubeovn.io` (used in 5.4) entirely absent from the cluster, not just empty. Kube-OVN finishes its own setup a minute or two after the pods are Running; if Harvester refuses the overlay network below with "kubeovn is not yet enabled", wait a minute and create it again.
 
 **Virtual Machine Networks → Create**:
 
@@ -76,8 +76,8 @@ VMs on `dev/secure-loop-dev` only talk to peers on that overlay.
 Pick a non-critical VM (for example `daily-batch-processor`):
 
 1. ⋮ → **Edit Config** → **Networks** → select `prod/secure-loop-prod` (or `dev/secure-loop-dev` for a dev VM).
-2. **Save**.
-3. **Stop** the VM if required, then **Start** / **Restart** so the NIC change applies.
+2. **Save**. Harvester asks whether to restart: **Save and Restart** applies the NIC change in one step.
+3. If you chose plain **Save**, **Stop** the VM, then **Start** it so the NIC change applies.
 
 > **Important:** Hot-plug of network changes is limited. Stopping first is the reliable path.
 
